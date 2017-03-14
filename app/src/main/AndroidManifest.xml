@@ -14,8 +14,8 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
     <application
-        android:allowBackup="true"
         android:name=".XberApplication"
+        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -23,6 +23,7 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="lIYgdoVypvfC2YIO5GsKaDcExgf0Zwpt" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +35,14 @@
         <service android:name=".service.StompService" />
 
         <activity android:name="com.congxiaoyao.adapter.base.binding.demo.RVBindingTestActivity" />
-        <activity android:name=".ServiceDemoActivity"></activity>
+        <activity android:name=".ServiceDemoActivity" />
+        <activity android:name=".driverslist.DriverListActivity" />
+        <activity android:name=".login.LoginActivity" />
+        <activity android:name=".monitoring.MonitorActivity" />
+        <activity android:name=".publishedtask.PublishedTaskActivity" />
+        <activity android:name=".dispatch.DispatchTaskActivity" />
+        <activity android:name=".settings.SettingsActivity" />
+        <activity android:name=".spotmanage.SpotManageActivity"></activity>
     </application>
 
 </manifest>

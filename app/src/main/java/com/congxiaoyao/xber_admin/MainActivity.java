@@ -3,7 +3,6 @@ package com.congxiaoyao.xber_admin;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
