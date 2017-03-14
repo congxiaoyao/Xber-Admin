@@ -1,0 +1,53 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!--<item name="android:actionBarItemBackground">@drawable/bg_menu_btn</item>-->
+        <!--<item name="colorControlHighlight">@color/colorDarkGreen</item>-->
+        <!--<item name="actionModeBackground">@color/colorLightGreen</item>-->
+        <item name="toolbarNavigationButtonStyle">@style/MyNavigationButtonStyle</item>
+        <item name="actionModeCloseButtonStyle">@style/myActionModeCloseButtonStyle</item>
+    </style>
+
+    <style name="myActionModeCloseButtonStyle" parent="@style/Widget.AppCompat.ActionButton.CloseMode">
+        <!--<item name="android:background">@drawable/bg_menu_btn</item>-->
+    </style>
+
+    <style name="MyNavigationButtonStyle" parent="@style/Widget.AppCompat.Toolbar.Button.Navigation">
+        <!--<item name="android:background">@drawable/bg_menu_btn</item>-->
+    </style>
+
+    <style name="MyButtonStyle" parent="Widget.AppCompat.Button.Colored" >
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+    </style>
+
+    <style name="MyactionOverflowMenuStyle" parent="@style/Widget.AppCompat.PopupMenu.Overflow">
+        <item name="overlapAnchor">true</item>
+        <item name="android:dropDownHorizontalOffset">0dp</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="colorControlHighlight">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="ProgressBarTheme" parent="AppTheme">
+        <item name="colorAccent">@color/colorPrimaryLight</item>
+        <item name="colorControlHighlight">@color/colorPrimaryLight</item>
+    </style>
+</resources>

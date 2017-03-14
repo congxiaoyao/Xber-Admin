@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Xber-Admin.iml" filepath="$PROJECT_DIR$/Xber-Admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Xber-Driver/httplib/httplib.iml" filepath="$PROJECT_DIR$/../Xber-Driver/httplib/httplib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Xber-Driver/locationcommonlib/locationcommonlib.iml" filepath="$PROJECT_DIR$/../Xber-Driver/locationcommonlib/locationcommonlib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../StompTest/stopmlib/stomplib.iml" filepath="$PROJECT_DIR$/../StompTest/stopmlib/stomplib.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,7 @@
+include ':app'
+include ':stomplib'
+project(':stomplib').projectDir = new File('../StompTest/stopmlib')
+include ':httplib'
+project(':httplib').projectDir = new File('../Xber-Driver/httplib')
+include(':locationcommonlib')
+project(':locationcommonlib').projectDir = new File('../Xber-Driver/locationcommonlib')
