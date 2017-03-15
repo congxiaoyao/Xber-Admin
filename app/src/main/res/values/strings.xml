@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Xber-Admin</string>
+    <string name="spot_manage">任务点管理</string>
+    <string name="driver_list">司机列表</string>
+    <string name="published_task">已派发的任务</string>
+    <string name="dispatch_task">任务派发</string>
+    <string name="car_monitoring">车辆监控</string>
+    <string name="login_username">用户名</string>
+    <string name="login_password">密码</string>
+    <string name="login_forget_password">忘记密码？</string>
 </resources>

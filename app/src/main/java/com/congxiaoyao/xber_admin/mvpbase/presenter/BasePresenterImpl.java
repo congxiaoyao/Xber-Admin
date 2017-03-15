@@ -66,6 +66,7 @@ public class BasePresenterImpl<T extends LoadableView> implements BasePresenter,
      */
     @Override
     public void onDispatchException(Throwable throwable) {
+        view.hideLoading();
         toastExceptionHandler.onDispatchException(throwable);
     }
 

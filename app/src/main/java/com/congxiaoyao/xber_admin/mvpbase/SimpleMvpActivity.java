@@ -3,8 +3,11 @@ package com.congxiaoyao.xber_admin.mvpbase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
+import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.view.BaseView;
 
@@ -20,24 +23,24 @@ public abstract class SimpleMvpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_standard);
-//
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        getSupportActionBar().setTitle(getToolbarTitle());
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//
-//        Fragment fragment = getFragment();
-//        if (!(fragment instanceof BaseView)) {
-//            throw new RuntimeException("请遵守SimpleMvpActivity约定使用实现了BaseView接口的Fragment");
-//        }
-//        BaseView baseView = (BaseView) fragment;
-//        getPresenter(baseView);
-//
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.fragment_content, fragment);
-//        transaction.commit();
+        setContentView(R.layout.activity_standard);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setTitle(getToolbarTitle());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Fragment fragment = getFragment();
+        if (!(fragment instanceof BaseView)) {
+            throw new RuntimeException("请遵守SimpleMvpActivity约定使用实现了BaseView接口的Fragment");
+        }
+        BaseView baseView = (BaseView) fragment;
+        getPresenter(baseView);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_content, fragment);
+        transaction.commit();
     }
 
     @Override

@@ -3,27 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_item"
-    android:paddingLeft="16dp"
+    android:paddingLeft="8dp"
     android:paddingRight="16dp"
-    android:paddingTop="13dp"
-    android:clickable="true"
-    android:paddingBottom="13dp">
+    android:clickable="true">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="13dp"
+        android:paddingBottom="13dp"
+        android:id="@+id/tv_ref"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@id/tv_ref"
+        android:layout_alignBottom="@id/tv_ref"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:id="@+id/img_icon"
+        android:src="@drawable/flat_circle"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="我的收藏"
-        android:textColor="@color/colorBlack"
-        android:layout_alignParentLeft="true"
+        android:textColor="@color/colorDarkGray"
+        android:layout_toRightOf="@id/img_icon"
         android:id="@+id/tv_title"
+        android:paddingTop="13dp"
+        android:paddingBottom="13dp"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="9"
-        android:id="@+id/tv_num"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>

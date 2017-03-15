@@ -7,7 +7,7 @@
     <color name="colorWhite">#f1efe8</color>
     <color name="colorBlack">#222222</color>
     <color name="colorLightGray">#C8C8C8</color>
-    <color name="colorDarkGray">#303030</color>
+    <color name="colorDarkGray">#505050</color>
     <color name="colorBlueTrans">#aa3aaffa</color>
     <color name="colorTrans">#00000000</color>
 </resources>

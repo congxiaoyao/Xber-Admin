@@ -18,7 +18,7 @@
         android:theme="@style/ProgressBarTheme"
         android:layout_gravity="center"
         android:visibility="invisible"
-        android:id="@+id/content_loading_progress"/>
+        android:id="@+id/item_loading_more"/>
 
     </LinearLayout>
 
