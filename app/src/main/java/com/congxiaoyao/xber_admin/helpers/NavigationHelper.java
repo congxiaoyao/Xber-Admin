@@ -2,6 +2,7 @@ package com.congxiaoyao.xber_admin.helpers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.MenuRes;
@@ -14,6 +15,7 @@ import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,6 +28,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.congxiaoyao.xber_admin.R;
+import com.congxiaoyao.xber_admin.TAG;
+import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.yqritc.recyclerviewflexibledivider.FlexibleDividerDecoration;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
@@ -53,7 +57,6 @@ import rx.functions.Action1;
  * 请记得分组定义 为每组配置id 为每个item配置id和tittle 这样 {@link NavigationHelper} 就可以解析出来了
  *
  * 关于列表项的点击监听 参考{@link NavigationHelper#onItemSelected}
- * 关于改变列表右侧数字内容 参考{@link NavigationHelper#updateItemContent(int, int)}
  *
  * Created by congxiaoyao on 2016/7/19.
  */
@@ -136,7 +139,7 @@ public class NavigationHelper {
             if (nowGroupId != lastGroupId) showDivider.add(i);
 
             lastGroupId = nowGroupId;
-            data.add(new ItemBean(item.getTitle().toString(), 0, item.getItemId()));
+            data.add(new ItemBean(item.getTitle().toString(), item.getItemId(), item.getIcon()));
         }
 
         //将arrayList转换为int数组 以便传入HorizontalDividerItemDecoration绘制分割线
@@ -152,6 +155,11 @@ public class NavigationHelper {
 
         //加载header
         headerView = LayoutInflater.from(context).inflate(headerResId, recyclerView, false);
+        int statusBarHeight = DisplayUtils.getStatusBarHeight((Activity) context);
+//        headerView.setPadding(headerView.getPaddingLeft(),
+//                headerView.getPaddingTop() + statusBarHeight,
+//                headerView.getPaddingRight(),
+//                headerView.getPaddingBottom());
 
         //根据已有的data、header、分割线位置来初始化recyclerView
         adapter = new QuickAdapter(R.layout.item_navigation, data);
@@ -175,22 +183,6 @@ public class NavigationHelper {
         //不要被这句话蒙骗了 虽然叫addHeaderView但是是将整个view作为header的
         navigationView.addHeaderView(mainView);
 
-    }
-
-    /**
-     * 更新列表项右边的数字
-     * @param itemId
-     * @param num
-     */
-    public void updateItemContent(@IdRes int itemId, int num) {
-        for (int i = 0; i < data.size(); i++) {
-            ItemBean itemBean = data.get(i);
-            if (itemBean.id == itemId) {
-                itemBean.num = num;
-                adapter.notifyItemChanged(i + 1);
-                return;
-            }
-        }
     }
 
     /**
@@ -223,8 +215,7 @@ public class NavigationHelper {
         @Override
         protected void convert(BaseViewHolder helper, ItemBean itemBean) {
             helper.setText(R.id.tv_title, itemBean.title)
-                    .setText(R.id.tv_num, itemBean.num + "")
-                    .setVisible(R.id.tv_num, itemBean.num != 0);
+                    .setImageDrawable(R.id.img_icon, itemBean.icon);
         }
 
     }
@@ -234,13 +225,13 @@ public class NavigationHelper {
      */
     private class ItemBean {
         String title;
-        int num;
         @IdRes int id;
+        Drawable icon;
 
-        ItemBean(String title, int num, @IdRes int id) {
+        ItemBean(String title, @IdRes int id,Drawable icon) {
             this.title = title;
-            this.num = num;
             this.id = id;
+            this.icon = icon;
         }
     }
 

@@ -56,6 +56,7 @@ public class ToastAndLogExceptionHandler implements IExceptionHandler {
     @Override
     public void onHttpError(HttpException exception) {
         Toast.makeText(context.getContext(), "服务不可达", Toast.LENGTH_SHORT).show();
+        Log.d(TAG.ME, "onHttpError: " + exception);
     }
 
     @Override
