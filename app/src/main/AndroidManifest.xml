@@ -24,7 +24,9 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="lIYgdoVypvfC2YIO5GsKaDcExgf0Zwpt" />
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.TranslucentStatus">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,7 +44,8 @@
         <activity android:name=".publishedtask.PublishedTaskActivity" />
         <activity android:name=".dispatch.DispatchTaskActivity" />
         <activity android:name=".settings.SettingsActivity" />
-        <activity android:name=".spotmanage.SpotManageActivity"></activity>
+        <activity android:name=".spotmanage.SpotManageActivity" />
+        <activity android:name=".WheelTestActivity"></activity>
     </application>
 
 </manifest>

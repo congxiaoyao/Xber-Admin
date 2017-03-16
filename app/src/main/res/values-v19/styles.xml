@@ -11,7 +11,7 @@
                 <item name="colorControlHighlight">@color/colorPrimary</item>
         </style>
 
-        <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <style name="AppTheme.TranslucentStatus" parent="AppTheme">
                 <item name="windowActionBar">false</item>
                 <item name="windowNoTitle">true</item>
                 <item name="android:windowTranslucentStatus">true</item>

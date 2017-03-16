@@ -2,18 +2,23 @@ package com.congxiaoyao.xber_admin;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.congxiaoyao.Admin;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
+
+import android.databinding.ViewDataBinding;
 import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
+import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
+import com.congxiaoyao.xber_admin.utils.VersionUtils;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -44,6 +49,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
         });
+        if (VersionUtils.LOLLIPOP_MR1AndPlus) {
+            View statusBar = binding.statusBar;
+            statusBar.setVisibility(View.VISIBLE);
+            statusBar.setBackgroundColor(Color.parseColor("#55000000"));
+            ViewGroup.LayoutParams layoutParams = statusBar.getLayoutParams();
+            layoutParams.height = DisplayUtils.getStatusBarHeight(this);
+            statusBar.requestLayout();
+        }
     }
 
     @Override
@@ -66,15 +79,20 @@ public class MainActivity extends AppCompatActivity {
                 Token.value = admin.getToken();
                 ((TextView) helper.getHeaderView().findViewById(R.id.tv_user_name))
                         .setText(admin.getNickName());
+                tokenSafeOnResume();
             }
         });
+    }
+
+    private void tokenSafeOnResume() {
+
     }
 
     public void onItemSelected(int menuId) {
         if (menuId == R.id.menu_car_monitor) {
             binding.drawerLayout.closeDrawers();
         } else if (menuId == R.id.menu_drivers) {
-            Toast.makeText(MainActivity.this, "menu drivers", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, WheelTestActivity.class));
         }
     }
 }
