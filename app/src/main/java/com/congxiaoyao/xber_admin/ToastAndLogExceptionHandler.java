@@ -5,9 +5,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.congxiaoyao.httplib.request.retrofit2.adapter.rxjava.HttpException;
+import com.congxiaoyao.httplib.response.exception.AuthException;
+import com.congxiaoyao.httplib.response.exception.EmptyDataException;
 import com.congxiaoyao.httplib.response.exception.IExceptionHandler;
-import com.congxiaoyao.httplib.response.exception.ResponseException;
-import com.congxiaoyao.httplib.response.exception.StatusException;
+import com.congxiaoyao.httplib.response.exception.LoginException;
+import com.congxiaoyao.httplib.response.exception.NetWorkException;
+import com.congxiaoyao.httplib.response.exception.PermissionDeniedException;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -33,91 +36,53 @@ public class ToastAndLogExceptionHandler implements IExceptionHandler {
 
     }
 
-    /**
-     * 所有的ResponseException的统一错误处理 如果发生了一个ResponseException
-     * 在不覆写任何错误处理函数的情况下 一定会走到这里
-     * @param exception
-     */
     @Override
-    public void onResponseError(ResponseException exception) {
-        Log.d(TAG.ME, "ExceptionHandler onResponseError: " + exception);
+    public void onLoginError(LoginException exception) {
+        Log.d(TAG.ME, "onLoginError: ", exception);
     }
 
     @Override
-    public void onTimeoutError(SocketTimeoutException exception) {
-        Toast.makeText(context.getContext(), "网络超时", Toast.LENGTH_SHORT).show();
+    public void onAuthError(AuthException exception) {
+        Log.d(TAG.ME, "onAuthError: ", exception);
     }
 
     @Override
-    public void onUnknowHostError(UnknownHostException exception) {
-        Toast.makeText(context.getContext(), "域名解析失败 请检查网络连接", Toast.LENGTH_SHORT).show();
+    public void onPermissionError(PermissionDeniedException exception) {
+        Toast.makeText(context.getContext(), "没有访问权限", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onHttpError(HttpException exception) {
-        Toast.makeText(context.getContext(), "服务不可达", Toast.LENGTH_SHORT).show();
-        Log.d(TAG.ME, "onHttpError: " + exception);
-    }
-
-    @Override
-    public boolean onEmptyDataError(ResponseException exception) {
+    public void onEmptyDataError(EmptyDataException exception) {
         Toast.makeText(context.getContext(), "暂时没有数据", Toast.LENGTH_SHORT).show();
-        return true;
+    }
+
+    @Override
+    public boolean onTimeoutError(SocketTimeoutException exception) {
+        Log.d(TAG.ME, "onTimeoutError: 网络超时");
+        return false;
+    }
+
+
+    @Override
+    public boolean onUnknowHostError(UnknownHostException exception) {
+        Log.d(TAG.ME, "onUnknowHostError: 域名解析失败 请检查网络连接");
+        return false;
     }
 
     /**
-     * 状态码错误 上层为{@link IExceptionHandler#onResponseError(ResponseException)}
+     * 如果上面两个方法返回了false 则此方法将会继续被调用
      * @param exception
-     * @return
+     * @see ToastAndLogExceptionHandler#onUnknowHostError(UnknownHostException)
+     * @see ToastAndLogExceptionHandler#onTimeoutError(SocketTimeoutException)
      */
     @Override
-    public boolean onStatusError(StatusException exception) {
-        Log.d(TAG.ME, "ExceptionHandler onStatusError: " + exception);
-        return false;
+    public void onNetworkError(NetWorkException exception) {
+        Toast.makeText(context.getContext(), "请检查网络连接", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 网络连接不可用 上层为{@link IExceptionHandler#onResponseError(ResponseException)}
-     * @param msg
-     * @return
-     */
     @Override
-    public boolean onNullNetworkError(String msg) {
-        Toast.makeText(context.getContext(), "网络连接不可用", Toast.LENGTH_SHORT).show();
-        return false;
-    }
-
-    /**
-     * 非{@link ResponseException}的其他类型的Throwable
-     * @param throwable
-     * @return
-     */
-    @Override
-    public boolean unKnowError(Throwable throwable) {
-        throwable.printStackTrace();
-        return false;
-    }
-
-    /**
-     * 未登录 上层为{@link IExceptionHandler#onStatusError(StatusException)}
-     * @param reason
-     * @return
-     */
-    @Override
-    public boolean onUnLogin(String reason) {
-        Log.d(TAG.ME, "ExceptionHandler onUnLogin: " + reason);
-        return false;
-    }
-
-    /**
-     * 登录错误 上层为{@link IExceptionHandler#onStatusError(StatusException)}
-     * @param reason
-     * @return
-     */
-    @Override
-    public boolean onLoginError(String reason) {
-        Log.d(TAG.ME, "ExceptionHandler onLoginError: " + reason);
-        return false;
+    public void unKnowError(Throwable throwable) {
+        Toast.makeText(context.getContext(), "未知错误", Toast.LENGTH_SHORT).show();
     }
 
     public interface ContextProvider {
