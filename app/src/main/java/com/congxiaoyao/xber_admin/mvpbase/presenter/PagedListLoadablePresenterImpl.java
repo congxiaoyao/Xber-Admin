@@ -6,6 +6,8 @@ import com.congxiaoyao.httplib.response.ResponsePreProcess;
 import com.congxiaoyao.httplib.response.exception.EmptyDataException;
 import com.congxiaoyao.httplib.response.exception.NetWorkException;
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
+import com.congxiaoyao.xber_admin.mvpbase.view.PagedListLoadableViewImpl;
+import com.congxiaoyao.xber_admin.mvpbase.view.SimplePagedListLoadableView;
 
 import java.util.Date;
 import java.util.List;
@@ -19,8 +21,8 @@ import rx.functions.Action2;
 /**
  * isLoading变量的线程同步问题
  * 这是一个关于{@link PagedListLoadablePresenter}接口的实现类
- * 与之对应的view为{@link com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableViewImpl}
- * 或者是{@link com.congxiaoyao.xber_admin.mvpbase.view.SimpleListLoadableView}
+ * 与之对应的view为{@link PagedListLoadableViewImpl}
+ * 或者是{@link SimplePagedListLoadableView}
  * 此Presenter为了一站式解决ListLoadable系列presenter的所有问题：
  * <ul>
  * <li>初始状态下应该如何拉取数据并操作view</li>

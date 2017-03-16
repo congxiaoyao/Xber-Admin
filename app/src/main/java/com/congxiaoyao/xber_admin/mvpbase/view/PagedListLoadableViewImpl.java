@@ -15,7 +15,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.TAG;
-import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenter;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 
@@ -23,10 +22,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by congxiaoyao on 2017/3/16.
+ * 实现了SegmentFault中内容展示的一个标准套路
+ * RecyclerView+ContentLoadingProgressBar+SwipeRefreshLayout+底部加载更多
+ *
+ * 同时实现了网络连接失败时的展示页面
+ * 没有数据时候的展示页面
+ * 加载到最后一条的提示
+ *
+ * 关于列表数据展示的载体 这里约定使用{@link android.support.v7.widget.RecyclerView}并使用
+ * {@link BaseQuickAdapter}作为适配器 所以此类已经默认空实现了适配器并将适配器中的转换(convert)方法
+ * 直接交由此类的{@link PagedListLoadableViewImpl#convert(BaseViewHolder, Object)}实现
+ * 所以具体的业务逻辑类可以覆写此方法完成view的适配
+ * 同时必须要覆写{@link PagedListLoadableViewImpl#getItemLayoutResId()}返回item的布局文件的id
+ *
+ * 如果需要自定义adapter完成更为复杂的操作 需要将自己实现的adapter绑定进来 绑定使用
+ * {@link PagedListLoadableViewImpl#bindAdapterAndDataSet(BaseQuickAdapter, List)}
+ * 在自定义adapter的过程中你不需要亲自实现底部加载更多的功能 即使你做了实现 我也会覆盖你的实现
+ * 如果这样对你有影响 请在绑定之后重新做底部加载实现即可
+ *
+ * 前面两段的意思是想说 我为了实现接口中的功能实现了一个默认的adapter 如果你不嫌弃 覆写下方法
+ * 便可以通过{@link PagedListLoadableViewImpl#getAdapter()}直接拿来使用 比如设置给你自己的RecyclerView
+ * 如果你嫌弃呢 就自己实现一个传进来 否则我没办法帮你实现接口中规定的功能
+ *
+ * 关于底部加载 需要实现抽象方法{@link PagedListLoadableViewImpl#isSupportLoadMore()}才能开启
+ * 如果需要开启底部加载 还需要覆写{@link PagedListLoadableViewImpl#getPageSize()}
+ *
+ * 关于下拉刷新 需要实现抽象方法{@link PagedListLoadableViewImpl#isSupportSwipeRefresh()}开启
+ * 如果需要开启下拉刷新 还需要覆写{@link PagedListLoadableViewImpl#getSwipeRefreshLayout()}
+ *
+ * 好！这一大段确实有点啰嗦 总结下 正常情况下你只需要实现
+ * {@link PagedListLoadableViewImpl#getItemLayoutResId()}
+ * {@link PagedListLoadableViewImpl#convert(BaseViewHolder, Object)}
+ * {@link PagedListLoadableViewImpl#isSupportLoadMore()}
+ * {@link PagedListLoadableViewImpl#getPageSize()}
+ * {@link PagedListLoadableViewImpl#isSupportSwipeRefresh()}
+ * {@link PagedListLoadableViewImpl#getSwipeRefreshLayout()}
+ * {@link PagedListLoadableViewImpl#scrollToTop()}
+ * {@link PagedListLoadableViewImpl#hideSwipeRefreshLoading()}
+ * 这八个方法就可以啦！！
+ *
+ * Created by congxiaoyao on 2016/8/26.
  */
+public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePresenter, D> extends
+        LoadableViewImpl<T> implements ListLoadableView<T, D> {
 
-public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> extends LoadableViewImpl<T> implements ListLoadableView<T, D>  {
+    private static final int PAGE_SIZE = 20;
 
     private ViewGroup container;
     private LayoutInflater inflater;
@@ -39,7 +79,8 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         this.container = container;
         this.inflater = inflater;
         data = new ArrayList<>();
@@ -72,6 +113,26 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
         if (adapter == null || data == null) return;
         this.data = data;
         this.adapter = adapter;
+        //滑到底部加载更多
+        adapter.setLoadMoreView(new MyLoadMoreView());
+        if (isSupportLoadMore()) {
+            adapter.setAutoLoadMoreSize(getPageSize());
+            adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+                @Override
+                public void onLoadMoreRequested() {
+                    if (!presenter.hasMoreData()) {
+                        container.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.loadMoreComplete();
+                            }
+                        });
+                    } else {
+                        presenter.loadMoreData();
+                    }
+                }
+            });
+        }
     }
 
     protected BaseQuickAdapter<D,BaseViewHolder> getAdapter() {
@@ -180,10 +241,10 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
                 }
             });
         }
-//        //如果没有更多数据了 就设置下footer
-//        if (!presenter.hasMoreData()) {
-//            showEOF();
-//        }
+        //如果没有更多数据了 就设置下footer
+        if (!presenter.hasMoreData()) {
+            showEOF();
+        }
     }
 
     @Override
@@ -229,6 +290,14 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
     }
 
     /**
+     * 如果开启了底部加载更多 请覆写此方法返回精准的pageSize 默认{@link PagedListLoadableViewImpl#PAGE_SIZE}
+     * @return 每一页的item的数量
+     */
+    protected int getPageSize() {
+        return PAGE_SIZE;
+    }
+
+    /**
      * 如果开启了下拉刷新功能 请覆写此方法绑定一个拉刷新组件
      * @return
      */
@@ -238,6 +307,11 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
         }
         return null;
     }
+
+    /**
+     * @return 如果希望开启底部加载更多 返回true 否则false
+     */
+    public abstract boolean isSupportLoadMore();
 
     /**
      * @return 如果希望开启下拉刷新 返回true 否则false
@@ -257,7 +331,7 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
 
         @Override
         protected void convert(BaseViewHolder baseViewHolder, D d) {
-            ListLoadableViewImpl.this.convert(baseViewHolder, d);
+            PagedListLoadableViewImpl.this.convert(baseViewHolder, d);
         }
     }
 }
