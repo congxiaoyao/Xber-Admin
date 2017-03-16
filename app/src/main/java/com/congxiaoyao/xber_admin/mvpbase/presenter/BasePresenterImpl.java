@@ -3,10 +3,13 @@ package com.congxiaoyao.xber_admin.mvpbase.presenter;
 import android.content.Context;
 
 import com.congxiaoyao.httplib.request.retrofit2.adapter.rxjava.HttpException;
+import com.congxiaoyao.httplib.response.exception.AuthException;
+import com.congxiaoyao.httplib.response.exception.EmptyDataException;
 import com.congxiaoyao.httplib.response.exception.ExceptionDispatcher;
 import com.congxiaoyao.httplib.response.exception.IExceptionHandler;
-import com.congxiaoyao.httplib.response.exception.ResponseException;
-import com.congxiaoyao.httplib.response.exception.StatusException;
+import com.congxiaoyao.httplib.response.exception.LoginException;
+import com.congxiaoyao.httplib.response.exception.NetWorkException;
+import com.congxiaoyao.httplib.response.exception.PermissionDeniedException;
 import com.congxiaoyao.xber_admin.ToastAndLogExceptionHandler;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
 
@@ -70,83 +73,43 @@ public class BasePresenterImpl<T extends LoadableView> implements BasePresenter,
         toastExceptionHandler.onDispatchException(throwable);
     }
 
-    /**
-     * 所有的ResponseException的统一错误处理 如果发生了一个ResponseException
-     * 在不覆写任何错误处理函数的情况下 一定会走到这里
-     * @param exception
-     */
     @Override
-    public void onResponseError(ResponseException exception) {
-        toastExceptionHandler.onResponseError(exception);
+    public void onLoginError(LoginException exception) {
+        toastExceptionHandler.onLoginError(exception);
     }
 
     @Override
-    public void onTimeoutError(SocketTimeoutException exception) {
-        toastExceptionHandler.onTimeoutError(exception);
+    public void onAuthError(AuthException exception) {
+        toastExceptionHandler.onAuthError(exception);
     }
 
     @Override
-    public void onUnknowHostError(UnknownHostException exception) {
-        toastExceptionHandler.onUnknowHostError(exception);
+    public void onPermissionError(PermissionDeniedException exception) {
+        toastExceptionHandler.onPermissionError(exception);
     }
 
     @Override
-    public void onHttpError(HttpException exception) {
-        toastExceptionHandler.onHttpError(exception);
+    public void onEmptyDataError(EmptyDataException exception) {
+        toastExceptionHandler.onEmptyDataError(exception);
     }
 
     @Override
-    public boolean onEmptyDataError(ResponseException exception) {
-        return toastExceptionHandler.onEmptyDataError(exception);
+    public boolean onTimeoutError(SocketTimeoutException exception) {
+        return toastExceptionHandler.onTimeoutError(exception);
     }
 
-    /**
-     * 状态码错误 上层为{@link IExceptionHandler#onResponseError(ResponseException)}
-     * @param exception
-     * @return
-     */
     @Override
-    public boolean onStatusError(StatusException exception) {
-        return toastExceptionHandler.onStatusError(exception);
+    public boolean onUnknowHostError(UnknownHostException exception) {
+        return toastExceptionHandler.onUnknowHostError(exception);
     }
 
-    /**
-     * 网络连接不可用 上层为{@link IExceptionHandler#onResponseError(ResponseException)}
-     * @param msg
-     * @return
-     */
     @Override
-    public boolean onNullNetworkError(String msg) {
-        return toastExceptionHandler.onNullNetworkError(msg);
+    public void onNetworkError(NetWorkException exception) {
+        toastExceptionHandler.onNetworkError(exception);
     }
 
-    /**
-     * 非{@link ResponseException}的其他类型的Throwable
-     * @param throwable
-     * @return
-     */
     @Override
-    public boolean unKnowError(Throwable throwable) {
-        return toastExceptionHandler.unKnowError(throwable);
-    }
-
-    /**
-     * 未登录 上层为{@link IExceptionHandler#onStatusError(StatusException)}
-     * @param reason
-     * @return
-     */
-    @Override
-    public boolean onUnLogin(String reason) {
-        return toastExceptionHandler.onUnLogin(reason);
-    }
-
-    /**
-     * 登录错误 上层为{@link IExceptionHandler#onStatusError(StatusException)}
-     * @param reason
-     * @return
-     */
-    @Override
-    public boolean onLoginError(String reason) {
-        return toastExceptionHandler.onLoginError(reason);
+    public void unKnowError(Throwable throwable) {
+        toastExceptionHandler.unKnowError(throwable);
     }
 }

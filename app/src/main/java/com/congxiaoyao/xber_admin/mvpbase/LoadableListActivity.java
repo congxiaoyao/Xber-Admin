@@ -3,12 +3,9 @@ package com.congxiaoyao.xber_admin.mvpbase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
-import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenter;
+import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
 
 /**
@@ -65,7 +62,7 @@ public abstract class LoadableListActivity extends AppCompatActivity {
      * @param baseView 这里的参数是{@link SimpleMvpActivity#getFragment()}方法的返回值
      * @return BasePresenter的实现类
      */
-    public abstract ListLoadablePresenter getPresenter(ListLoadableView baseView);
+    public abstract PagedListLoadablePresenter getPresenter(ListLoadableView baseView);
 
     /**
      * @return 一定要返回一个实现了ListLoadableView接口的Fragment 否则将会抛出异常

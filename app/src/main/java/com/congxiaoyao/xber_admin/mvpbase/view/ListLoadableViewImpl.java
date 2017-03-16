@@ -9,14 +9,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.TAG;
-import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenter;
+import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenter;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ import java.util.List;
  *
  * Created by congxiaoyao on 2016/8/26.
  */
-public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> extends
+public abstract class ListLoadableViewImpl<T extends PagedListLoadablePresenter, D> extends
         LoadableViewImpl<T> implements ListLoadableView<T, D> {
 
     private static final int PAGE_SIZE = 20;
