@@ -6,27 +6,32 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:openDrawer="start">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <!--<android.support.design.widget.AppBarLayout-->
-            <!--android:id="@+id/app_bar"-->
-            <!--app:elevation="0dp"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:theme="@style/AppTheme.AppBarOverlay">-->
+            android:layout_height="match_parent"
+            android:id="@+id/rl_container">
 
-            <!--<android.support.v7.widget.Toolbar-->
-            <!--android:id="@+id/toolbar"-->
-            <!--android:background="@color/colorPrimary"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="?attr/actionBarSize"-->
-            <!--app:popupTheme="@style/AppTheme.PopupOverlay" >-->
-            <!--</android.support.v7.widget.Toolbar>-->
-            <!--</android.support.design.widget.AppBarLayout>-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:background="@color/colorWhite"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_launcher"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/colorAccent"
+                android:layout_alignParentTop="true"
+                android:visibility="visible"
+                android:id="@+id/status_bar"/>
         </RelativeLayout>
 
         <android.support.design.widget.NavigationView
@@ -35,7 +40,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@color/colorWhite"
-            app:insetForeground="@color/colorPrimaryLight" />
+            app:insetForeground="@color/colorPrimaryDark" />
 
     </android.support.v4.widget.DrawerLayout>
 </layout>

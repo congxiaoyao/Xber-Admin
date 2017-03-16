@@ -155,11 +155,11 @@ public class NavigationHelper {
 
         //加载header
         headerView = LayoutInflater.from(context).inflate(headerResId, recyclerView, false);
-        int statusBarHeight = DisplayUtils.getStatusBarHeight((Activity) context);
-//        headerView.setPadding(headerView.getPaddingLeft(),
-//                headerView.getPaddingTop() + statusBarHeight,
-//                headerView.getPaddingRight(),
-//                headerView.getPaddingBottom());
+        int statusBarHeight = DisplayUtils.getStatusBarHeight(context);
+        headerView.setPadding(headerView.getPaddingLeft(),
+                headerView.getPaddingTop() + statusBarHeight,
+                headerView.getPaddingRight(),
+                headerView.getPaddingBottom());
 
         //根据已有的data、header、分割线位置来初始化recyclerView
         adapter = new QuickAdapter(R.layout.item_navigation, data);
