@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenter;
+import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenter;
 
 /**
  * {@link ListLoadableViewImpl}过于抽象不易使用，所以此类就是为了解决他的使用问题
@@ -18,7 +18,7 @@ import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenter;
  *
  * Created by congxiaoyao on 2016/8/27.
  */
-public class SimpleListLoadableView<T extends ListLoadablePresenter, D> extends ListLoadableViewImpl<T, D> {
+public class SimpleListLoadableView<T extends PagedListLoadablePresenter, D> extends ListLoadableViewImpl<T, D> {
 
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
