@@ -12,13 +12,13 @@ import android.widget.Button;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenter;
 
 /**
- * {@link ListLoadableViewImpl}过于抽象不易使用，所以此类就是为了解决他的使用问题
+ * {@link PagedListLoadableViewImpl}过于抽象不易使用，所以此类就是为了解决他的使用问题
  * 为了简化使用 这里直接设置fragment的布局文件为R.layout.fragment_swipe_list 同时完成了他们的初始化操作
  * 于是这里默认开启了下拉加载更多和底部加载更多并实现了相关方法 适用于那些可下拉刷新的列表场景
  *
  * Created by congxiaoyao on 2016/8/27.
  */
-public class SimpleListLoadableView<T extends PagedListLoadablePresenter, D> extends ListLoadableViewImpl<T, D> {
+public class SimplePagedListLoadableView<T extends PagedListLoadablePresenter, D> extends PagedListLoadableViewImpl<T, D> {
 
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
