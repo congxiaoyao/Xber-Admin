@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -131,6 +132,18 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
     }
 
     @Override
+    protected void onReLoginSuccess() {
+        super.onReLoginSuccess();
+        presenter.subscribe();
+    }
+
+    @Override
+    protected void onReLoginFailed() {
+        super.onReLoginFailed();
+        Toast.makeText(getContext(), "未登录", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void showDataEmpty() {
         if (emptyView == null) emptyView = createEmptyView();
         adapter.setEmptyView(emptyView);
@@ -189,7 +202,7 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
     @Override
     public void showNothing() {
         boolean changed = false;
-        Log.d(TAG.ME, "showNothing: PagedListLoadableViewImpl");
+        Log.d(TAG.ME, "showNothing: ListLoadableViewImpl");
         if (data.size() != 0) {
             data.clear();
             changed = true;
@@ -202,7 +215,7 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
 
         eofView = null;
         if (adapter.getEmptyView() != null) {
-            Log.d(TAG.ME, "showNothing: PagedListLoadableViewImpl empty view not null");
+            Log.d(TAG.ME, "showNothing: ListLoadableViewImpl empty view not null");
             adapter.setEmptyView(null);
             changed = true;
         }

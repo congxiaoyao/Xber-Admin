@@ -1,6 +1,9 @@
 package com.congxiaoyao.xber_admin.mvpbase.presenter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.widget.Toast;
 
 import com.congxiaoyao.httplib.request.retrofit2.adapter.rxjava.HttpException;
 import com.congxiaoyao.httplib.response.exception.AuthException;
@@ -11,6 +14,7 @@ import com.congxiaoyao.httplib.response.exception.LoginException;
 import com.congxiaoyao.httplib.response.exception.NetWorkException;
 import com.congxiaoyao.httplib.response.exception.PermissionDeniedException;
 import com.congxiaoyao.xber_admin.ToastAndLogExceptionHandler;
+import com.congxiaoyao.xber_admin.login.LoginActivity;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
 
 import java.net.SocketTimeoutException;
@@ -81,6 +85,15 @@ public class BasePresenterImpl<T extends LoadableView> implements BasePresenter,
     @Override
     public void onAuthError(AuthException exception) {
         toastExceptionHandler.onAuthError(exception);
+        Context context = view.getContext();
+        Toast.makeText(context, "请登录", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(context, LoginActivity.class);
+        if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            activity.startActivityForResult(intent, LoginActivity.CODE_REQUEST_LOGIN);
+        }else {
+            context.startActivity(intent);
+        }
     }
 
     @Override

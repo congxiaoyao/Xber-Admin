@@ -12,7 +12,7 @@ public interface LoginContract {
 
     interface View extends LoadableView<Presenter> {
 
-        void showLoginError();
+        void showLoginError(String msg);
 
         void showLoginSuccess();
     }
@@ -22,5 +22,7 @@ public interface LoginContract {
         Admin getAdmin();
 
         void login(String userName, String password);
+
+        void setLoginResult(int tag);
     }
 }
