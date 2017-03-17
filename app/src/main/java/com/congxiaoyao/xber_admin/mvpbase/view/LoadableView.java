@@ -11,5 +11,4 @@ public interface LoadableView<T extends BasePresenter> extends BaseView<T> {
     void showLoading();
 
     void hideLoading();
-
 }

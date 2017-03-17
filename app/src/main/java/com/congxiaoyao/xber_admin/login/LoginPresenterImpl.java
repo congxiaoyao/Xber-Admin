@@ -10,6 +10,7 @@ import com.congxiaoyao.httplib.request.LoginRequest;
 import com.congxiaoyao.httplib.request.body.LoginBody;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.LoginInfoResponse;
+import com.congxiaoyao.httplib.response.exception.LoginException;
 import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.utils.Token;
@@ -45,6 +46,14 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
     }
 
     @Override
+    public void setLoginResult(int tag) {
+        if (view.getContext() instanceof Activity) {
+            Activity activity = (Activity) view.getContext();
+            activity.setResult(tag);
+        }
+    }
+
+    @Override
     public void subscribe() {
         LoginBody body = new LoginBody();
         body.setClientId(Build.SERIAL);
@@ -66,6 +75,7 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<LoginInfoResponse>() {
             @Override
             public void call(LoginInfoResponse loginInfoResponse) {
+                setLoginResult(LoginActivity.CODE_RESULT_SUCCESS);
                 view.showLoginSuccess();
                 ((Activity) view.getContext()).finish();
             }
@@ -75,5 +85,11 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
                 exceptionDispatcher.dispatchException(throwable);
             }
         });
+    }
+
+    @Override
+    public void onLoginError(LoginException exception) {
+        String message = exception.getMessage();
+        view.showLoginError(message);
     }
 }

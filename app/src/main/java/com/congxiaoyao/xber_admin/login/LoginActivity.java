@@ -11,6 +11,10 @@ import com.congxiaoyao.xber_admin.mvpbase.view.BaseView;
 
 public class LoginActivity extends SimpleMvpActivity {
 
+    public static final int CODE_REQUEST_LOGIN = 100;
+    public static final int CODE_RESULT_SUCCESS = 101;
+    public static final int CODE_RESULT_FAILED = 102;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
