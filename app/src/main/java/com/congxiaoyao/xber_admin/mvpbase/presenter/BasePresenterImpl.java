@@ -3,6 +3,7 @@ package com.congxiaoyao.xber_admin.mvpbase.presenter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 import com.congxiaoyao.httplib.request.retrofit2.adapter.rxjava.HttpException;
@@ -88,10 +89,13 @@ public class BasePresenterImpl<T extends LoadableView> implements BasePresenter,
         Context context = view.getContext();
         Toast.makeText(context, "请登录", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(context, LoginActivity.class);
-        if (context instanceof Activity) {
+        if (view instanceof Fragment) {
+            Fragment fragment = (Fragment) view;
+            fragment.startActivityForResult(intent, LoginActivity.CODE_REQUEST_LOGIN);
+        } else if (context instanceof Activity) {
             Activity activity = (Activity) context;
             activity.startActivityForResult(intent, LoginActivity.CODE_REQUEST_LOGIN);
-        }else {
+        } else {
             context.startActivity(intent);
         }
     }
