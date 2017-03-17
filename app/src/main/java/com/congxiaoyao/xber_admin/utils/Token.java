@@ -1,6 +1,8 @@
 package com.congxiaoyao.xber_admin.utils;
 
-import android.os.Build;
+import android.content.Context;
+
+import static android.provider.Settings.Secure;
 
 /**
  * Created by congxiaoyao on 2017/3/16.
@@ -9,13 +11,12 @@ import android.os.Build;
 public class Token {
     public static String value = "";
 
-    public static void processTokenAndSave(String rawToken) {
-        char[] chars = new char[10];
-        for (int i = 0; i < chars.length; i++) {
-            chars[i] = (char) ((int) (Math.random() * 10) + 'a');
-        }
-        String header = new String(chars);
-        //TODO delete this in real version
-        value = String.format("Basic %s:%s", header + Build.SERIAL, rawToken);
+    public static void processTokenAndSave(Context context, String rawToken) {
+        value = String.format("Basic %s:%s", getClientId(context), rawToken);
+    }
+
+    public static String getClientId(Context context) {
+        return Secure.getString(context.getContentResolver(),
+                Secure.ANDROID_ID);
     }
 }
