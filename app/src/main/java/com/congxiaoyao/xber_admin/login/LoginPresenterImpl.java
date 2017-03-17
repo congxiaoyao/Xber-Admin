@@ -56,8 +56,7 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
     @Override
     public void subscribe() {
         LoginBody body = new LoginBody();
-        body.setClientId(Build.SERIAL);
-        Log.d(TAG.ME, "clientId = " + body.getClientId());
+        body.setClientId(Token.getClientId(view.getContext()));
         body.setUsername(userName);
         body.setPassword(password);
         view.showLoading();
@@ -68,7 +67,7 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
                 admin.setPassword(password);
                 admin.setNickName(loginInfoResponse.getName());
                 admin.setUserName(loginInfoResponse.getUsername());
-                Token.processTokenAndSave(loginInfoResponse.getAuthToken());
+                Token.processTokenAndSave(view.getContext(), loginInfoResponse.getAuthToken());
                 admin.setToken(Token.value);
                 admin.save(view.getContext());
             }
