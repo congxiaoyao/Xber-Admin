@@ -48,4 +48,16 @@
         <item name="colorAccent">@color/colorPrimaryLight</item>
         <item name="colorControlHighlight">@color/colorPrimaryLight</item>
     </style>
+
+    <style name="MyButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/colorPrimaryLight</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="MyBackButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">#E8E8E8</item>
+        <item name="android:textColor">@color/colorPrimaryLight</item>
+        <item name="colorControlHighlight">@color/colorLightGray</item>
+    </style>
+
 </resources>
