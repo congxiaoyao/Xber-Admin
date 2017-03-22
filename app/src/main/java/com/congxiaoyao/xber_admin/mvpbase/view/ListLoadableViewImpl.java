@@ -2,6 +2,7 @@ package com.congxiaoyao.xber_admin.mvpbase.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -216,7 +217,7 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
         eofView = null;
         if (adapter.getEmptyView() != null) {
             Log.d(TAG.ME, "showNothing: ListLoadableViewImpl empty view not null");
-            adapter.setEmptyView(null);
+            ((ViewGroup) adapter.getEmptyView()).removeAllViews();
             changed = true;
         }
 

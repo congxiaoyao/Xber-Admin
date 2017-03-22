@@ -140,7 +140,6 @@ public abstract class ListLoadablePresenterImpl<T extends ListLoadableView> exte
 
     @Override
     public void onEmptyDataError(EmptyDataException exception) {
-        super.onEmptyDataError(exception);
         view.showDataEmpty();
     }
 }

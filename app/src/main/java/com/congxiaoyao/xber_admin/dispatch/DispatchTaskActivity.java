@@ -20,7 +20,6 @@ public class DispatchTaskActivity extends AppCompatActivity {
 
     protected Class[] classes;
     private LinearLayout linearLayout;
-    private List<ChooseTimeFragment.DateView> listDate;
     private List<String> transportContent;
     private List<String> locations;
 
@@ -75,17 +74,31 @@ public class DispatchTaskActivity extends AppCompatActivity {
         linearLayout.setVisibility(View.VISIBLE);
     }
 
-    public void addDate(List<ChooseTimeFragment.DateView> listDate) {
-        this.listDate = listDate;
+    public void hideWeekLine() {
+        linearLayout.setVisibility(View.GONE);
     }
 
-    public List<ChooseTimeFragment.DateView> getDate() {
-        if (listDate==null) throw new NullPointerException("ChooseTimeFragment 未调用 addDate方法");
-        return listDate;
-    }
+//    public void addDate(List<ChooseTimeFragment.DateView> listDate) {
+//        this.listDate = listDate;
+//    }
+
+//    public List<ChooseTimeFragment.DateView> getDate() {
+//        if (listDate==null) throw new NullPointerException("ChooseTimeFragment 未调用 addDate方法");
+//        return listDate;
+//    }
 
     public void setToolBarTitle(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+    public View showToolbarButton() {
+        View view = findViewById(R.id.btn_today);
+        view.setVisibility(View.VISIBLE);
+        return view;
+    }
+
+    public void hideToolbarButton() {
+        findViewById(R.id.btn_today).setVisibility(View.GONE);
     }
 
     public void addTransportContent(String content, String remark) {

@@ -4,14 +4,17 @@
     android:clickable="true"
     android:elevation="32dp"
     android:layout_marginTop="32dp"
-    android:background="@color/colorWhite"
+    android:background="#f0f0f0"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tv_time"
-        android:text="请选择开始时间"
-        android:layout_margin="12dp"
+        android:id="@+id/tv_title"
+        android:text="@string/please_select_start_time"
+        android:padding="16dp"
         android:textColor="@color/colorBlack"
         android:gravity="center"
         android:textSize="18sp"
@@ -21,11 +24,11 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_below="@id/tv_time"
-        android:background="@color/colorBlack"/>
+        android:layout_below="@id/tv_title"
+        android:background="@color/colorLightGray"/>
 
     <LinearLayout
-        android:layout_below="@id/tv_time"
+        android:layout_below="@id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ll_container">
@@ -39,7 +42,7 @@
 
         <View
             android:layout_width="1px"
-            android:background="@color/colorBlack"
+            android:background="@color/colorLightGray"
             android:layout_height="match_parent" />
 
         <kankan.wheel.widget.WheelView
@@ -57,11 +60,13 @@
         android:text="确定"
         android:layout_below="@id/ll_container"
         android:layout_width="match_parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_height="wrap_content" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_above="@id/btn_choose_time"
-        android:background="@color/colorBlack"/>
+        android:background="@color/colorLightGray"/>
 </RelativeLayout>
