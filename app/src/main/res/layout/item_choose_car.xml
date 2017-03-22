@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_item"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/img_driver_info"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/driver_headportrait"
+        android:layout_height="54dp"
+        android:layout_width="54dp" />
+
+    <TextView
+        android:id="@+id/tv_driver_name"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="17dp"
+        android:layout_toRightOf="@id/img_driver_info"
+        android:text="周大光"
+        android:textColor="@color/colorBlack"
+        android:textSize="13sp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        />
+
+    <TextView
+        android:id="@+id/tv_car_plate"
+        android:layout_below="@id/tv_driver_name"
+        android:layout_alignLeft="@id/tv_driver_name"
+        android:layout_marginRight="13dp"
+        android:text="津A 00000"
+        android:textSize="12sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_car_type"
+        android:layout_alignTop="@id/tv_car_plate"
+        android:layout_toRightOf="@id/tv_car_plate"
+        android:text="黄大发"
+        android:textSize="12sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:theme="@style/myCheckBox"
+        android:layout_centerInParent="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:clickable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
