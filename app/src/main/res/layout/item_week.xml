@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/week_line"
+    android:visibility="gone"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    >
+    <TextView
+        android:layout_width="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="日"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="一"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="二"
+        android:textColor="#ffffff" />
+    <TextView
+        android:layout_width="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="三"
+        android:textColor="#ffffff" />
+    <TextView
+        android:layout_width="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="四"
+        android:textColor="#ffffff" />
+    <TextView
+        android:layout_width="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="五"
+        android:textColor="#ffffff" />
+    <TextView
+        android:layout_width="0dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:layout_height="48dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="六"
+        android:textColor="#ffffff" />
+
+</LinearLayout>
