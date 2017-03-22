@@ -24,7 +24,22 @@
                 android:layout_height="?attr/actionBarSize"
                 android:id="@+id/toolbar"
                 android:padding="0dp"
-                app:popupTheme="@style/AppTheme.PopupOverlay"></android.support.v7.widget.Toolbar>
+                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+            <TextView
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:text="今天"
+                android:id="@+id/btn_today"
+                android:clickable="true"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:textSize="16sp"
+                android:textColor="#ffffff"
+                android:gravity="center"
+                android:layout_gravity="right"/>
+
         </FrameLayout>
             <include layout="@layout/item_week"></include>
 
