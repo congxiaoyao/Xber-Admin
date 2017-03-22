@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="presenter"
+            type="com.congxiaoyao.xber_admin.helpers.SearchAddrBar.ButtonPresenter" />
+
+        <variable
+            name="startSpot"
+            type="com.congxiaoyao.httplib.response.Spot" />
+
+        <variable
+            name="endSpot"
+            type="com.congxiaoyao.httplib.response.Spot" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="144dp"
+            android:clickable="true"
+            android:layout_marginBottom="4dp"
+            app:cardBackgroundColor="@color/colorCardBg"
+            android:layout_marginLeft="12dp"
+            android:id="@+id/card_view"
+            android:layout_marginRight="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:clickable="true"
+                    android:onClick="@{presenter.onClickStart}"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:visibility="invisible"
+                    tools:visibility="visible"
+                    android:id="@+id/ll_start_container"
+                    android:layout_weight="1">
+
+                    <View
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="17dp"
+                        android:layout_height="22dp"
+                        android:background="@drawable/icon_location_start"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/btn_select_start"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="center_vertical"
+                        tools:text="@string/please_select_start_addr"
+                        android:paddingRight="16dp"
+                        android:text="@{startSpot == null ? @string/please_select_start_addr : startSpot.spotName}"
+                        android:drawableRight="@drawable/icon_spinner"
+                        />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:id="@+id/view_divider1"
+                    android:visibility="invisible"
+                    tools:visibility="visible"
+                    android:background="@color/colorLightGray"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:paddingLeft="16dp"
+                    android:visibility="invisible"
+                    tools:visibility="visible"
+                    android:clickable="true"
+                    android:onClick="@{presenter.onClickEnd}"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:id="@+id/ll_end_container"
+                    android:orientation="horizontal"
+                    android:layout_weight="1">
+
+                    <View
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="17dp"
+                        android:layout_height="22dp"
+                        android:background="@drawable/icon_location_goal"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/btn_select_end"
+                        android:layout_marginLeft="16dp"
+                        android:gravity="center_vertical"
+                        android:drawableRight="@drawable/icon_spinner"
+                        android:paddingRight="16dp"
+                        android:text="@{endSpot == null ? @string/please_select_end_addr :endSpot.spotName}"
+                        tools:text="@string/please_select_end_addr" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:id="@+id/view_divider2"
+                    android:visibility="invisible"
+                    tools:visibility="visible"
+                    android:background="@color/colorLightGray"
+                    />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="搜索"
+                    android:onClick="@{presenter.onClickSearch}"
+                    android:id="@+id/btn_search"
+                    tools:visibility="visible"
+                    android:visibility="invisible"
+                    android:theme="@style/MyButtonStyle"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</layout>

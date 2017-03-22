@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+
+        <variable
+            name="car"
+            type="com.congxiaoyao.httplib.response.CarDetail" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_72"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/img_driver_info"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/driver_headportrait"
+            android:layout_height="54dp"
+            android:layout_width="54dp" />
+
+        <TextView
+            android:id="@+id/tv_driver_name"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"
+            android:layout_toRightOf="@id/img_driver_info"
+            tools:text="周大光"
+            android:text="@{car.userInfo.name}"
+            android:textColor="@color/colorBlack"
+            android:textSize="13sp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_car_plate"
+            android:layout_below="@id/tv_driver_name"
+            android:layout_alignLeft="@id/tv_driver_name"
+            android:layout_marginRight="13dp"
+            tools:text="津A 00000"
+            android:text="@{car.plate}"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_car_type"
+            android:layout_alignTop="@id/tv_car_plate"
+            android:layout_toRightOf="@id/tv_car_plate"
+            tools:text="黄大发"
+            android:text="@{car.spec}"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+</layout>

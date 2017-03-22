@@ -83,6 +83,7 @@ public class ToastAndLogExceptionHandler implements IExceptionHandler {
     @Override
     public void unKnowError(Throwable throwable) {
         Toast.makeText(context.getContext(), "未知错误", Toast.LENGTH_SHORT).show();
+        Log.d(TAG.ME, "unKnowError: ", throwable);
     }
 
     public interface ContextProvider {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:clickable="true"
+    android:background="?android:attr/selectableItemBackground"
+    android:layout_height="48dp">
+
+    <View
+        android:layout_centerVertical="true"
+        android:layout_width="17dp"
+        android:layout_height="22dp"
+        android:id="@+id/view_location_icon"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/icon_location_start"/>
+    
+    <TextView
+        android:id="@+id/tv_location"
+        android:layout_toEndOf="@+id/view_location_icon"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="长安医院"
+        />
+    <!---->
+    <!--<CheckBox-->
+        <!--android:id="@+id/location_chcekbox"-->
+        <!--android:layout_toStartOf="@+id/location"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginEnd="16dp"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
+
+
+</RelativeLayout>

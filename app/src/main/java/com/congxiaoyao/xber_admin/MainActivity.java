@@ -4,21 +4,37 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.congxiaoyao.Admin;
+
+import com.congxiaoyao.TopBarPagerAdapter;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
 
 import android.databinding.ViewDataBinding;
+
+import com.congxiaoyao.xber_admin.databinding.ItemSearchBarBinding;
 import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
+import com.congxiaoyao.xber_admin.helpers.SearchAddrBar;
+import com.congxiaoyao.xber_admin.helpers.SearchCarBar;
+import com.congxiaoyao.xber_admin.helpers.TopSearchBar;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
 import com.congxiaoyao.xber_admin.utils.VersionUtils;
+import com.congxiaoyao.xber_admin.widget.CustomViewPager;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -30,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     private NavigationHelper helper;
     private ActivityMainBinding binding;
+    private TopBarPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +74,25 @@ public class MainActivity extends AppCompatActivity {
             layoutParams.height = DisplayUtils.getStatusBarHeight(this);
             statusBar.requestLayout();
         }
+
+        pagerAdapter = new TopBarPagerAdapter(binding.animationLayer,
+                binding.topBarPager);
+        binding.topBarPager.setAdapter(pagerAdapter);
+        binding.topBarPager.addOnPageChangeListener(pagerAdapter.
+                new PageScrollHelper(binding.topBarPager));
+
+        pagerAdapter.getSearchCarBar().setupWithDrawerLayout(binding.drawerLayout);
+        pagerAdapter.getSearchAddrBar().setupWithDrawerLayout(binding.drawerLayout);
+        pagerAdapter.setOnTraceCarListener(new TopBarPagerAdapter.OnTraceCarListener() {
+            @Override
+            public void onTraceCar(List<Long> carIds) {
+                if (carIds == null) {
+                    Log.d(TAG.ME, "onTraceCar: null");
+                }else {
+                    Log.d(TAG.ME, "onTraceCar: " + carIds);
+                }
+            }
+        });
     }
 
     @Override
@@ -85,14 +121,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void tokenSafeOnResume() {
-
+        Log.d(TAG.ME, "token = " + Token.value);
     }
 
     public void onItemSelected(int menuId) {
         if (menuId == R.id.menu_car_monitor) {
             binding.drawerLayout.closeDrawers();
-        } else if (menuId == R.id.menu_drivers) {
-            startActivity(new Intent(this, WheelTestActivity.class));
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (pagerAdapter == null) {
+            super.onBackPressed();
+            return;
+        }
+        if (!pagerAdapter.onBackPressed()) {
+            super.onBackPressed();
         }
     }
 }
