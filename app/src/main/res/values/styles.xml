@@ -64,4 +64,8 @@
         <item name="colorControlHighlight">@color/colorLightGray</item>
     </style>
 
+    <style name="myCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
 </resources>
