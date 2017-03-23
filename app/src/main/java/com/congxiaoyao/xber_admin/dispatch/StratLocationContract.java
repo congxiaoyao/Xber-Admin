@@ -8,7 +8,7 @@ import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
  * Created by guo on 2017/3/22.
  */
 
-public class StratLocationContract  {
+public interface StratLocationContract  {
 
     interface View extends ListLoadableView<Presenter,Spot>{
         void clear();

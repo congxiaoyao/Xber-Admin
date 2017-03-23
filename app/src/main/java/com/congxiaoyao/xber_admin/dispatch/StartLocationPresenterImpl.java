@@ -45,9 +45,9 @@ public class StartLocationPresenterImpl extends ListLoadablePresenterImpl<StratL
     @Override
     public void setSpot(Spot spot) {
         if (type==0) {
-            ((DispatchTaskActivity)view.getContext()).setStartSpot(spot.getSpotId());
+            ((DispatchTaskActivity)view.getContext()).setStartSpot(spot);
         } else if(type == 1){
-            ((DispatchTaskActivity)view.getContext()).setEndSpot(spot.getSpotId());
+            ((DispatchTaskActivity)view.getContext()).setEndSpot(spot);
         }
     }
     @Override
