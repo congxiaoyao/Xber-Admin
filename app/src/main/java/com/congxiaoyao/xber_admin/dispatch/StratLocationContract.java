@@ -15,6 +15,7 @@ public class StratLocationContract  {
     }
 
     interface Presenter extends ListLoadablePresenter {
-
+        void setSpot(Spot spot);
+        int getType();
     }
 }

@@ -15,6 +15,8 @@ import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.utils.Token;
 
+import java.net.SocketTimeoutException;
+
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;

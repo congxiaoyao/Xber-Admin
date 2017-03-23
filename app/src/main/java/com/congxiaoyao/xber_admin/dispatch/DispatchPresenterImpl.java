@@ -71,9 +71,8 @@ public class DispatchPresenterImpl extends ListLoadablePresenterImpl<DispatchCon
         return observable;
     }
 
-
     @Override
-    public void saveCarId(long carId) {
-
+    public void setCarId(long carId) {
+        ((DispatchTaskActivity) view.getContext()).setCarId(carId);
     }
 }

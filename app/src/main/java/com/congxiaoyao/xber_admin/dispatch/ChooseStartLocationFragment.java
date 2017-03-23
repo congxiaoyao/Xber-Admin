@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -38,6 +39,7 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_location_start, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_location);
+        Button button = (Button) view.findViewById(R.id.btn_location_start_next);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(),
                 R.color.colorPrimary));
@@ -68,9 +70,17 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
                 lastCheckedInedx = checkedIndex;
             }
         });
+
         if (presenter != null) {
             presenter.subscribe();
         }
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.setSpot(getAdapter().getData().get(checkedIndex));
+                ((DispatchTaskActivity)getContext()).jumpToNext(ChooseStartLocationFragment.this);
+            }
+        });
         return view;
     }
 
@@ -109,6 +119,10 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
     public void clear() {
         checkedIndex = -1;
         lastCheckedInedx = -1;
+    }
+
+    public StratLocationContract.Presenter getPresenter() {
+        return presenter;
     }
 
     @Override

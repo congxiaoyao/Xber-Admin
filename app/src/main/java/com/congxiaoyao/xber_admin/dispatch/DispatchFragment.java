@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -43,7 +44,15 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(),
                 R.color.colorPrimary));
+        Button btn_choose_car_next = (Button) view.findViewById(R.id.btn_choose_car_next);
 
+        btn_choose_car_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.setCarId(getAdapter().getData().get(checkedIndex).getCarId());
+                ((DispatchTaskActivity)getContext()).jumpToNext(DispatchFragment.this);
+            }
+        });
         progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_loading_progress);
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration
                 .Builder(getContext())

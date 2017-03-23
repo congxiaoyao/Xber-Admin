@@ -16,7 +16,7 @@ public interface DispatchContract{
     };
 
     public interface Presenter extends ListLoadablePresenter {
-        void saveCarId(long carId);
+        void setCarId(long carId);
     };
 
 

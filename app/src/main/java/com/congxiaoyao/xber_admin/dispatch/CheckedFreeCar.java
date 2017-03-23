@@ -19,6 +19,14 @@ public class CheckedFreeCar {
         this.carType = carType;
     }
 
+    public long getCarId() {
+        return carId;
+    }
+
+    public void setCarId(long carId) {
+        this.carId = carId;
+    }
+
     public String getDriverName() {
         return driverName;
     }
