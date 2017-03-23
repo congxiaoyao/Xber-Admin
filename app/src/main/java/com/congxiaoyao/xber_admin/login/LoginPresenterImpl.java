@@ -17,6 +17,7 @@ import com.congxiaoyao.xber_admin.utils.Token;
 
 import java.net.SocketTimeoutException;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -62,7 +63,7 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
         body.setUsername(userName);
         body.setPassword(password);
         view.showLoading();
-        XberRetrofit.create(LoginRequest.class).login(body).doOnNext(new Action1<LoginInfoResponse>() {
+        Subscription subscribe = XberRetrofit.create(LoginRequest.class).login(body).doOnNext(new Action1<LoginInfoResponse>() {
             @Override
             public void call(LoginInfoResponse loginInfoResponse) {
                 Admin admin = new Admin();
@@ -70,6 +71,7 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
                 admin.setNickName(loginInfoResponse.getName());
                 admin.setUserName(loginInfoResponse.getUsername());
                 Token.processTokenAndSave(view.getContext(), loginInfoResponse.getAuthToken());
+                admin.setUserId(loginInfoResponse.getUserId());
                 admin.setToken(Token.value);
                 admin.save(view.getContext());
             }
@@ -86,6 +88,7 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
                 exceptionDispatcher.dispatchException(throwable);
             }
         });
+        subscriptions.add(subscribe);
     }
 
     @Override

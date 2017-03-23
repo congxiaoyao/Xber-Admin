@@ -11,6 +11,7 @@ import com.congxiaoyao.httplib.request.gson.GsonHelper;
 
 public class Admin {
 
+    private long userId;
     private String userName;
     private String password;
 
@@ -61,6 +62,14 @@ public class Admin {
         this.token = token;
     }
 
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
     public static Admin fromSharedPreference(Context context) {
         SharedPreferences xber_sp = context.getSharedPreferences("xber_sp", Context.MODE_PRIVATE);
         return fromSharedPreference(xber_sp);
@@ -91,6 +100,7 @@ public class Admin {
                 "userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", nickName='" + nickName + '\'' +
+                ", userId='" + userId + '\'' +
                 ", token='" + token + '\'' +
                 '}';
     }

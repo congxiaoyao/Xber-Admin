@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,24 +11,21 @@ import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.congxiaoyao.Admin;
-import com.congxiaoyao.TopBarPagerAdapter;
+import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
 import com.congxiaoyao.xber_admin.dispatch.DispatchTaskActivity;
 import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
+import com.congxiaoyao.xber_admin.service.SyncOrderedList;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
-import com.congxiaoyao.xber_admin.utils.Token;
 import com.congxiaoyao.xber_admin.utils.VersionUtils;
+import com.congxiaoyao.xber_admin.widget.LoadingLayout;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends StompBaseActivity {
 
     private NavigationHelper helper;
     private ActivityMainBinding binding;
@@ -76,42 +72,49 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTraceCar(List<Long> carIds) {
                 if (carIds == null) {
-                    Log.d(TAG.ME, "onTraceCar: null");
-                }else {
-                    Log.d(TAG.ME, "onTraceCar: " + carIds);
+                    onTraceAllCar();
+                } else {
+                    onTraceSpecifiedCar(carIds);
                 }
             }
         });
+        binding.loadingLayout.below(R.id.top_bar_pager, 16);
+    }
+
+    @Override
+    protected void onStompPrepared() {
+        pagerAdapter.setEnabled(true);
+    }
+
+    @Override
+    public void onCarAdd(long carId, SyncOrderedList<GpsSampleRspOuterClass.GpsSampleRsp> trace) {
+        super.onCarAdd(carId, trace);
+    }
+
+    @Override
+    public void onCarRemove(long carId) {
+        super.onCarRemove(carId);
+    }
+
+    public void onTraceAllCar() {
+
+    }
+
+    public void onTraceSpecifiedCar(List<Long> carIds) {
+
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
         binding.mapView.onResume();
-        Observable.just(1).map(new Func1<Integer, Admin>() {
-            @Override
-            public Admin call(Integer integer) {
-                Admin admin = Admin.fromSharedPreference(MainActivity.this);
-                return admin;
-            }
-        }).subscribeOn(Schedulers.io()).filter(new Func1<Admin, Boolean>() {
-            @Override
-            public Boolean call(Admin admin) {
-                return admin != null;
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Admin>() {
-            @Override
-            public void call(Admin admin) {
-                Token.value = admin.getToken();
-                ((TextView) helper.getHeaderView().findViewById(R.id.tv_user_name))
-                        .setText(admin.getNickName());
-                tokenSafeOnResume();
-            }
-        });
+        super.onResume();
     }
 
-    private void tokenSafeOnResume() {
-        Log.d(TAG.ME, "token = " + Token.value);
+    @Override
+    protected void tokenSafeOnResume(Admin admin) {
+        super.tokenSafeOnResume(admin);
+        ((TextView) helper.getHeaderView().findViewById(R.id.tv_user_name))
+                .setText(admin.getNickName());
     }
 
     @Override
@@ -126,10 +129,15 @@ public class MainActivity extends AppCompatActivity {
         binding.mapView.onDestroy();
     }
 
+    @Override
+    protected LoadingLayout getLoadingLayout() {
+        return binding.loadingLayout;
+    }
+
     public void onItemSelected(int menuId) {
         if (menuId == R.id.menu_car_monitor) {
             binding.drawerLayout.closeDrawers();
-        }  else if (menuId == R.id.menu_task_send) {
+        } else if (menuId == R.id.menu_task_send) {
             startActivity(new Intent(this, DispatchTaskActivity.class));
         }
     }

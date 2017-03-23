@@ -25,7 +25,7 @@ import com.congxiaoyao.xber_admin.mvpbase.view.LoadableViewImpl;
  */
 
 public class LoginFragment extends LoadableViewImpl<LoginContract.Presenter>
-        implements LoginContract.View ,View.OnClickListener{
+        implements LoginContract.View, View.OnClickListener, View.OnLongClickListener {
 
     private FragmentLoginBinding binding;
 
@@ -37,6 +37,7 @@ public class LoginFragment extends LoadableViewImpl<LoginContract.Presenter>
         binding.btnLogin.getBackground().setColorFilter(ContextCompat.getColor(context,
                 R.color.colorPrimary), PorterDuff.Mode.SRC);
         binding.btnLogin.setOnClickListener(this);
+        binding.btnLogin.setOnLongClickListener(this);
         progressBar = (ContentLoadingProgressBar) binding.getRoot()
                 .findViewById(R.id.content_progress_bar);
         Admin admin = presenter.getAdmin();
@@ -73,5 +74,13 @@ public class LoginFragment extends LoadableViewImpl<LoginContract.Presenter>
 
     private static boolean isEmpty(String msg) {
         return (msg == null || msg.length() == 0);
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        getContext().getSharedPreferences("xber_sp", Context.MODE_PRIVATE)
+                .edit().putString("admin", null).apply();
+        Toast.makeText(getContext(), "logout!", Toast.LENGTH_SHORT).show();
+        return true;
     }
 }
