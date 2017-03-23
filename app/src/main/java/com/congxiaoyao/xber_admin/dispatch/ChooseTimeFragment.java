@@ -77,7 +77,7 @@ public class ChooseTimeFragment extends Fragment {
     }
 
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
-                              Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         final CoordinatorLayout view = (CoordinatorLayout) inflater.inflate(R.layout.fragment_date_start,
                 container, false);
         getDispatchTaskActivity().showWeekLine();
@@ -187,14 +187,11 @@ public class ChooseTimeFragment extends Fragment {
                 }
                 long start = dateTimes.getFirst().toTime();
                 long end = dateTimes.getLast().toTime();
-                if (start < end) {
+                if (start > end) {
                     long temp = start;
                     start = end;
                     end = temp;
                 }
-                //TODO jump to next fragment
-                Log.d(TAG.ME, "onClick: start" + start);
-                Log.d(TAG.ME, "onClick: end" + end);
                 DispatchTaskActivity context = (DispatchTaskActivity) getContext();
                 context.setStartTime(start);
                 context.setEndTime(end);
@@ -222,7 +219,6 @@ public class ChooseTimeFragment extends Fragment {
 
         @Override
         public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            Log.d(TAG.ME, "onStateChanged: "+newState);
             if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                 Object tag = bottomSheet.getTag();
                 if (tag != null) {

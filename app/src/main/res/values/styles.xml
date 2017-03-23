@@ -33,7 +33,7 @@
     <style name="MyButtonStyle" parent="Widget.AppCompat.Button.Colored" >
         <item name="android:textColor">@color/colorWhite</item>
         <item name="colorButtonNormal">@color/colorPrimary</item>
-        <item name="android:colorControlHighlight">@color/colorPrimaryDark</item>
+        <item name="colorControlHighlight">@color/colorPrimaryDark</item>
     </style>
 
     <style name="MyactionOverflowMenuStyle" parent="@style/Widget.AppCompat.PopupMenu.Overflow">
@@ -52,7 +52,7 @@
 
     <style name="MyButton" parent="Widget.AppCompat.Button.Colored">
         <item name="colorButtonNormal">@color/colorPrimary</item>
-        <item name="android:colorControlHighlight">@color/colorPrimaryDark</item>
+        <item name="colorControlHighlight">@color/colorPrimaryDark</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
 

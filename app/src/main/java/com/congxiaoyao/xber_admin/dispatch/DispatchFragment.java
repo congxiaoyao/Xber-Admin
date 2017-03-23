@@ -71,7 +71,7 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration
                 .Builder(getContext())
                 .size(1)
-                .margin(DisplayUtils.dp2px(getContext(),16),0)
+                .margin(DisplayUtils.dp2px(getContext(),16))
                 .colorResId(R.color.colorDarkGray)
                 .build());
         super.onCreateView(inflater, container, savedInstanceState);

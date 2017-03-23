@@ -63,8 +63,8 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration
                 .Builder(getContext())
                 .size(1)
-                .margin(DisplayUtils.dp2px(getContext(),16),0)
-                .colorResId(R.color.colorDarkGray)
+                .margin(DisplayUtils.dp2px(getContext(), 16))
+                .colorResId(R.color.colorLightGray)
                 .build());
         super.onCreateView(inflater, container, savedInstanceState);
         recyclerView.setAdapter(getAdapter());
