@@ -1,5 +1,6 @@
 package com.congxiaoyao.xber_admin.dispatch;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -12,10 +13,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.xber_admin.R;
 
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableViewImpl;
@@ -28,7 +32,7 @@ import java.util.List;
  * Created by guo on 2017/3/16.
  */
 
-public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Presenter,CheckedFreeCar>
+public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Presenter,CarDetail>
         implements DispatchContract.View  {
     protected RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -43,7 +47,26 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(),
                 R.color.colorPrimary));
+        Button btn_choose_car_next = (Button) view.findViewById(R.id.btn_next);
 
+        btn_choose_car_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkedIndex==-1){
+                    Toast.makeText(getContext(), "请选择司机", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                presenter.setCar(getAdapter().getData().get(checkedIndex));
+                ((DispatchTaskActivity)getContext()).jumpToNext(DispatchFragment.this);
+            }
+        });
+        view.findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+             getFragmentManager().popBackStack();
+                ((DispatchTaskActivity) getContext()).notifyToolBar(DispatchFragment.this);
+            }
+        });
         progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_loading_progress);
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration
                 .Builder(getContext())
@@ -83,11 +106,11 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
     }
 
     @Override
-    protected void convert(BaseViewHolder viewHolder, CheckedFreeCar data) {
+    protected void convert(BaseViewHolder viewHolder, CarDetail data) {
         super.convert(viewHolder, data);
-        viewHolder.setText(R.id.tv_driver_name, data.getDriverName());
-        viewHolder.setText(R.id.tv_car_plate, data.getCarPlate());
-        viewHolder.setText(R.id.tv_car_type, data.getCarType());
+        viewHolder.setText(R.id.tv_driver_name, data.getUserInfo().getName());
+        viewHolder.setText(R.id.tv_car_plate, data.getPlate());
+        viewHolder.setText(R.id.tv_car_type, data.getSpec());
         int position = viewHolder.getLayoutPosition();
         if (position == checkedIndex) {
             viewHolder.setChecked(R.id.checkbox, true);

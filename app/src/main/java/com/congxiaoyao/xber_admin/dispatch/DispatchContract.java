@@ -1,5 +1,6 @@
 package com.congxiaoyao.xber_admin.dispatch;
 
+import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
@@ -10,13 +11,13 @@ import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
 
 public interface DispatchContract{
 
-    public interface View extends ListLoadableView<Presenter,CheckedFreeCar> {
+    public interface View extends ListLoadableView<Presenter,CarDetail> {
 
         void clear();
     };
 
     public interface Presenter extends ListLoadablePresenter {
-        void saveCarId(long carId);
+        void setCar(CarDetail car);
     };
 
 

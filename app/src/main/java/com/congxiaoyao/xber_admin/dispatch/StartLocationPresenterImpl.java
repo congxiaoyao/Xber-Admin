@@ -22,8 +22,11 @@ import rx.schedulers.Schedulers;
 public class StartLocationPresenterImpl extends ListLoadablePresenterImpl<StratLocationContract.View>
         implements StratLocationContract.Presenter{
 
-    public StartLocationPresenterImpl(StratLocationContract.View view) {
+    private int type;
+
+    public StartLocationPresenterImpl(StratLocationContract.View view,int type) {
         super(view);
+        this.type = type;
     }
 
     @Override
@@ -38,4 +41,18 @@ public class StartLocationPresenterImpl extends ListLoadablePresenterImpl<StratL
                 });
         return observable;
     }
+
+    @Override
+    public void setSpot(Spot spot) {
+        if (type==0) {
+            ((DispatchTaskActivity)view.getContext()).setStartSpot(spot);
+        } else if(type == 1){
+            ((DispatchTaskActivity)view.getContext()).setEndSpot(spot);
+        }
+    }
+    @Override
+    public int getType() {
+        return type;
+    }
+
 }

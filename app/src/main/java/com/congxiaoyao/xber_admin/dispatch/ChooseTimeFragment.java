@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,12 +63,21 @@ public class ChooseTimeFragment extends Fragment {
     private int thisYear;
     private int thisMonth;
     private int thisDay;
+    private String dateTitle;
 
     @Nullable
-    @Override
+    public View onCreateView1(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        FrameLayout frameLayout = new FrameLayout(container.getContext());
+        frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        View loadingBar = inflater.inflate(R.layout.view_progress_bar, frameLayout, false);
+        loadingBar.setVisibility(View.VISIBLE);
+        frameLayout.addView(loadingBar);
+        return frameLayout;
+    }
 
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
-                             Bundle savedInstanceState) {
+                              Bundle savedInstanceState) {
         final CoordinatorLayout view = (CoordinatorLayout) inflater.inflate(R.layout.fragment_date_start,
                 container, false);
         getDispatchTaskActivity().showWeekLine();
@@ -103,15 +113,19 @@ public class ChooseTimeFragment extends Fragment {
         calendarDateView.setOnItemClickListener(new CalendarView.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int i, CalendarBean bean) {
-                getDispatchTaskActivity().setToolBarTitle(bean.year +
-                        "年" + bean.moth + "月");
+                String title = bean.year + "年" + bean.moth + "月";
+                dateTitle = title;
+                getDispatchTaskActivity().setToolBarTitle(title);
             }
         });
-        Calendar calendar = Calendar.getInstance();
+        final Calendar calendar = Calendar.getInstance();
         thisYear = calendar.get(Calendar.YEAR);
         thisMonth = calendar.get(Calendar.MONTH) + 1;
         thisDay = calendar.get(Calendar.DAY_OF_MONTH);
-        ((DispatchTaskActivity) getContext()).setToolBarTitle(thisYear + "年" + thisMonth + "月");
+        if (dateTitle == null) {
+            dateTitle = thisYear + "年" + thisMonth + "月";
+        }
+        ((DispatchTaskActivity) getContext()).setToolBarTitle(dateTitle);
         wheelHour = (WheelView) view.findViewById(R.id.wheel_hour);
         wheelMinute = (WheelView) view.findViewById(R.id.wheel_minute);
 
@@ -181,13 +195,15 @@ public class ChooseTimeFragment extends Fragment {
                 //TODO jump to next fragment
                 Log.d(TAG.ME, "onClick: start" + start);
                 Log.d(TAG.ME, "onClick: end" + end);
-
+                DispatchTaskActivity context = (DispatchTaskActivity) getContext();
+                context.setStartTime(start);
+                context.setEndTime(end);
+                context.setToday(dateTitle);
+                context.jumpToNext(ChooseTimeFragment.this);
             }
         });
-
         return view;
     }
-
 
     private void jumpToToday() {
         int currentItem = calendarDateView.getCurrentItem();
@@ -253,7 +269,7 @@ public class ChooseTimeFragment extends Fragment {
                     }
                     title.setText(dateTimes.addTimes % 2 == 0 ?
                             R.string.please_select_start_time : R.string.please_select_end_time);
-                    int hour = Calendar.getInstance().get(Calendar.HOUR);
+                    int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                     int minute = Calendar.getInstance().get(Calendar.MINUTE);
                     wheelHour.setCurrentItem(hour - 1);
                     wheelMinute.setCurrentItem(minute);
@@ -291,13 +307,6 @@ public class ChooseTimeFragment extends Fragment {
         return (bean.year == thisYear &&
                 bean.moth == thisMonth &&
                 bean.day == thisDay);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        getDispatchTaskActivity().hideToolbarButton();
-        getDispatchTaskActivity().hideWeekLine();
     }
 
     private void onDateSelected(View view, CalendarBean bean) {

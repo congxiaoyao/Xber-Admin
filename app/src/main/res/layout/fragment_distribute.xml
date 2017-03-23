@@ -1,268 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:background="#fafafa"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <RelativeLayout
-        android:id="@+id/start_time_container"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="18dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true">
-
-        <ImageView
-            android:id="@+id/icon_start_time"
-            android:src="@drawable/icon_start_time"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
-
-        <TextView
-            android:id="@+id/tv_start_time_display"
-            android:layout_marginLeft="16sp"
-            android:layout_toRightOf="@id/icon_start_time"
-            android:text="开始时间"
-            android:textSize="17sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_start_date"
-            android:layout_below="@id/tv_start_time_display"
-            android:layout_alignLeft="@id/tv_start_time_display"
-            android:layout_marginTop="14dp"
-            android:text="2017-1-1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_start_time"
-            android:layout_marginLeft="40dp"
-            android:layout_toRightOf="@id/tv_start_date"
-            android:layout_alignTop="@id/tv_start_date"
-            android:text="11:11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/end_time_container"
-        android:layout_below="@id/start_time_container"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="18dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/icon_end_time"
-            android:src="@drawable/icon_end_time"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
-
-        <TextView
-            android:id="@+id/tv_end_time_display"
-            android:layout_marginLeft="16sp"
-            android:layout_toRightOf="@id/icon_end_time"
-            android:text="结束时间"
-            android:textSize="17sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_end_date"
-            android:layout_below="@id/tv_end_time_display"
-            android:layout_alignLeft="@id/tv_end_time_display"
-            android:layout_marginTop="14dp"
-            android:text="2017-1-1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_end_time"
-            android:layout_marginLeft="40dp"
-            android:layout_toRightOf="@id/tv_end_date"
-            android:layout_alignTop="@id/tv_end_date"
-            android:text="11:11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/car_container"
-        android:layout_marginTop="18dp"
-        android:layout_marginLeft="18dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/end_time_container"
-        android:layout_alignParentEnd="true">
-
-        <ImageView
-            android:id="@+id/icon_car"
-            android:src="@drawable/icon_car"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
-
-        <TextView
-            android:id="@+id/tv_car_display"
-            android:layout_marginLeft="16sp"
-            android:layout_toRightOf="@id/icon_car"
-            android:text="可用车辆"
-            android:textSize="17sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_car_plate"
-            android:layout_below="@id/icon_car"
-            android:layout_alignLeft="@id/tv_car_display"
-            android:layout_marginTop="14dp"
-            android:text="津A 000000"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_car_type"
-            android:layout_marginLeft="17dp"
-            android:layout_toRightOf="@id/tv_car_plate"
-            android:layout_alignTop="@id/tv_car_plate"
-            android:text="骚红色夏利"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_car_user"
-            android:layout_marginLeft="17dp"
-            android:layout_toRightOf="@id/tv_car_type"
-            android:layout_alignTop="@id/tv_car_type"
-            android:text="王大伯"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/start_location_container"
-        android:layout_marginTop="18dp"
-        android:layout_marginLeft="18dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/car_container"
-        android:layout_alignParentEnd="true">
-
-        <ImageView
-            android:id="@+id/icon_start_location"
-            android:src="@drawable/icon_start_location"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
-
-        <TextView
-            android:id="@+id/tv_start_location_display"
-            android:layout_marginLeft="16sp"
-            android:layout_toRightOf="@id/icon_start_location"
-            android:text="起始地"
-            android:textSize="17sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_start_location"
-            android:layout_below="@id/tv_start_location_display"
-            android:layout_alignLeft="@id/tv_start_location_display"
-            android:layout_marginTop="14dp"
-            android:text="起始点1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/end_location_container"
-        android:layout_marginTop="18dp"
-        android:layout_marginLeft="18dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/start_location_container"
-        android:layout_alignParentEnd="true">
-
-        <ImageView
-            android:id="@+id/icon_end_location"
-            android:src="@drawable/icon_end_location"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
-
-        <TextView
-            android:id="@+id/tv_end_location_display"
-            android:layout_marginLeft="16sp"
-            android:layout_toRightOf="@id/icon_end_location"
-            android:text="目的地"
-            android:textSize="17sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tv_end_location"
-            android:layout_below="@id/tv_end_location_display"
-            android:layout_alignLeft="@id/tv_end_location_display"
-            android:layout_marginTop="14dp"
-            android:text="目的点1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/remark_container"
-        android:layout_marginTop="18dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/end_location_container"
-        android:layout_alignParentEnd="true">
-
-        <ImageView
-            android:layout_marginLeft="18dp"
-            android:id="@+id/icon_remark"
-            android:src="@drawable/icon_remark"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
-
-        <TextView
-
-            android:id="@+id/tv_remark_display"
-            android:layout_marginLeft="16dp"
-            android:layout_toRightOf="@id/icon_remark"
-            android:text="运输内容及备注"
-            android:textSize="17sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/tv_remark"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/tv_remark_display"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/edit_transport"
-            android:layout_width="333dp"
-            android:layout_height="100dp" />
-
-    </RelativeLayout>
-
-
     <LinearLayout
         android:id="@+id/lin_btn"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
+        android:padding="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/btn_distribute_back"
             android:theme="@style/MyBackButton"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_marginBottom="10dp"
             android:text="上一步"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -271,14 +24,281 @@
         <Button
             android:id="@+id/btn_distribute_next"
             android:theme="@style/MyButton"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:layout_marginBottom="10dp"
             android:text="派发"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content" />
 
     </LinearLayout>
+
+    <ScrollView
+        android:layout_above="@id/lin_btn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:id="@+id/start_time_container"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true">
+
+                <ImageView
+                    android:id="@+id/icon_start_time"
+                    android:src="@drawable/icon_start_time"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" />
+
+                <TextView
+                    android:id="@+id/tv_start_time_display"
+                    android:layout_marginLeft="16sp"
+                    android:layout_toRightOf="@id/icon_start_time"
+                    android:text="开始时间"
+                    android:textSize="17sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_start_date"
+                    android:layout_below="@id/tv_start_time_display"
+                    android:layout_alignLeft="@id/tv_start_time_display"
+                    android:layout_marginTop="14dp"
+                    android:text="2017-1-1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_start_time"
+                    android:layout_marginLeft="40dp"
+                    android:layout_toRightOf="@id/tv_start_date"
+                    android:layout_alignTop="@id/tv_start_date"
+                    android:text="11:11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/end_time_container"
+                android:layout_below="@id/start_time_container"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/icon_end_time"
+                    android:src="@drawable/icon_end_time"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" />
+
+                <TextView
+                    android:id="@+id/tv_end_time_display"
+                    android:layout_marginLeft="16sp"
+                    android:layout_toRightOf="@id/icon_end_time"
+                    android:text="结束时间"
+                    android:textSize="17sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_end_date"
+                    android:layout_below="@id/tv_end_time_display"
+                    android:layout_alignLeft="@id/tv_end_time_display"
+                    android:layout_marginTop="14dp"
+                    android:text="2017-1-1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_end_time"
+                    android:layout_marginLeft="40dp"
+                    android:layout_toRightOf="@id/tv_end_date"
+                    android:layout_alignTop="@id/tv_end_date"
+                    android:text="11:11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/car_container"
+                android:layout_marginTop="18dp"
+                android:layout_marginLeft="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/end_time_container"
+                android:layout_alignParentEnd="true">
+
+                <ImageView
+                    android:id="@+id/icon_car"
+                    android:src="@drawable/icon_car"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" />
+
+                <TextView
+                    android:id="@+id/tv_car_display"
+                    android:layout_marginLeft="16sp"
+                    android:layout_toRightOf="@id/icon_car"
+                    android:text="可用车辆"
+                    android:textSize="17sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_car_plate"
+                    android:layout_below="@id/icon_car"
+                    android:layout_alignLeft="@id/tv_car_display"
+                    android:layout_marginTop="14dp"
+                    android:text="津A 000000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_car_type"
+                    android:layout_marginLeft="17dp"
+                    android:layout_toRightOf="@id/tv_car_plate"
+                    android:layout_alignTop="@id/tv_car_plate"
+                    android:text="骚红色夏利"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_car_user"
+                    android:layout_marginLeft="17dp"
+                    android:layout_toRightOf="@id/tv_car_type"
+                    android:layout_alignTop="@id/tv_car_type"
+                    android:text="王大伯"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/start_location_container"
+                android:layout_marginTop="18dp"
+                android:layout_marginLeft="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/car_container"
+                android:layout_alignParentEnd="true">
+
+                <ImageView
+                    android:id="@+id/icon_start_location"
+                    android:src="@drawable/icon_start_location"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" />
+
+                <TextView
+                    android:id="@+id/tv_start_location_display"
+                    android:layout_marginLeft="16sp"
+                    android:layout_toRightOf="@id/icon_start_location"
+                    android:text="起始地"
+                    android:textSize="17sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_start_location"
+                    android:layout_below="@id/tv_start_location_display"
+                    android:layout_alignLeft="@id/tv_start_location_display"
+                    android:layout_marginTop="14dp"
+                    android:text="起始点1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/end_location_container"
+                android:layout_marginTop="18dp"
+                android:layout_marginLeft="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/start_location_container"
+                android:layout_alignParentEnd="true">
+
+                <ImageView
+                    android:id="@+id/icon_end_location"
+                    android:src="@drawable/icon_end_location"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" />
+
+                <TextView
+                    android:id="@+id/tv_end_location_display"
+                    android:layout_marginLeft="16sp"
+                    android:layout_toRightOf="@id/icon_end_location"
+                    android:text="目的地"
+                    android:textSize="17sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_end_location"
+                    android:layout_below="@id/tv_end_location_display"
+                    android:layout_alignLeft="@id/tv_end_location_display"
+                    android:layout_marginTop="14dp"
+                    android:text="目的点1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/remark_container"
+                android:layout_marginTop="18dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/end_location_container"
+                android:layout_alignParentEnd="true">
+
+                <ImageView
+                    android:layout_marginLeft="18dp"
+                    android:id="@+id/icon_remark"
+                    android:src="@drawable/icon_remark"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" />
+
+                <TextView
+
+                    android:id="@+id/tv_remark_display"
+                    android:layout_marginLeft="16dp"
+                    android:layout_toRightOf="@id/icon_remark"
+                    android:text="运输内容及备注"
+                    android:textSize="17sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/tv_remark"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/tv_remark_display"
+                    android:layout_marginTop="14dp"
+                    android:enabled="false"
+                    android:background="@drawable/edit_transport"
+                    android:layout_width="333dp"
+                    android:layout_height="100dp" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+
+    <android.support.v4.widget.ContentLoadingProgressBar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?android:attr/progressBarStyleInverse"
+        android:id="@+id/content_progress_bar"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"/>
 
 </RelativeLayout>
