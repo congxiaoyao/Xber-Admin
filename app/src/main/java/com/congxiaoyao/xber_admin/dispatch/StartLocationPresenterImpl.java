@@ -2,8 +2,10 @@ package com.congxiaoyao.xber_admin.dispatch;
 
 import com.congxiaoyao.httplib.request.SpotRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
+import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.httplib.response.Spot;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenterImpl;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class StartLocationPresenterImpl extends ListLoadablePresenterImpl<StratL
     public Observable<? extends List> pullListData() {
         Observable<List<Spot>> observable = XberRetrofit.create(SpotRequest.class)
                 .getAllSpots(Token.value)
+                .compose(RxUtils.<List<Spot>>delayWhenTimeEnough(300))
                 .doOnNext(new Action1<List<Spot>>() {
                     @Override
                     public void call(List<Spot> spots) {

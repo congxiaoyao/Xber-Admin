@@ -11,12 +11,14 @@ import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
 
 public interface DispatchContract{
 
-    public interface View extends ListLoadableView<Presenter,CarDetail> {
+    interface View extends ListLoadableView<Presenter,CarDetail> {
 
         void clear();
+
+        DispatchTaskActivity getParent();
     };
 
-    public interface Presenter extends ListLoadablePresenter {
+    interface Presenter extends ListLoadablePresenter {
         void setCar(CarDetail car);
     };
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.congxiaoyao.Admin;
@@ -18,12 +19,18 @@ import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.VersionUtils;
 import com.congxiaoyao.xber_admin.widget.LoadingLayout;
 
+import java.util.Collections;
 import java.util.List;
 
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends StompBaseActivity {
 
@@ -88,12 +95,10 @@ public class MainActivity extends StompBaseActivity {
 
     @Override
     public void onCarAdd(long carId, SyncOrderedList<GpsSampleRspOuterClass.GpsSampleRsp> trace) {
-        super.onCarAdd(carId, trace);
     }
 
     @Override
     public void onCarRemove(long carId) {
-        super.onCarRemove(carId);
     }
 
     public void onTraceAllCar() {

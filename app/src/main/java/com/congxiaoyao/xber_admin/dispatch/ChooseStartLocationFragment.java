@@ -1,6 +1,5 @@
 package com.congxiaoyao.xber_admin.dispatch;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -35,7 +34,7 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
     protected RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private int checkedIndex = -1;
-    private int lastCheckedInedx = -2;
+    private int lastCheckedIndex = -2;
 
     @Nullable
     @Override
@@ -59,7 +58,7 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(),
                 R.color.colorPrimary));
-        progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_loading_progress);
+        progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_progress_bar);
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration
                 .Builder(getContext())
                 .size(1)
@@ -74,19 +73,15 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
                 checkedIndex = position;
-                if (checkedIndex == lastCheckedInedx) {
-                    checkedIndex = -1;
-                }
-                if (checkedIndex != -1) {
-                    adapter.notifyItemChanged(checkedIndex);
-                }
-                if (lastCheckedInedx != -1) {
-                    adapter.notifyItemChanged(lastCheckedInedx);
-                }
-                lastCheckedInedx = checkedIndex;
+                //重复选择认为没做操作
+                if (checkedIndex == lastCheckedIndex) return;
+                //改变选择的情况
+                adapter.notifyItemChanged(checkedIndex);
+                if (lastCheckedIndex != -1) adapter.notifyItemChanged(lastCheckedIndex);
+
+                lastCheckedIndex = checkedIndex;
             }
         });
-
         if (presenter != null) {
             presenter.subscribe();
         }
@@ -102,6 +97,13 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
             }
         });
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        clear();
+        Log.d(TAG.ME, "onResume: ");
     }
 
     @Override
@@ -142,7 +144,13 @@ public class ChooseStartLocationFragment extends ListLoadableViewImpl<StratLocat
     @Override
     public void clear() {
         checkedIndex = -1;
-        lastCheckedInedx = -1;
+        lastCheckedIndex = -1;
+        recyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                getAdapter().notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

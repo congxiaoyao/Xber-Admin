@@ -6,6 +6,7 @@ import com.congxiaoyao.httplib.response.Car;
 import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenterImpl;
 import com.congxiaoyao.xber_admin.service.StompService;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
 
 import java.util.List;
@@ -37,19 +38,11 @@ public class CarResultCardPresenterImpl extends ListLoadablePresenterImpl<CarRes
     }
 
     private Observable<? extends List> searchName() {
-        final long pre = System.currentTimeMillis();
         return XberRetrofit.create(CarRequest.class).getCarsByName(content, Token.value)
+                .compose(RxUtils.<List<CarDetail>>delayWhenTimeEnough(300))
                 .doOnNext(new Action1<List<CarDetail>>() {
                     @Override
                     public void call(final List<CarDetail> carDetails) {
-                        int minTime = 400;
-                        if (System.currentTimeMillis() - pre < minTime) {
-                            try {
-                                Thread.sleep(minTime - System.currentTimeMillis() + pre);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
                         view.post(new Runnable() {
                             @Override
                             public void run() {

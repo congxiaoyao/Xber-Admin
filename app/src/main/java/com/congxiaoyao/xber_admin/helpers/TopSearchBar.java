@@ -170,6 +170,10 @@ public class TopSearchBar {
         binding.imgRightIcon.getDrawable().setTint(result);
     }
 
+    public ItemSearchBarBinding getBinding() {
+        return binding;
+    }
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

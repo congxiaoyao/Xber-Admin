@@ -9,11 +9,11 @@ import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
 
 public interface DistributeContract {
 
-    public interface View extends LoadableView<Presenter>{
+    interface View extends LoadableView<Presenter>{
 
     }
 
-    public interface Presenter extends BasePresenter{
+    interface Presenter extends BasePresenter{
 
     }
 }

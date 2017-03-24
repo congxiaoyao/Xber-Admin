@@ -21,11 +21,11 @@
         android:id="@+id/tv_driver_name"
         android:layout_alignParentTop="true"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="17dp"
+        android:layout_marginBottom="10dp"
         android:layout_toRightOf="@id/img_driver_info"
         android:text="周大光"
         android:textColor="@color/colorBlack"
-        android:textSize="13sp"
+        android:textSize="15sp"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         />
@@ -51,11 +51,12 @@
     
     <CheckBox
         android:id="@+id/checkbox"
+        android:clickable="false"
         android:theme="@style/myCheckBox"
+        android:background="@color/colorTrans"
         android:layout_centerInParent="true"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
-        android:clickable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
