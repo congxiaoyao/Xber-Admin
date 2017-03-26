@@ -47,7 +47,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
         @Override
         public void onStompConnect() {
             Log.d(TAG.ME, "onStompConnect: ");
-            shouldReconnect = Observable.just("连接超时\n请重新连接").delay(5, TimeUnit.SECONDS)
+            shouldReconnect = Observable.just("连接超时\n请重新连接").delay(4, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<String>() {
@@ -145,7 +145,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
 
     public void rebindService() {
         unbindService(connection);
-        Observable.just(0).delay(1000, TimeUnit.MILLISECONDS)
+        Observable.just(0).delay(500, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Integer>() {
@@ -156,6 +156,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        Log.d(TAG.ME, "rebindService" + throwable);
                         new AlertDialog.Builder(StompBaseActivity.this)
                                 .setTitle("错误")
                                 .setMessage("发生了奇怪的错误 请重启软件")
@@ -224,4 +225,9 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
     }
 
     protected abstract LoadingLayout getLoadingLayout();
+
+    public interface StompServiceProvider {
+        StompService getService();
+    }
+
 }

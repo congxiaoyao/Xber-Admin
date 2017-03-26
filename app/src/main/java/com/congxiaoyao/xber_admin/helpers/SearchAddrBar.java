@@ -36,6 +36,7 @@ import com.congxiaoyao.xber_admin.resultcard.AddrResultCardPresenterImpl;
 import com.congxiaoyao.xber_admin.resultcard.AddrResultCardViewImpl;
 import com.congxiaoyao.xber_admin.resultcard.OnTaskResultCardPresenterImpl;
 import com.congxiaoyao.xber_admin.resultcard.OnTaskResultCardViewImpl;
+import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -431,7 +432,8 @@ public class SearchAddrBar extends TopSearchBar {
             if (locationFragment != null) {
                 removeLocationSelectCard();
             }
-            showLocationSelectCard(itemSearchAddrBarBinding.getRoot().getHeight() / 3 * 2 - 2);
+            showLocationSelectCard(itemSearchAddrBarBinding.getRoot().getHeight() / 3 * 2 +
+                    DisplayUtils.dp2px(itemSearchAddrBarBinding.getRoot().getContext(), 2));
             view.post(new Runnable() {
                 @Override
                 public void run() {
@@ -444,7 +446,8 @@ public class SearchAddrBar extends TopSearchBar {
             if (locationFragment != null) {
                 removeLocationSelectCard();
             }
-            showLocationSelectCard(itemSearchAddrBarBinding.getRoot().getHeight() / 3);
+            showLocationSelectCard(itemSearchAddrBarBinding.getRoot().getHeight() / 3 +
+                    DisplayUtils.dp2px(itemSearchAddrBarBinding.getRoot().getContext(), 2));
             view.post(new Runnable() {
                 @Override
                 public void run() {

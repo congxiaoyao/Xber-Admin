@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -67,9 +68,11 @@ public class StompService extends Service implements Action1<Throwable> {
     );
 
     private StompClient client;
+
     private OnCarChangeListener onCarChangeListener;
 
     private Scheduler stompScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
+
     private BehaviorSubject<Integer> serviceDestroy = BehaviorSubject.create();
 
     @Override
@@ -88,7 +91,7 @@ public class StompService extends Service implements Action1<Throwable> {
 
     @Override
     public IBinder onBind(Intent intent) {
-        userId = intent.getLongExtra(EXTRA_USER_ID, 0);
+        userId = intent.getLongExtra(EXTRA_USER_ID, -1);
         token = intent.getStringExtra(EXTRA_TOKEN);
         buffer = new HashMap<>();
         latestTime = new TreeMap<>();
@@ -512,7 +515,7 @@ public class StompService extends Service implements Action1<Throwable> {
                             //车消失了 已经好久获取不到新数据了
                             if (expiration) {
                                 SyncOrderedList<GpsSampleRsp> value = buffer.remove(carId);
-                                expiration = expiration & (value != null);
+                                expiration = expiration && (value != null);
                             }
                             //满足数据过期 确实删除了数据 监听器非空 则符合回调条件
                             return expiration && onCarChangeListener != null;

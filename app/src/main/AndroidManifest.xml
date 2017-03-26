@@ -37,10 +37,8 @@
         <service android:name=".service.StompService" />
 
         <activity android:name="com.congxiaoyao.adapter.base.binding.demo.RVBindingTestActivity" />
-        <activity android:name=".ServiceDemoActivity" />
         <activity android:name=".driverslist.DriverListActivity" />
         <activity android:name=".login.LoginActivity" />
-        <activity android:name=".monitoring.MonitorActivity" />
         <activity android:name=".publishedtask.PublishedTaskActivity" />
         <activity android:name=".dispatch.DispatchTaskActivity" />
         <activity android:name=".settings.SettingsActivity" />
