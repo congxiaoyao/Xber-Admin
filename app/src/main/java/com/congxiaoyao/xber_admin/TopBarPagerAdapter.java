@@ -1,4 +1,4 @@
-package com.congxiaoyao;
+package com.congxiaoyao.xber_admin;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -90,6 +90,15 @@ public class TopBarPagerAdapter extends PagerAdapter {
 
     public SearchAddrBar getSearchAddrBar() {
         return searchAddrBar;
+    }
+
+    public void setEnabled(boolean enabled) {
+        if (searchAddrBar != null) {
+            searchAddrBar.setEnabled(enabled);
+        }
+        if (searchCarBar != null) {
+            searchCarBar.setEnabled(enabled);
+        }
     }
 
     public class PageScrollHelper extends ViewPager.SimpleOnPageChangeListener {

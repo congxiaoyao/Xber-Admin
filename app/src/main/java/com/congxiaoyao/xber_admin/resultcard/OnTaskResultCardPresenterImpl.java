@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -23,7 +24,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResultCardContract.View>
-        implements OnTaskResultCardContract.Presenter{
+        implements OnTaskResultCardContract.Presenter, Action1<List<CarDetail>> {
 
     private Spot start;
     private Spot end;
@@ -63,21 +64,7 @@ public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResul
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<CarDetail>>() {
-                    @Override
-                    public void call(final List<CarDetail> carDetails) {
-                        Runnable runnable = null;
-                        if (callback != null) {
-                            runnable= new Runnable() {
-                                @Override
-                                public void run() {
-                                    callback.call(carDetails);
-                                }
-                            };
-                        }
-                        view.hideMySelf(runnable);
-                    }
-                }, new Action1<Throwable>() {
+                .subscribe(this, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         exceptionDispatcher.dispatchException(throwable);
@@ -90,5 +77,34 @@ public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResul
     public void destroy(Runnable callback) {
         unSubscribe();
         view.hideMySelf(callback);
+    }
+
+    @Override
+    public void call(final List<CarDetail> carDetails) {
+        final Runnable runnable = callback == null ? null : new Runnable() {
+            @Override
+            public void run() {
+                callback.call(carDetails);
+            }
+        };
+        Observable.just(1).observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer integer) {
+                        view.hideLoading();
+                        view.showSuccess();
+                    }
+                }).observeOn(Schedulers.io()).delay(600, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer integer) {
+                view.hideMySelf(runnable);
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                exceptionDispatcher.dispatchException(throwable);
+            }
+        });
     }
 }

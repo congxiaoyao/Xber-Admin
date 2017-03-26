@@ -92,7 +92,7 @@ public class NavigationHelper {
         navigationView.getChildAt(0).setVerticalScrollBarEnabled(false);
         //设置背景色
         navigationView.getChildAt(0).setBackgroundColor(ContextCompat
-                .getColor(context, R.color.colorWhite));
+                .getColor(context, R.color.colorCardBg));
         //去掉padding让显示效果看起来正常一些
         try {
             Field field = navigationView.getClass().getDeclaredField("mPresenter");
@@ -151,7 +151,7 @@ public class NavigationHelper {
         mainView = LayoutInflater.from(context).inflate(mainResId, null);
         recyclerView = (RecyclerView) mainView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorWhite));
+        recyclerView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorCardBg));
 
         //加载header
         headerView = LayoutInflater.from(context).inflate(headerResId, recyclerView, false);

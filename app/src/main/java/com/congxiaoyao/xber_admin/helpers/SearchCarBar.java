@@ -60,6 +60,7 @@ public class SearchCarBar extends TopSearchBar {
 
     @Override
     protected void onSearchClick() {
+        if (!enabled) return;
         animationLayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -205,8 +206,6 @@ public class SearchCarBar extends TopSearchBar {
             @Override
             public void onAnimationEnd(Animator animation) {
                 animationLayer.setVisibility(View.GONE);
-                Context context = binding.getRoot().getContext();
-                hideSoftInput(context);
                 presenter = null;
                 if (fragment != null) {
                     FragmentManager manager = ((AppCompatActivity) binding.getRoot().getContext())
@@ -224,6 +223,7 @@ public class SearchCarBar extends TopSearchBar {
     public void runCarBarOutAnimation() {
         isAnimating = true;
         Button btnSearch = itemSearchCarBinding.btnSearch;
+        hideSoftInput(itemSearchCarBinding.getRoot().getContext());
         int translationY = btnSearch.getHeight() / 2;
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(ObjectAnimator.ofFloat(btnSearch,

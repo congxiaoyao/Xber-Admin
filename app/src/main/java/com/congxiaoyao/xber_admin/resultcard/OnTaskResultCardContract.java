@@ -18,6 +18,8 @@ public class OnTaskResultCardContract {
     interface View extends LoadableView<Presenter> {
 
         void hideMySelf(Runnable runnable);
+
+        void showSuccess();
     }
 
     interface Presenter extends BasePresenter {

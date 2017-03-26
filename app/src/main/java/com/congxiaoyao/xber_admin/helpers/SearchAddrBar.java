@@ -69,6 +69,7 @@ public class SearchAddrBar extends TopSearchBar {
 
     @Override
     protected void onSearchClick() {
+        if (!enabled) return;
         animationLayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

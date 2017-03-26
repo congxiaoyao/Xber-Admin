@@ -4,40 +4,46 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.mapapi.map.BaiduMap;
 import com.congxiaoyao.Admin;
+import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
-
-import android.databinding.ViewDataBinding;
 import com.congxiaoyao.xber_admin.dispatch.DispatchTaskActivity;
 import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
+import com.congxiaoyao.xber_admin.service.SyncOrderedList;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
-import com.congxiaoyao.xber_admin.utils.Token;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.VersionUtils;
+import com.congxiaoyao.xber_admin.widget.LoadingLayout;
+
+import java.util.Collections;
+import java.util.List;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends StompBaseActivity {
 
     private NavigationHelper helper;
     private ActivityMainBinding binding;
+    private TopBarPagerAdapter pagerAdapter;
+    private BaiduMap baiduMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        baiduMap = binding.mapView.getMap();
         helper = new NavigationHelper(binding.navView,
                 R.menu.navigation, R.layout.nav_main, R.layout.nav_header);
         helper.onItemSelected(new Action1<Integer>() {
@@ -60,47 +66,95 @@ public class MainActivity extends AppCompatActivity {
             layoutParams.height = DisplayUtils.getStatusBarHeight(this);
             statusBar.requestLayout();
         }
-        String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        Log.d(TAG.ME, "onCreate: " + android_id);
+
+        pagerAdapter = new TopBarPagerAdapter(binding.animationLayer,
+                binding.topBarPager);
+        binding.topBarPager.setAdapter(pagerAdapter);
+        binding.topBarPager.addOnPageChangeListener(pagerAdapter.
+                new PageScrollHelper(binding.topBarPager));
+
+        pagerAdapter.getSearchCarBar().setupWithDrawerLayout(binding.drawerLayout);
+        pagerAdapter.getSearchAddrBar().setupWithDrawerLayout(binding.drawerLayout);
+        pagerAdapter.setOnTraceCarListener(new TopBarPagerAdapter.OnTraceCarListener() {
+            @Override
+            public void onTraceCar(List<Long> carIds) {
+                if (carIds == null) {
+                    onTraceAllCar();
+                } else {
+                    onTraceSpecifiedCar(carIds);
+                }
+            }
+        });
+        binding.loadingLayout.below(R.id.top_bar_pager, 16);
+    }
+
+    @Override
+    protected void onStompPrepared() {
+        pagerAdapter.setEnabled(true);
+    }
+
+    @Override
+    public void onCarAdd(long carId, SyncOrderedList<GpsSampleRspOuterClass.GpsSampleRsp> trace) {
+    }
+
+    @Override
+    public void onCarRemove(long carId) {
+    }
+
+    public void onTraceAllCar() {
+
+    }
+
+    public void onTraceSpecifiedCar(List<Long> carIds) {
+
     }
 
     @Override
     protected void onResume() {
+        binding.mapView.onResume();
         super.onResume();
-        Observable.just(1).map(new Func1<Integer, Admin>() {
-            @Override
-            public Admin call(Integer integer) {
-                Admin admin = Admin.fromSharedPreference(MainActivity.this);
-                return admin;
-            }
-        }).subscribeOn(Schedulers.io()).filter(new Func1<Admin, Boolean>() {
-            @Override
-            public Boolean call(Admin admin) {
-                return admin != null;
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Admin>() {
-            @Override
-            public void call(Admin admin) {
-                Token.value = admin.getToken();
-                Log.d(TAG.ME, "call: "+Token.value);
-                ((TextView) helper.getHeaderView().findViewById(R.id.tv_user_name))
-                        .setText(admin.getNickName());
-                tokenSafeOnResume();
-            }
-        });
     }
 
-    private void tokenSafeOnResume() {
+    @Override
+    protected void tokenSafeOnResume(Admin admin) {
+        super.tokenSafeOnResume(admin);
+        ((TextView) helper.getHeaderView().findViewById(R.id.tv_user_name))
+                .setText(admin.getNickName());
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        binding.mapView.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding.mapView.onDestroy();
+    }
+
+    @Override
+    protected LoadingLayout getLoadingLayout() {
+        return binding.loadingLayout;
     }
 
     public void onItemSelected(int menuId) {
         if (menuId == R.id.menu_car_monitor) {
             binding.drawerLayout.closeDrawers();
-        } else if (menuId == R.id.menu_drivers) {
-            startActivity(new Intent(this, WheelTestActivity.class));
         } else if (menuId == R.id.menu_task_send) {
             startActivity(new Intent(this, DispatchTaskActivity.class));
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (pagerAdapter == null) {
+            super.onBackPressed();
+            return;
+        }
+        if (!pagerAdapter.onBackPressed()) {
+            super.onBackPressed();
         }
     }
 }

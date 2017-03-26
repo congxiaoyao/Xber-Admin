@@ -66,4 +66,16 @@ implements OnTaskResultCardContract.View{
         });
         animatorSet.start();
     }
+
+    @Override
+    public void showSuccess() {
+        binding.tvSuccess.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoading() {
+        if (progressBar != null) {
+            progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
 }

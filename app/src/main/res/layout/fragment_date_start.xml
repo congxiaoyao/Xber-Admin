@@ -16,10 +16,6 @@
             <Button
                 android:id="@+id/btn_choose_time_next"
                 android:theme="@style/MyButton"
-                android:layout_marginLeft="11dp"
-                android:layout_marginRight="11dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
                 android:text="下一步"
                 android:layout_alignParentBottom="true"
                 android:layout_height="wrap_content"

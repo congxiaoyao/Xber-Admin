@@ -2,10 +2,12 @@ package com.congxiaoyao.xber_admin.dispatch;
 
 import com.congxiaoyao.httplib.request.CarRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
+import com.congxiaoyao.httplib.response.Car;
 import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.httplib.response.Page;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenterImpl;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
 
 import java.util.ArrayList;
@@ -32,8 +34,9 @@ public class DispatchPresenterImpl extends ListLoadablePresenterImpl<DispatchCon
     @Override
     public Observable<? extends List> pullListData() {
         Observable<List<CarDetail>> observable = XberRetrofit.create(CarRequest.class)
-                .getFreeCars(System.currentTimeMillis(),
-                        System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000), Token.value)
+                .getFreeCars(view.getParent().getData().getStartTime(),
+                        view.getParent().getData().getEndTime(), Token.value)
+                .compose(RxUtils.<List<CarDetail>>delayWhenTimeEnough(300))
                 .doOnNext(new Action1<List<CarDetail>>() {
                     @Override
                     public void call(List<CarDetail> carDetails) {

@@ -203,7 +203,6 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
     @Override
     public void showNothing() {
         boolean changed = false;
-        Log.d(TAG.ME, "showNothing: ListLoadableViewImpl");
         if (data.size() != 0) {
             data.clear();
             changed = true;

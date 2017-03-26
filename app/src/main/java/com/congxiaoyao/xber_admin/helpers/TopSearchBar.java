@@ -43,6 +43,7 @@ public class TopSearchBar {
     protected TimeInterpolator defaultInterpolator = new DecelerateInterpolator();
 
     private int iconState = ICON_STATE_SEARCH;
+    protected boolean enabled;
 
     public TopSearchBar(ItemSearchBarBinding binding, final LinearLayout animationLayer) {
         this.binding = binding;
@@ -167,6 +168,14 @@ public class TopSearchBar {
         int b = (int) MathUtils.map(minValue, maxValue, Color.blue(gray), Color.blue(red), value);
         int result = Color.rgb(r, g, b);
         binding.imgRightIcon.getDrawable().setTint(result);
+    }
+
+    public ItemSearchBarBinding getBinding() {
+        return binding;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**

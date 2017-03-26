@@ -1,6 +1,5 @@
 package com.congxiaoyao.xber_admin.dispatch;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -8,9 +7,7 @@ import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -26,8 +23,6 @@ import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableViewImpl;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
-import java.util.List;
-
 /**
  * Created by guo on 2017/3/16.
  */
@@ -37,7 +32,7 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
     protected RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private int checkedIndex = -1;
-    private int lastCheckedInedx = -2;
+    private int lastCheckedIndex = -2;
 
     @Nullable
     @Override
@@ -67,12 +62,12 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
                 ((DispatchTaskActivity) getContext()).notifyToolBar(DispatchFragment.this);
             }
         });
-        progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_loading_progress);
+        progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_progress_bar);
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration
                 .Builder(getContext())
                 .size(1)
-                .margin(DisplayUtils.dp2px(getContext(),16),0)
-                .colorResId(R.color.colorDarkGray)
+                .margin(DisplayUtils.dp2px(getContext(), 16))
+                .colorResId(R.color.colorLightGray)
                 .build());
         super.onCreateView(inflater, container, savedInstanceState);
         recyclerView.setAdapter(getAdapter());
@@ -82,21 +77,20 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
                 checkedIndex = position;
-                if (checkedIndex == lastCheckedInedx) {
-                    checkedIndex = -1;
-                }
-                if (checkedIndex != -1) {
-                    adapter.notifyItemChanged(checkedIndex);
-                }
-                if (lastCheckedInedx != -1) {
-                    adapter.notifyItemChanged(lastCheckedInedx);
-                }
-                lastCheckedInedx = checkedIndex;
+                //重复选择认为没做操作
+                if (checkedIndex == lastCheckedIndex) return;
+                //改变选择的情况
+                adapter.notifyItemChanged(checkedIndex);
+                if (lastCheckedIndex != -1) adapter.notifyItemChanged(lastCheckedIndex);
+
+                lastCheckedIndex = checkedIndex;
             }
         });
         if (presenter != null) {
             presenter.subscribe();
         }
+
+
         return view;
     }
 
@@ -117,6 +111,8 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
         }else {
             viewHolder.setChecked(R.id.checkbox, false);
         }
+
+
     }
 
     @Override
@@ -136,10 +132,22 @@ public class DispatchFragment extends ListLoadableViewImpl<DispatchContract.Pres
     @Override
     public void clear() {
         checkedIndex = -1;
-        lastCheckedInedx = -1;
+        lastCheckedIndex = -1;
+        recyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                getAdapter().notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public DispatchTaskActivity getParent() {
+        return (DispatchTaskActivity) getContext();
     }
 
     @Override
     public void scrollToTop() {
+        recyclerView.scrollToPosition(0);
     }
 }
