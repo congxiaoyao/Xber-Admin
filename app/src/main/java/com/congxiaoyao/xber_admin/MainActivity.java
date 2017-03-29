@@ -4,33 +4,33 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.MapPoi;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.Marker;
+import com.baidu.mapapi.map.UiSettings;
+import com.baidu.mapapi.model.LatLng;
 import com.congxiaoyao.Admin;
 import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
 import com.congxiaoyao.xber_admin.dispatch.DispatchTaskActivity;
 import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
+import com.congxiaoyao.xber_admin.monitoring.XberMonitor;
+import com.congxiaoyao.xber_admin.service.StompService;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
-import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.VersionUtils;
+import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 import com.congxiaoyao.xber_admin.widget.LoadingLayout;
 
-import java.util.Collections;
 import java.util.List;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends StompBaseActivity {
 
@@ -38,6 +38,8 @@ public class MainActivity extends StompBaseActivity {
     private ActivityMainBinding binding;
     private TopBarPagerAdapter pagerAdapter;
     private BaiduMap baiduMap;
+
+    private XberMonitor monitor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,27 +88,83 @@ public class MainActivity extends StompBaseActivity {
             }
         });
         binding.loadingLayout.below(R.id.top_bar_pager, 16);
+
+        monitor = new XberMonitor(binding.mapView, baiduMap, new StompServiceProvider() {
+            @Override
+            public StompService getService() {
+                return stompService;
+            }
+        });
+        configBaiduMap();
+    }
+
+    private void configBaiduMap() {
+        UiSettings uiSettings = baiduMap.getUiSettings();
+        uiSettings.setRotateGesturesEnabled(false);
+        baiduMap.showMapIndoorPoi(false);
+        baiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus) {
+
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus mapStatus) {
+
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus mapStatus) {
+                monitor.onMapStatusChangeFinish(mapStatus);
+            }
+        });
+
+        baiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                return monitor.onMarkerClick(marker);
+            }
+        });
+
+        baiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                monitor.onMapClick(latLng);
+            }
+
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+                return false;
+            }
+        });
+
+        BaiduMapUtils.moveToLatLng(baiduMap, 39.066252, 117.147011);
     }
 
     @Override
     protected void onStompPrepared() {
         pagerAdapter.setEnabled(true);
+        LatLng latLng = BaiduMapUtils.getScreenCenterLatLng(this, baiduMap);
+        double radius = BaiduMapUtils.getScreenRadius(this, baiduMap);
+        stompService.nearestNTrace(latLng.latitude, latLng.longitude, radius, 100);
     }
 
     @Override
     public void onCarAdd(long carId, SyncOrderedList<GpsSampleRspOuterClass.GpsSampleRsp> trace) {
+        monitor.onCarAdd(carId, trace);
     }
 
     @Override
     public void onCarRemove(long carId) {
+        monitor.onCarRemove(carId);
     }
 
     public void onTraceAllCar() {
-
+        monitor.onTraceAllCar();
     }
 
     public void onTraceSpecifiedCar(List<Long> carIds) {
-
+        monitor.onTraceSpecifiedCar(carIds);
     }
 
     @Override

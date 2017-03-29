@@ -29,7 +29,7 @@ public class RxUtils {
         Observable.Transformer<T, T> transformer = new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> tObservable) {
-                return tObservable.observeOn(AndroidSchedulers.mainThread());
+                return tObservable.<T>observeOn(AndroidSchedulers.mainThread());
             }
         };
         return transformer;

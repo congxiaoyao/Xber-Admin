@@ -223,6 +223,7 @@ public class SearchCarBar extends TopSearchBar {
     public void runCarBarOutAnimation() {
         isAnimating = true;
         Button btnSearch = itemSearchCarBinding.btnSearch;
+        itemSearchCarBinding.editText.setEnabled(false);
         hideSoftInput(itemSearchCarBinding.getRoot().getContext());
         int translationY = btnSearch.getHeight() / 2;
         AnimatorSet animatorSet = new AnimatorSet();
@@ -267,6 +268,7 @@ public class SearchCarBar extends TopSearchBar {
 
     public void runCarBarInAnimation(final ItemSearchCarBarBinding binding) {
         itemSearchCarBinding = binding;
+        binding.editText.setEnabled(true);
         binding.btnSearch.setVisibility(View.VISIBLE);
         binding.viewDivider.setVisibility(View.VISIBLE);
         AnimatorSet animatorSet = new AnimatorSet();

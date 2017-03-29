@@ -111,7 +111,9 @@ public class CarResultCardViewImpl extends ListLoadableViewImpl<CarResultCardCon
         int recHeight = dataSize * itemHeight;
         final ViewGroup.LayoutParams layoutParams = binding.recyclerView.getLayoutParams();
         int orgHeight = layoutParams.height;
-        if (orgHeight <= 0) orgHeight = 0;
+        if (orgHeight <= 0) {
+            orgHeight = progressBar.getHeight();
+        }
         //动画过渡
         ValueAnimator animator = ValueAnimator.ofInt(orgHeight, recHeight);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

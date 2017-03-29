@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -96,7 +97,9 @@ public class AddrResultCardViewImpl extends ListLoadableViewImpl<AddrResultCardC
         int recHeight = dataSize * itemHeight;
         final ViewGroup.LayoutParams layoutParams = binding.recyclerView.getLayoutParams();
         int orgHeight = layoutParams.height;
-        if (orgHeight <= 0) orgHeight = 0;
+        if (orgHeight <= 0) {
+            orgHeight = progressBar.getHeight();
+        }
         //动画过渡
         ValueAnimator animator = ValueAnimator.ofInt(orgHeight, recHeight);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -107,7 +110,7 @@ public class AddrResultCardViewImpl extends ListLoadableViewImpl<AddrResultCardC
                 binding.recyclerView.requestLayout();
             }
         });
-        animator.setInterpolator(new DecelerateInterpolator());
+        animator.setInterpolator(new AccelerateInterpolator());
         animator.setDuration(200);
         animator.start();
     }
