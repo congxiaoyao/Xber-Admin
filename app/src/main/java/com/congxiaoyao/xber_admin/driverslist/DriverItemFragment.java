@@ -110,6 +110,7 @@ public class DriverItemFragment extends PagedListLoadableViewImpl<DriverItemCont
         ((TextView) view.findViewById(R.id.tv_start_time)).setText(format.format(taskRsp.getStartTime()));
         ((TextView) view.findViewById(R.id.tv_end_time)).setText(format.format(taskRsp.getEndTime()));
         TextView state = (TextView) view.findViewById(R.id.tv_state);
+        //我还不信交不上去了？？
         state.setText("运送中");
         state.setTextColor(ContextCompat.getColor(getContext(),R.color.colorPrimary));
         return view;
