@@ -18,11 +18,13 @@ import com.congxiaoyao.Admin;
 import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
 import com.congxiaoyao.xber_admin.dispatch.DispatchTaskActivity;
+import com.congxiaoyao.xber_admin.driverslist.DriverListActivity;
 import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
 import com.congxiaoyao.xber_admin.monitoring.XberMonitor;
 import com.congxiaoyao.xber_admin.service.StompService;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
+import com.congxiaoyao.xber_admin.spotmanage.SpotManageActivity;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.congxiaoyao.xber_admin.utils.VersionUtils;
 import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
@@ -202,6 +204,10 @@ public class MainActivity extends StompBaseActivity {
             binding.drawerLayout.closeDrawers();
         } else if (menuId == R.id.menu_task_send) {
             startActivity(new Intent(this, DispatchTaskActivity.class));
+        } else if (menuId == R.id.menu_drivers) {
+            startActivity(new Intent(this, DriverListActivity.class));
+        } else if (menuId == R.id.menu_spot) {
+            startActivity(new Intent(this, SpotManageActivity.class));
         }
     }
 

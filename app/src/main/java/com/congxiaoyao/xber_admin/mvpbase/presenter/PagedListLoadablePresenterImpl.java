@@ -87,7 +87,7 @@ public abstract class PagedListLoadablePresenterImpl<T extends ListLoadableView>
         page = null;
 
         //先试探下子类有没有返回可用的observable 如果返回null可以当做出现了异常的一个信号
-        Observable<Pageable<Object>> observable = pullPagedListData(1);
+        Observable<Pageable<Object>> observable = pullPagedListData(0);
         //如果子类觉得当前无法请求比如参数错误 或没有token等 可以返回null然后这里就直接return
         if (observable == null) return;
 
@@ -130,7 +130,7 @@ public abstract class PagedListLoadablePresenterImpl<T extends ListLoadableView>
         }
 
         //先试探下子类有没有返回可用的observable 如果返回null可以当做出现了异常的一个信号
-        Observable<Pageable<Object>> observable = pullPagedListData(1);
+        Observable<Pageable<Object>> observable = pullPagedListData(0);
         //如果子类觉得当前无法请求比如参数错误 或没有token等 可以返回null然后这里就直接return
         if (observable == null) return;
 

@@ -43,6 +43,7 @@
         <activity android:name=".dispatch.DispatchTaskActivity" />
         <activity android:name=".settings.SettingsActivity" />
         <activity android:name=".spotmanage.SpotManageActivity" />
+        <activity android:name=".driverslist.DriverItemActivity" />
     </application>
 
 </manifest>

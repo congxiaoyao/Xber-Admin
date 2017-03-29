@@ -70,4 +70,8 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
+    <style name="myActionButton" parent="Base.Widget.AppCompat.ActionButton">
+        <item name="android:colorAccent">@color/colorPrimary</item>
+    </style>
+
 </resources>
