@@ -12,4 +12,5 @@
     <color name="colorTrans">#00000000</color>
     <color name="colorDarkRed">#bf3728</color>
     <color name="colorCardBg">#f7f7f7</color>
+    <color name="colorGreen">#07d015</color>
 </resources>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/carList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <com.bigkoo.quicksidebar.QuickSideBarView
+        android:layout_alignParentTop="true"
+        android:id="@+id/quickSideBarView"
+        android:layout_width="@dimen/height_quicksidebaritem"
+        android:layout_alignParentRight="true"
+        android:layout_height="match_parent"
+        app:sidebarItemHeight="19.2dp"
+        app:sidebarTextColor="@android:color/black"
+        app:sidebarTextColorChoose="@color/colorPrimary"
+        app:sidebarTextSize="@dimen/textSize_quicksidebar"
+        app:sidebarTextSizeChoose="@dimen/textSize_quicksidebar_choose" />
+
+    <com.bigkoo.quicksidebar.QuickSideBarTipsView
+        android:id="@+id/quickSideBarTips"
+        app:sidebarBackgroundColor="@color/colorPrimary"
+        app:sidebarTextColor="@android:color/white"
+        app:sidebarTextSize="@dimen/textSize_quicksidebartips"
+        android:layout_toLeftOf="@id/quickSideBarView"
+        android:layout_width="@dimen/height_quicksidebartips"
+        android:layout_height="match_parent">
+    </com.bigkoo.quicksidebar.QuickSideBarTipsView>
+
+    <include layout="@layout/view_progress_bar"></include>
+
+</RelativeLayout>
+
