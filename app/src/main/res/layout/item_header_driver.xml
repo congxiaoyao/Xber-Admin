@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="#fafafa"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="18dp">
 
     <RelativeLayout
         android:id="@+id/driver_container"
-        android:background="@color/colorWhite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -30,7 +31,7 @@
                 android:id="@+id/tv_driver_name"
                 android:text="张大光"
                 android:textColor="@color/colorBlack"
-                android:textSize="17sp"
+                android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -38,7 +39,7 @@
                 android:id="@+id/tv_car_plate"
                 android:layout_marginTop="10dp"
                 android:text="津A 000000"
-                android:textSize="17sp"
+                android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -46,7 +47,7 @@
                 android:id="@+id/tv_car_type"
                 android:layout_marginTop="10dp"
                 android:text="夏利"
-                android:textSize="17sp"
+                android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

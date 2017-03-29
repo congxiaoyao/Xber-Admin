@@ -3,6 +3,8 @@ package com.congxiaoyao.xber_admin.driverslist;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,21 +31,22 @@ public class DriverItemFragment extends PagedListLoadableViewImpl<DriverItemCont
 
     private RecyclerView recyclerView;
     private SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_drivcer_item, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_progress_bar);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         super.onCreateView(inflater, container, savedInstanceState);
         CarDetailParcel parcel = ((DriverItemActivity) getContext()).getParcel();
         getAdapter().addHeaderView(getDriverHeader(parcel),0);
         getAdapter().addHeaderView(getHistoryHeader(),1);
         recyclerView.setAdapter(getAdapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        if (presenter != null) {
-            presenter.subscribe();
-        }
+        if (presenter != null) presenter.subscribe();
         return view;
     }
 
@@ -60,19 +63,37 @@ public class DriverItemFragment extends PagedListLoadableViewImpl<DriverItemCont
     }
 
     @Override
+    public void showDataEmpty() {
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.view_load_more, null);
+        view.findViewById(R.id.tv_load_end).setVisibility(View.VISIBLE);
+        getAdapter().addFooterView(view);
+    }
+
+    @Override
     public boolean isSupportLoadMore() {
         return true;
     }
 
     @Override
     public boolean isSupportSwipeRefresh() {
-        return false;
+        return true;
+    }
+
+    @Override
+    protected SwipeRefreshLayout getSwipeRefreshLayout() {
+        return swipeRefreshLayout;
+    }
+
+    @Override
+    protected boolean isSupportToolbarDoubleClick() {
+        return true;
     }
 
     @Override
     public void scrollToTop() {
-
+        recyclerView.smoothScrollToPosition(0);
     }
+
     @Override
     protected int getPageSize() {
         return DriverItemPresenterImpl.PAGE_SIZE;
@@ -88,6 +109,10 @@ public class DriverItemFragment extends PagedListLoadableViewImpl<DriverItemCont
         });
     }
 
+    @Override
+    public Long getDriverId() {
+        return ((DriverItemActivity) getContext()).getParcel().getUserInfo().getUserId();
+    }
 
     @Override
     protected int getItemLayoutResId() {
@@ -110,7 +135,6 @@ public class DriverItemFragment extends PagedListLoadableViewImpl<DriverItemCont
         ((TextView) view.findViewById(R.id.tv_start_time)).setText(format.format(taskRsp.getStartTime()));
         ((TextView) view.findViewById(R.id.tv_end_time)).setText(format.format(taskRsp.getEndTime()));
         TextView state = (TextView) view.findViewById(R.id.tv_state);
-        //我还不信交不上去了？？
         state.setText("运送中");
         state.setTextColor(ContextCompat.getColor(getContext(),R.color.colorPrimary));
         return view;

@@ -21,11 +21,6 @@ public interface ListLoadableView<T extends BasePresenter, D> extends LoadableVi
     void showNetworkError();
 
     /**
-     * 当到达列表末尾显示的内容
-     */
-    void showEOF();
-
-    /**
      * 添加数据并显示
      * @param data
      */

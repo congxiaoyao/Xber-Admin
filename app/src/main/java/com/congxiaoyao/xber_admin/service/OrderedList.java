@@ -1,6 +1,8 @@
 package com.congxiaoyao.xber_admin.service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.SortedSet;
 
 /**
  * 保持元素有序的List 元素的顺序由构造函数的Comparator参数决定
@@ -150,8 +152,7 @@ public class OrderedList<T> implements IOrderedList<T>, Iterable<T> {
                 return node;
             }
         }
-        linkBehind(node, header);
-        return node;
+        return header.next;
     }
 
     private void remove(Node<T> node) {

@@ -22,7 +22,6 @@ public class DriverSectionAdapter extends BaseSectionQuickAdapter<DriverSection,
     @Override
     protected void convertHead(BaseViewHolder helper, DriverSection item) {
         helper.setText(R.id.tv_header, item.header);
-
     }
 
     @Override

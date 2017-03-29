@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <include layout="@layout/view_progress_bar" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_gravity="center"
+        android:textSize="14sp"
+        android:id="@+id/tv_load_failed"
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="加载失败"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_gravity="center"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:id="@+id/tv_load_end"
+        android:gravity="center"
+        android:text="# 没有更多数据 #"/>
+
+
+</FrameLayout>

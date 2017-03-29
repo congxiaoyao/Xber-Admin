@@ -1,15 +1,19 @@
 package com.congxiaoyao.xber_admin.dispatch;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -17,17 +21,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codbking.calendar.CaledarAdapter;
 import com.codbking.calendar.CalendarBean;
 import com.codbking.calendar.CalendarDateView;
+import com.codbking.calendar.CalendarLayout;
 import com.codbking.calendar.CalendarView;
 import com.congxiaoyao.location.utils.RoundList;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.TAG;
+import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,13 +50,14 @@ public class ChooseTimeFragment extends Fragment {
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     private int todayPage;
+    private LayerDrawable todayDrawable;
 
     private TextView tvStartTime;
     private TextView tvEndTime;
     private TextView[] textViews;
 
-    private BottomSheetBehavior<NestedScrollView> behavior;
-    private NestedScrollView scrollView;
+    private BottomSheetBehavior<LinearLayout> behavior;
+    private LinearLayout container;
     private WheelView wheelHour;
     private WheelView wheelMinute;
     private TextView title;
@@ -65,21 +72,13 @@ public class ChooseTimeFragment extends Fragment {
     private int thisDay;
     private String dateTitle;
 
-    @Nullable
-    public View onCreateView1(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FrameLayout frameLayout = new FrameLayout(container.getContext());
-        frameLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        View loadingBar = inflater.inflate(R.layout.view_progress_bar, frameLayout, false);
-        loadingBar.setVisibility(View.VISIBLE);
-        frameLayout.addView(loadingBar);
-        return frameLayout;
-    }
-
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         final CoordinatorLayout view = (CoordinatorLayout) inflater.inflate(R.layout.fragment_date_start,
                 container, false);
+        todayDrawable = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.item_today_xiaomi);
+        todayDrawable.addLayer(new TextDrawable());
+
         getDispatchTaskActivity().showWeekLine();
         getDispatchTaskActivity().showToolbarButton().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,17 +86,23 @@ public class ChooseTimeFragment extends Fragment {
                 jumpToToday();
             }
         });
-        scrollView = (NestedScrollView) view.findViewById(R.id.scrollView);
-        scrollView.setTag(null);
-        behavior = BottomSheetBehavior.from(scrollView);
+        this.container = (LinearLayout) view.findViewById(R.id.ll_container);
+        this.container.setTag(null);
+        behavior = BottomSheetBehavior.from(this.container);
         behavior.setBottomSheetCallback(new MyBottomSheetCallback());
         Button chooseTimeButton = (Button) view.findViewById(R.id.btn_choose_time);
         title = (TextView) view.findViewById(R.id.tv_title);
+        title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
         chooseTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onTimeSelected(wheelHour.getCurrentItem() + 1, wheelMinute.getCurrentItem());
-                scrollView.setTag(true);
+                ChooseTimeFragment.this.container.setTag(true);
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
@@ -126,6 +131,18 @@ public class ChooseTimeFragment extends Fragment {
             dateTitle = thisYear + "年" + thisMonth + "月";
         }
         ((DispatchTaskActivity) getContext()).setToolBarTitle(dateTitle);
+
+
+        final CalendarLayout calendarLayout = (CalendarLayout) view.findViewById(R.id.calendar_layout);
+        View.OnClickListener openCalendarListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendarLayout.open();
+            }
+        };
+        view.findViewById(R.id.rl_item_time_start).setOnClickListener(openCalendarListener);
+        view.findViewById(R.id.rl_item_time_end).setOnClickListener(openCalendarListener);
+
         wheelHour = (WheelView) view.findViewById(R.id.wheel_hour);
         wheelMinute = (WheelView) view.findViewById(R.id.wheel_minute);
 
@@ -145,14 +162,6 @@ public class ChooseTimeFragment extends Fragment {
         wheelHour.setHintSizePx((int) spToPx(12));
         wheelHour.setHintPaddingPx((int) dpToPx(10));
         wheelHour.setWheelForeground(R.drawable.wheel_val_gray);
-        View.OnTouchListener touchListener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                scrollView.stopNestedScroll();
-                return false;
-            }
-        };
-        wheelHour.setOnTouchListener(touchListener);
 
         viewAdapter = new ArrayWheelAdapter<>(getContext(), getMinuteArray());
         viewAdapter.setTextColor(ContextCompat.getColor(getContext(), R.color.colorDarkGray));
@@ -169,7 +178,6 @@ public class ChooseTimeFragment extends Fragment {
         wheelMinute.setHintSizePx((int) spToPx(12));
         wheelMinute.setHintPaddingPx((int) dpToPx(10));
         wheelMinute.setWheelForeground(R.drawable.wheel_val_gray);
-        wheelMinute.setOnTouchListener(touchListener);
 
         wheelMinute.post(new Runnable() {
             @Override
@@ -182,7 +190,7 @@ public class ChooseTimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (views.size() != 2) {
-                    Toast.makeText(getContext(), "请继续你的表演", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "请先完成时间选择", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 long start = dateTimes.getFirst().toTime();
@@ -291,12 +299,11 @@ public class ChooseTimeFragment extends Fragment {
             if (shouldSelect) {
                 view.setBackgroundResource(R.drawable.item_select_xiaomi);
             } else if (isToday(calendarBean)) {
-                view.setBackgroundResource(R.drawable.item_today_xiaomi);
+                view.setBackground(todayDrawable);
             } else {
                 view.setBackgroundColor(Color.TRANSPARENT);
             }
         }
-
     }
 
     private boolean isToday(CalendarBean bean) {
@@ -337,7 +344,7 @@ public class ChooseTimeFragment extends Fragment {
     private void onTimeCancel() {
         if (views.size() == 0) return;
         if (isToday(tempDateTime.bean)) {
-            views.getLast().setBackgroundResource(R.drawable.item_today_xiaomi);
+            views.getLast().setBackground(todayDrawable);
         }else {
             views.getLast().setBackgroundColor(Color.TRANSPARENT);
         }
@@ -351,6 +358,7 @@ public class ChooseTimeFragment extends Fragment {
             dateTimes.removeAll();
             views.add(first);
             dateTimes.add(dt);
+            views.get(0).setBackgroundResource(R.drawable.item_select_xiaomi);
         }
     }
 
@@ -452,4 +460,40 @@ public class ChooseTimeFragment extends Fragment {
             }
         }
     }
+
+    class TextDrawable extends Drawable {
+
+        Paint paint;
+        float x, y;
+
+        TextDrawable() {
+            paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setTextSize(spToPx(10));
+            paint.setColor(ContextCompat.getColor(getContext(),R.color.colorPrimaryDark));
+            y = x = dpToPx(10);
+        }
+
+        @Override
+        public void draw(Canvas canvas) {
+            canvas.drawText("今", canvas.getWidth() - x, y, paint);
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            paint.setAlpha(alpha);
+            invalidateSelf();
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter colorFilter) {
+            paint.setColorFilter(colorFilter);
+            invalidateSelf();
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+    }
+
 }

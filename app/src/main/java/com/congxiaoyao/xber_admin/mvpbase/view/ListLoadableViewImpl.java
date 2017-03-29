@@ -37,7 +37,6 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
 
     private View emptyView;
     private View networkErrorView;
-    private View eofView;
 
     @Nullable
     @Override
@@ -59,6 +58,10 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
                     presenter.refreshData();
                 }
             });
+        }
+
+        if (isSupportToolbarDoubleClick()) {
+            listenToolbarDoubleClick();
         }
         return null;
     }
@@ -163,17 +166,6 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
     }
 
     @Override
-    public void showEOF() {
-        if (eofView != null) return;
-        container.post(new Runnable() {
-            @Override
-            public void run() {
-                adapter.addFooterView(eofView = createEofView());
-            }
-        });
-    }
-
-    @Override
     public void addData(List<D> data) {
         //如果参数为null 相当于拿这个方法当刷新用
         if (data == null || data.size() == 0) {
@@ -194,10 +186,6 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
                 }
             });
         }
-//        //如果没有更多数据了 就设置下footer
-//        if (!presenter.hasMoreData()) {
-//            showEOF();
-//        }
     }
 
     @Override
@@ -213,7 +201,6 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
             changed = true;
         }
 
-        eofView = null;
         if (adapter.getEmptyView() != null) {
             Log.d(TAG.ME, "showNothing: ListLoadableViewImpl empty view not null");
             ((ViewGroup) adapter.getEmptyView()).removeAllViews();
@@ -223,6 +210,14 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
         if (changed) adapter.notifyDataSetChanged();
     }
 
+    @Override
+    protected void onToolbarDoubleClick() {
+        scrollToTop();
+    }
+
+    protected boolean isSupportToolbarDoubleClick() {
+        return false;
+    }
 
     /**
      * 如果使用默认adapter 请覆写此方法绑定数据

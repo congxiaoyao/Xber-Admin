@@ -764,6 +764,11 @@ public class WheelView extends View {
 		}
 
 		switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				if (getParent() != null) {
+					getParent().requestDisallowInterceptTouchEvent(true);
+				}
+				break;
 			case MotionEvent.ACTION_MOVE:
 				if (getParent() != null) {
 					getParent().requestDisallowInterceptTouchEvent(true);

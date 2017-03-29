@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.congxiaoyao.Admin;
 import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
@@ -96,6 +97,12 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
         @Override
         public void onSpecifiedCarsPrepared() {
             onNearestNPrepared();
+        }
+
+        @Override
+        public void onInnerError(Throwable throwable) {
+            getLoadingLayout().hideLoading();
+            Toast.makeText(StompBaseActivity.this, "内部错误", Toast.LENGTH_SHORT).show();
         }
     };
 

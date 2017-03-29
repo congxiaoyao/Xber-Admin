@@ -1,9 +1,8 @@
 package com.congxiaoyao.xber_admin.monitoring;
 
+import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
+import android.util.Log;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -14,10 +13,18 @@ import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.StompBaseActivity.StompServiceProvider;
+import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.monitoring.model.TraceCtrlFactory;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.GpsSampleRsp;
@@ -32,6 +39,8 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
     private BaiduMap baiduMap;
     private StompServiceProvider serviceProvider;
     private TraceCtrlFactory factory;
+
+    private Map<Long, RunningCar> runningCars = new HashMap<>();
 
     public XberMonitor(TextureMapView mapView, BaiduMap baiduMap,
                        StompServiceProvider serviceProvider) {
@@ -56,12 +65,37 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 
     @Override
     public void onCarAdd(long carId, SyncOrderedList<GpsSampleRsp> trace) {
-
+        RunningCar runningCar = runningCars.get(carId);
+        if (runningCar != null) {
+            Log.e(TAG.ME, "onCarAdd: 按说这里不应该查到东西的！！");
+            runningCar.destroy();
+        }
+        runningCar = new RunningCar(factory,baiduMap,trace){
+//            @Override
+//            protected void requestInf(double lat, double lng) {
+//                MarkerOptions markerOptions = new MarkerOptions();
+//                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_location_goal));
+//                markerOptions.position(new LatLng(lat, lng));
+//                baiduMap.addOverlay(markerOptions);
+//            }
+//
+//            @Override
+//            protected void requestNormal(double lat, double lng) {
+//                MarkerOptions markerOptions = new MarkerOptions();
+//                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_location_start));
+//                markerOptions.position(new LatLng(lat, lng));
+//                baiduMap.addOverlay(markerOptions);
+//            }
+        };
+        runningCars.put(carId, runningCar);
     }
 
     @Override
     public void onCarRemove(long carId) {
-
+        RunningCar removed = runningCars.remove(carId);
+        if (removed != null) {
+            removed.destroy();
+        }
     }
 
     @Override
@@ -74,38 +108,66 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
         return true;
     }
 
+    private SyncOrderedList<GpsSampleRsp> testData;
+    private GpsSampleRsp lastData;
+
     @Override
     public void onMapClick(final LatLng latLng) {
-        final MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.xber_red_car));
-        markerOptions.position(latLng).anchor(0.5f, 0.5f);
-//        BaiduMapUtils.moveToLatLng(baiduMap, latLng.latitude, latLng.longitude, 13);
-        final Marker car = (Marker) baiduMap.addOverlay(markerOptions);
-        new HandlerThread("abc"){
-            @Override
-            protected void onLooperPrepared() {
-                Handler handler = new Handler(getLooper()) {
+
+        if (testData == null) {
+            testData = getTestData();
+            lastData = testData.getLast();
+            onCarAdd(testData.getFirst().getCarId(), testData);
+        }else {
+            lastData = GpsSampleRsp.newBuilder().setLat(latLng.latitude)
+                    .setLng(latLng.longitude)
+                    .setTime(System.currentTimeMillis())
+                    .setVlat(lastData.getVlat())
+                    .setVlng(lastData.getVlng())
+                    .setCarId(lastData.getCarId()).build();
+            testData.insert(lastData);
+        }
+    }
+
+    public SyncOrderedList<GpsSampleRsp> getTestData() {
+        SyncOrderedList<GpsSampleRsp> syncOrderedList =
+                new SyncOrderedList<>(new Comparator<GpsSampleRsp>() {
                     @Override
-                    public void handleMessage(Message msg) {
-                        if (msg.what == 1000) return;
-                        LatLng data = (LatLng) msg.obj;
-                        car.setPosition(data);
-                        double lng = data.longitude + 0.00002;
-                        data = new LatLng(data.latitude, lng);
-                        msg.what++;
-                        msg.obj = data;
-                        Message obtain = Message.obtain();
-                        obtain.what = msg.what;
-                        obtain.obj = msg.obj;
-                        sendMessageDelayed(obtain, 16);
+                    public int compare(GpsSampleRsp o1, GpsSampleRsp o2) {
+                        return Long.compare(o1.getTime(), o2.getTime());
                     }
-                };
-                Message message = Message.obtain();
-                message.what = 0;
-                message.obj = latLng;
-                handler.sendMessage(message);
+                });
+        AssetManager assets = mapView.getContext().getAssets();
+        try {
+            InputStream open = assets.open("animation_row_data.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(open));
+            String line = null;
+            GpsSampleRsp.Builder builder = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("lng")) {
+                    builder = GpsSampleRsp.newBuilder();
+                    builder.setLng(Double.parseDouble(line.substring(line.indexOf(":") + 1)));
+                } else if (line.startsWith("lat")) {
+                    builder.setLat(Double.parseDouble(line.substring(line.indexOf(":") + 1)));
+                } else if (line.startsWith("vlng")) {
+                    builder.setVlng(Double.parseDouble(line.substring(line.indexOf(":") + 1)));
+                } else if (line.startsWith("vlat")) {
+                    builder.setVlat(Double.parseDouble(line.substring(line.indexOf(":") + 1)));
+                } else if (line.startsWith("carId")) {
+                    builder.setCarId(Integer.parseInt(line.substring(line.indexOf(":") + 2)));
+                } else if (line.startsWith("time")) {
+                    builder.setTime(Long.parseLong(line.substring(line.indexOf(":") + 2)));
+                } else if (line.startsWith("taskId")) {
+                    GpsSampleRsp build = builder.build();
+                    syncOrderedList.insert(build);
+                }
             }
-        }.start();
+            open.close();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return syncOrderedList;
     }
 
     public void close() {

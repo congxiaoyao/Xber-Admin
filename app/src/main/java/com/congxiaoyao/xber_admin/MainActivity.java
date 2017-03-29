@@ -24,10 +24,10 @@ import com.congxiaoyao.xber_admin.login.LoginActivity;
 import com.congxiaoyao.xber_admin.monitoring.XberMonitor;
 import com.congxiaoyao.xber_admin.service.StompService;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
+import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 import com.congxiaoyao.xber_admin.spotmanage.SpotManageActivity;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.congxiaoyao.xber_admin.utils.VersionUtils;
-import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 import com.congxiaoyao.xber_admin.widget.LoadingLayout;
 
 import java.util.List;
@@ -98,6 +98,14 @@ public class MainActivity extends StompBaseActivity {
             }
         });
         configBaiduMap();
+
+//        binding.topBarPager.setCurrentItem(1, false);
+//        binding.topBarPager.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                binding.topBarPager.setCurrentItem(0, true);
+//            }
+//        }, 200);
     }
 
     private void configBaiduMap() {
@@ -143,12 +151,15 @@ public class MainActivity extends StompBaseActivity {
         BaiduMapUtils.moveToLatLng(baiduMap, 39.066252, 117.147011);
     }
 
+    /**
+     * 两个topic都准备好了 可以开始请求数据了
+     */
     @Override
     protected void onStompPrepared() {
         pagerAdapter.setEnabled(true);
         LatLng latLng = BaiduMapUtils.getScreenCenterLatLng(this, baiduMap);
         double radius = BaiduMapUtils.getScreenRadius(this, baiduMap);
-        stompService.nearestNTrace(latLng.latitude, latLng.longitude, radius, 100);
+//        stompService.nearestNTrace(latLng.latitude, latLng.longitude, radius, 100);
     }
 
     @Override
@@ -192,6 +203,7 @@ public class MainActivity extends StompBaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         binding.mapView.onDestroy();
+        monitor.close();
     }
 
     @Override

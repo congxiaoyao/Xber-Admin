@@ -51,6 +51,7 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration
                 .Builder(getContext())
                 .size(1)
+                .margin(DisplayUtils.dp2px(getContext(), 16))
                 .colorResId(R.color.colorLightGray)
                 .build());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

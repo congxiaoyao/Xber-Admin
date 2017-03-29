@@ -1,12 +1,11 @@
 package com.congxiaoyao.xber_admin.driverslist;
 
-import android.util.Log;
-
 import com.congxiaoyao.httplib.request.TaskRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.Task;
 import com.congxiaoyao.httplib.response.TaskListRsp;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenterImpl;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
 
 import rx.Observable;
@@ -26,39 +25,27 @@ public class DriverItemPresenterImpl  extends PagedListLoadablePresenterImpl<Dri
     }
 
     @Override
-    public  Observable pullPagedListData(final int page) {
+    public  Observable<TaskListRsp> pullPagedListData(final int page) {
         final TaskRequest taskRequest = XberRetrofit.create(TaskRequest.class);
-        if (page!=0) {
-            return taskRequest
-                    .getTask(((DriverItemActivity) view.getContext()).getParcel().getUserInfo().getUserId()
-                            , page
-                            , PAGE_SIZE
-                            , Task.STATUS_COMPLETED
-                            , timeStamp.getTime(), null, Token.value);
-        }
-        Observable observable = taskRequest
-                .getTask(((DriverItemActivity) view.getContext()).getParcel().getUserInfo().getUserId()
-                        , page
-                        , PAGE_SIZE
-                        , Task.STATUS_EXECUTING
-                        , System.currentTimeMillis()
-                        , null
-                        , Token.value).flatMap(new Func1<TaskListRsp, Observable<?>>() {
+        if (page > 0)
+        return taskRequest.getTask(view.getDriverId(), page, PAGE_SIZE,
+                Task.STATUS_COMPLETED, timeStamp == null ?
+                        System.currentTimeMillis() : timeStamp.getTime(), null, Token.value)
+                .compose(RxUtils.<TaskListRsp>delayWhenTimeEnough(1000));
+
+        return taskRequest.getTask(view.getDriverId(),
+                0, PAGE_SIZE, Task.STATUS_EXECUTING,
+                System.currentTimeMillis(), null, Token.value)
+                .flatMap(new Func1<TaskListRsp, Observable<TaskListRsp>>() {
                     @Override
-                    public Observable<?> call(TaskListRsp taskListRsp) {
-                        Log.d("gdy", "call: "+taskListRsp.getTaskList());
-                        if (taskListRsp.getTaskList().size()>0){
+                    public Observable<TaskListRsp> call(TaskListRsp taskListRsp) {
+                        if (taskListRsp.getTaskList().size() > 0)
                             view.addExecutingTask(taskListRsp.getTaskList().get(0));
-                        }
-                        return taskRequest.getTask(((DriverItemActivity) view.getContext()).getParcel().getUserInfo().getUserId()
-                                ,page
-                                ,PAGE_SIZE
-                                ,Task.STATUS_COMPLETED
-                                ,System.currentTimeMillis()
-                                ,null
-                                ,Token.value);
+                        return taskRequest.getTask(view.getDriverId(),
+                                0, PAGE_SIZE,
+                                Task.STATUS_COMPLETED,
+                                System.currentTimeMillis(), null, Token.value);
                     }
                 });
-        return observable;
     }
 }

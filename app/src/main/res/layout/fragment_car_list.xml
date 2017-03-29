@@ -39,6 +39,7 @@
         app:sidebarTextSize="@dimen/textSize_quicksidebartips"
         android:layout_toLeftOf="@id/quickSideBarView"
         android:layout_width="@dimen/height_quicksidebartips"
+        android:layout_marginRight="4dp"
         android:layout_height="match_parent">
     </com.bigkoo.quicksidebar.QuickSideBarTipsView>
 

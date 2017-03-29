@@ -2,9 +2,7 @@ package com.congxiaoyao.xber_admin.mvpbase.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +12,7 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.congxiaoyao.xber_admin.R;
-import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenter;
-import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +71,6 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
 
     private View emptyView;
     private View networkErrorView;
-    private View eofView;
 
     @Nullable
     @Override
@@ -99,6 +94,10 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
                 }
             });
         }
+
+        if (isSupportToolbarDoubleClick()) {
+            listenToolbarDoubleClick();
+        }
         return null;
     }
 
@@ -113,26 +112,21 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
         if (adapter == null || data == null) return;
         this.data = data;
         this.adapter = adapter;
+        if (!isSupportLoadMore()) return;
         //滑到底部加载更多
         adapter.setLoadMoreView(new MyLoadMoreView());
-        if (isSupportLoadMore()) {
-            adapter.setAutoLoadMoreSize(getPageSize());
-            adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
-                @Override
-                public void onLoadMoreRequested() {
+        adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+            @Override
+            public void onLoadMoreRequested() {
+                container.post(new Runnable() {@Override public void run() {
                     if (!presenter.hasMoreData()) {
-                        container.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.loadMoreComplete();
-                            }
-                        });
-                    } else {
+                        adapter.loadMoreEnd();
+                    }else {
                         presenter.loadMoreData();
                     }
-                }
-            });
-        }
+                }});
+            }
+        });
     }
 
     protected BaseQuickAdapter<D,BaseViewHolder> getAdapter() {
@@ -174,23 +168,6 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
         return view;
     }
 
-    /**
-     * @return 创建一个当拉取完所有数据的时候显示的内容
-     */
-    protected View createEofView() {
-        TextView textView = new TextView(getContext());
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams
-                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        textView.setLayoutParams(layoutParams);
-        textView.setGravity(Gravity.CENTER_HORIZONTAL);
-        textView.setText("# EOF #");
-        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorLightGray));
-        textView.setTextSize(15);
-        textView.setPadding(0, DisplayUtils.dp2px(getContext(), 10),
-                0, DisplayUtils.dp2px(getContext(), 10));
-        return textView;
-    }
-
     @Override
     public void showDataEmpty() {
         if (emptyView == null) emptyView = createEmptyView();
@@ -210,47 +187,50 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
     }
 
     @Override
-    public void showEOF() {
-        if (eofView != null) return;
-        container.post(new Runnable() {
-            @Override
-            public void run() {
-                adapter.addFooterView(eofView = createEofView());
-            }
-        });
-    }
-
-    @Override
-    public void addData(List<D> data) {
+    public void addData(final List<D> data) {
         //如果参数为null 相当于拿这个方法当刷新用
-        if (data == null || data.size() == 0) {
+        if (data == null) {
             adapter.notifyDataSetChanged();
             return;
         }
-        this.data.addAll(data);
+        if (data.size() == 0) {
+            container.post(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.loadMoreEnd();
+                }
+            });
+            return;
+        }
         //第一次加载数据
-        if (this.data.size() == data.size()) {
-            adapter.notifyDataSetChanged();
+        if (adapter.getData().size() == 0) {
+            adapter.addData(data);
         }
         //加载更多数据
         else {
             container.post(new Runnable() {
                 @Override
                 public void run() {
+                    adapter.addData(data);
                     adapter.loadMoreComplete();
                 }
             });
         }
         //如果没有更多数据了 就设置下footer
         if (!presenter.hasMoreData()) {
-            showEOF();
+            container.post(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.loadMoreEnd();
+                }
+            });
+
         }
     }
 
     @Override
     public void showNothing() {
         boolean changed = false;
-        Log.d(TAG.ME, "showNothing: PagedListLoadableViewImpl");
         if (data.size() != 0) {
             data.clear();
             changed = true;
@@ -261,9 +241,7 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
             changed = true;
         }
 
-        eofView = null;
         if (adapter.getEmptyView() != null) {
-            Log.d(TAG.ME, "showNothing: PagedListLoadableViewImpl empty view not null");
             adapter.setEmptyView(null);
             changed = true;
         }
@@ -271,6 +249,14 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
         if (changed) adapter.notifyDataSetChanged();
     }
 
+    @Override
+    protected void onToolbarDoubleClick() {
+        scrollToTop();
+    }
+
+    protected boolean isSupportToolbarDoubleClick() {
+        return false;
+    }
 
     /**
      * 如果使用默认adapter 请覆写此方法绑定数据

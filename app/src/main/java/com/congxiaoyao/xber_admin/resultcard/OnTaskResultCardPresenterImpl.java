@@ -1,15 +1,14 @@
 package com.congxiaoyao.xber_admin.resultcard;
 
-import com.congxiaoyao.httplib.NetWorkConfig;
 import com.congxiaoyao.httplib.request.CarRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.httplib.response.Spot;
+import com.congxiaoyao.httplib.response.exception.EmptyDataException;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -46,22 +45,9 @@ public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResul
     public void subscribe() {
         Long startId = start == null ? null : start.getSpotId();
         Long endId = end == null ? null : end.getSpotId();
-        final long pre = System.currentTimeMillis();
         Subscription subscribe = XberRetrofit.create(CarRequest.class)
                 .getCarsOnTask(startId, endId, Token.value)
-                .doOnNext(new Action1<List<CarDetail>>() {
-                    @Override
-                    public void call(List<CarDetail> carDetails) {
-                        int minTime = 400;
-                        if (System.currentTimeMillis() - pre < minTime) {
-                            try {
-                                Thread.sleep(minTime - System.currentTimeMillis() + pre);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                })
+                .compose(RxUtils.<List<CarDetail>>delayWhenTimeEnough(400))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this, new Action1<Throwable>() {
@@ -92,7 +78,11 @@ public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResul
                     @Override
                     public void call(Integer integer) {
                         view.hideLoading();
-                        view.showSuccess();
+                        if (carDetails.size() == 0) {
+                            view.showEmpty();
+                        } else {
+                            view.showSuccess();
+                        }
                     }
                 }).observeOn(Schedulers.io()).delay(600, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Integer>() {
@@ -106,5 +96,10 @@ public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResul
                 exceptionDispatcher.dispatchException(throwable);
             }
         });
+    }
+
+    @Override
+    public void onEmptyDataError(EmptyDataException exception) {
+
     }
 }

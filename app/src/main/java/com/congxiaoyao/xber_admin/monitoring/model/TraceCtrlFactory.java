@@ -1,5 +1,9 @@
 package com.congxiaoyao.xber_admin.monitoring.model;
 
+import android.util.Log;
+
+import com.congxiaoyao.xber_admin.TAG;
+
 import java.util.LinkedList;
 
 /**
@@ -75,11 +79,13 @@ public class TraceCtrlFactory {
             if (linkedList.isEmpty()) {
                 return createTraceCtrl();
             }
-            return linkedList.getLast();
+            Log.d(TAG.ME, "obtain: from recycle bin");
+            return linkedList.pollFirst();
         }
 
         public void recycle(T t) {
             if (linkedList.size() < maxSize) {
+                t.isUsing = false;
                 linkedList.addLast(t);
             }
         }

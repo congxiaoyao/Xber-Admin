@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,8 +48,10 @@ public class DriverListFragment extends ListLoadableViewImpl<DriverListContract.
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(),
                 R.color.colorPrimary));
+        progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_progress_bar);
         super.onCreateView(inflater, container, savedInstanceState);
-        DriverSectionAdapter adapter = new DriverSectionAdapter(R.layout.item_car, R.layout.item_header_car, getData());
+        DriverSectionAdapter adapter = new DriverSectionAdapter(R.layout.item_car_driver_list,
+                R.layout.item_header_car, getData());
         bindAdapterAndDataSet(adapter, getData());
         recyclerView.setAdapter(getAdapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -120,7 +123,6 @@ public class DriverListFragment extends ListLoadableViewImpl<DriverListContract.
 
     @Override
     public void onLetterTouching(boolean touching) {
-        Log.d("gdy", "onLetterTouching: ");
         quickSideBarTipsView.setVisibility(touching ? View.VISIBLE : View.INVISIBLE);
     }
 }

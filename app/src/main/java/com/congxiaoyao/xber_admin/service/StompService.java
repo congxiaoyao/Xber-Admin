@@ -25,6 +25,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.java_websocket.WebSocket;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -74,6 +75,7 @@ public class StompService extends Service implements Action1<Throwable> {
     private Scheduler stompScheduler = Schedulers.from(Executors.newSingleThreadExecutor());
 
     private BehaviorSubject<Integer> serviceDestroy = BehaviorSubject.create();
+    private StompLifeCycle lifeCycle;
 
     @Override
     public void onCreate() {
@@ -103,6 +105,8 @@ public class StompService extends Service implements Action1<Throwable> {
         if (lifeCycle == null) {
             throw new NullPointerException("lifeCycle can't be null");
         }
+        this.lifeCycle = lifeCycle;
+
         if (token == null || "".equals(token)) {
             lifeCycle.onStompError();
             return;
@@ -315,6 +319,7 @@ public class StompService extends Service implements Action1<Throwable> {
     @Override
     public void call(Throwable throwable) {
         Log.e(TAG.ME, "handle exception：", throwable);
+        lifeCycle.onInnerError(throwable);
     }
 
     @Override
@@ -435,7 +440,10 @@ public class StompService extends Service implements Action1<Throwable> {
             byte[] payload = message.getBytePayload();
             GpsSampleRsp lastData = decodeAndBufferTrace(payload);
             //分析最后一个点 有必要的话加快查询速度(可能在过弯)
-            if (lastData == null) loopTask.setDelay(QueryConfig.QUERY_DELAY_NORMAL);
+            if (lastData == null) {
+                loopTask.setDelay(QueryConfig.QUERY_DELAY_NORMAL);
+                return;
+            }
             double angle = GpsUtils.getSpeedAngle(lastData.getLng(), lastData.getLat());
             angle = Math.abs(angle);
             if (angle > QueryConfig.TURNING_ANGLE && isVarFreq) {
@@ -476,8 +484,21 @@ public class StompService extends Service implements Action1<Throwable> {
             GpsSampleRsp latest = gpsSamples[gpsSamples.length - 1];
             final long carId = latest.getCarId();
 
-            //如果最新的数据都是已经存储的老数据 则不存储
-            if (Long.valueOf(latest.getTime()).equals(latestTime.get(carId))) return null;
+            int startIndex = 0;
+            Long refTime = latestTime.get(carId);
+            if (refTime != null) {
+                int length = gpsSamples.length;
+                while (startIndex < length &&
+                        gpsSamples[startIndex].getTime() <= refTime) {
+                    startIndex++;
+                }
+                //没能存储任何数据 这些数据全都请求过了
+                if (startIndex == gpsSamples.length) {
+                    return null;
+                }
+                //保留最新的数据
+                gpsSamples = Arrays.copyOfRange(gpsSamples, startIndex, gpsSamples.length);
+            }
 
             SyncOrderedList<GpsSampleRsp> trace = buffer.get(carId);
             final boolean newCar = (trace == null);
@@ -574,6 +595,8 @@ public class StompService extends Service implements Action1<Throwable> {
         void onNearestNPrepared();
 
         void onSpecifiedCarsPrepared();
+
+        void onInnerError(Throwable throwable);
     }
 
     /**

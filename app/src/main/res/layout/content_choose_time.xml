@@ -8,27 +8,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:text="@string/please_select_start_time"
-        android:padding="12dp"
-        android:textColor="@color/colorBlack"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:background="?android:attr/selectableItemBackground"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="#ededed"
+        android:id="@+id/fl_container">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:text="@string/please_select_start_time"
+            android:padding="12dp"
+            android:textColor="@color/colorBlack"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:backgroundTint="@color/colorLightGray"
+            android:background="@drawable/abc_ic_clear_mtrl_alpha"
+            android:layout_gravity="center_vertical|right"
+            android:layout_marginRight="16dp"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:layout_below="@id/tv_title"
-        android:background="@color/colorLightGray"/>
+        android:layout_below="@id/fl_container"
+        android:background="@color/colorLightGray" />
 
     <LinearLayout
-        android:layout_below="@id/tv_title"
+        android:layout_below="@id/fl_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"
@@ -70,5 +85,5 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:layout_above="@id/btn_choose_time"
-        android:background="@color/colorLightGray"/>
+        android:background="@color/colorLightGray" />
 </RelativeLayout>

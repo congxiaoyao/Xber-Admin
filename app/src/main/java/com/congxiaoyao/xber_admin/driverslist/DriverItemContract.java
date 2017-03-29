@@ -13,7 +13,10 @@ import com.congxiaoyao.xber_admin.mvpbase.view.PagedListLoadableViewImpl;
 public interface DriverItemContract {
 
     interface View extends ListLoadableView<Presenter,TaskRsp>{
+
         void addExecutingTask(final TaskRsp taskRsp);
+
+        Long getDriverId();
     }
 
     interface Presenter extends PagedListLoadablePresenter{

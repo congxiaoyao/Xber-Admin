@@ -32,13 +32,13 @@ public class BaiduMapUtils {
             ((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenCenter);
             screenCenter.x = screenCenter.x / 2;
             screenCenter.y = screenCenter.y / 2;
-            Log.d(TAG.ME, "screenCenter: " + screenCenter);
         }
         return baiduMap.getProjection().fromScreenLocation(screenCenter);
     }
 
     public static double getScreenRadius(Context context, BaiduMap baiduMap) {
         if (screenSize == null) {
+            screenSize = new Point();
             ((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenSize);
         }
         Projection projection = baiduMap.getProjection();

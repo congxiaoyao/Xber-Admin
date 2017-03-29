@@ -69,13 +69,13 @@ implements OnTaskResultCardContract.View{
 
     @Override
     public void showSuccess() {
+        binding.tvSuccess.setText(R.string.query_success);
         binding.tvSuccess.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void hideLoading() {
-        if (progressBar != null) {
-            progressBar.setVisibility(View.INVISIBLE);
-        }
+    public void showEmpty() {
+        binding.tvSuccess.setText(R.string.empty_data);
+        binding.tvSuccess.setVisibility(View.VISIBLE);
     }
 }

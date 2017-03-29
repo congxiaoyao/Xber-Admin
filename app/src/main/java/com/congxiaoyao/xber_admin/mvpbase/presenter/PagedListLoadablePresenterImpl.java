@@ -9,6 +9,8 @@ import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
 import com.congxiaoyao.xber_admin.mvpbase.view.PagedListLoadableViewImpl;
 import com.congxiaoyao.xber_admin.mvpbase.view.SimplePagedListLoadableView;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -62,7 +64,7 @@ public abstract class PagedListLoadablePresenterImpl<T extends ListLoadableView>
     @Override
     public boolean hasMoreData() {
         if (page == null) return false;
-        return page.getNext() != 0;
+        return page.getNext() > 0;
     }
 
     /**
@@ -73,7 +75,7 @@ public abstract class PagedListLoadablePresenterImpl<T extends ListLoadableView>
      * @param <D>
      * @return
      */
-    public abstract <D> Observable<D> pullPagedListData(int page);
+    public abstract <D extends Pageable> Observable<D> pullPagedListData(int page);
 
     /**
      * 适用于初始状态下加载数据 如果不是什么都没有的状态 我这里也会清除为什么都没有的状态
@@ -164,7 +166,10 @@ public abstract class PagedListLoadablePresenterImpl<T extends ListLoadableView>
     public void loadMoreData() {
         //惯例判断正在加载和是否能继续加载
         if (isLoading) return;
-        if (!hasMoreData()) return;
+        if (!hasMoreData()) {
+            view.addData(Collections.EMPTY_LIST);
+            return;
+        }
 
         //先试探下子类有没有返回可用的observable 如果返回null可以当做出现了异常的一个信号
         Observable<Pageable<Object>> observable = pullPagedListData

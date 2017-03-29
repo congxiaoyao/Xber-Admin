@@ -20,6 +20,8 @@ public class OnTaskResultCardContract {
         void hideMySelf(Runnable runnable);
 
         void showSuccess();
+
+        void showEmpty();
     }
 
     interface Presenter extends BasePresenter {

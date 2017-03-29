@@ -8,23 +8,24 @@ import com.congxiaoyao.xber_admin.R;
  */
 
 public class MyLoadMoreView extends LoadMoreView {
+
     @Override
     public int getLayoutId() {
-        return R.layout.item_load_more;
+        return R.layout.view_load_more;
     }
 
     @Override
     protected int getLoadingViewId() {
-        return R.id.item_loading_more;
+        return R.id.content_progress_bar;
     }
 
     @Override
     protected int getLoadFailViewId() {
-        return R.id.load_more_load_fail_view;
+        return R.id.tv_load_failed;
     }
 
     @Override
     protected int getLoadEndViewId() {
-        return 0;
+        return R.id.tv_load_end;
     }
 }
