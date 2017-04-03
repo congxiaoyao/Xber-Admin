@@ -13,9 +13,11 @@ import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.httplib.response.Spot;
 import com.congxiaoyao.xber_admin.R;
 
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
+
 import static android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
 
-public class DispatchTaskActivity extends AppCompatActivity {
+public class DispatchTaskActivity extends SwipeBackActivity {
 
     private LinearLayout linearLayout;
     private String today;
@@ -56,7 +58,8 @@ public class DispatchTaskActivity extends AppCompatActivity {
                 ChooseStartLocationFragment endLocationFragment = new ChooseStartLocationFragment();
                 StratLocationContract.Presenter presenter = new StartLocationPresenterImpl(endLocationFragment, 1);
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.add(R.id.fragment_content, endLocationFragment).addToBackStack(null);;
+                transaction.add(R.id.fragment_content, endLocationFragment).addToBackStack(null);
+                ;
                 transaction.setTransition(TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
             } else if (((ChooseStartLocationFragment) fragment).getPresenter().getType() == 1) {
@@ -64,7 +67,8 @@ public class DispatchTaskActivity extends AppCompatActivity {
                 DispatchFragment dispatchFragment = new DispatchFragment();
                 DispatchPresenterImpl dispatchPresenter = new DispatchPresenterImpl(dispatchFragment);
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.add(R.id.fragment_content, dispatchFragment).addToBackStack(null);;
+                transaction.add(R.id.fragment_content, dispatchFragment).addToBackStack(null);
+                ;
                 transaction.setTransition(TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
             }
@@ -72,7 +76,8 @@ public class DispatchTaskActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("运输内容");
             TransportFragment transportFragment = new TransportFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.fragment_content, transportFragment).addToBackStack(null);;
+            transaction.add(R.id.fragment_content, transportFragment).addToBackStack(null);
+            ;
             transaction.setTransition(TRANSIT_FRAGMENT_OPEN);
             transaction.commit();
         } else if (fragment.getClass().equals(TransportFragment.class)) {
@@ -80,7 +85,8 @@ public class DispatchTaskActivity extends AppCompatActivity {
             DistributeFragment distributeFragment = new DistributeFragment();
             DistributePresenterImpl presenter = new DistributePresenterImpl(distributeFragment);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.fragment_content, distributeFragment).addToBackStack(null);;
+            transaction.add(R.id.fragment_content, distributeFragment).addToBackStack(null);
+            ;
             transaction.setTransition(TRANSIT_FRAGMENT_OPEN);
             transaction.commit();
         }
@@ -98,7 +104,7 @@ public class DispatchTaskActivity extends AppCompatActivity {
             } else {
                 setToolBarTitle("请选择起始地点");
             }
-        }else if (fragment.getClass().equals(DispatchFragment.class)) {
+        } else if (fragment.getClass().equals(DispatchFragment.class)) {
             setToolBarTitle("请选择目的地点");
         } else if (fragment.getClass().equals(TransportFragment.class)) {
             setToolBarTitle("请选择司机");

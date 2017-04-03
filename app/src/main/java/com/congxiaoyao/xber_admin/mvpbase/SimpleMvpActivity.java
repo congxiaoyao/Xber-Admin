@@ -11,6 +11,8 @@ import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.view.BaseView;
 
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
+
 /**
  * 一个简单的只带一个toolbar的Activity 里面的内容由Fragment展示
  * 此Activity的实现遵循Mvp设计模式 将view的内容全部交由Fragment来处理
@@ -18,7 +20,7 @@ import com.congxiaoyao.xber_admin.mvpbase.view.BaseView;
  *
  * Created by congxiaoyao on 2016/8/25.
  */
-public abstract class SimpleMvpActivity extends AppCompatActivity {
+public abstract class SimpleMvpActivity extends SwipeBackActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

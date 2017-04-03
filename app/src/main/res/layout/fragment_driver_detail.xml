@@ -1,0 +1,182 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.congxiaoyao.xber_admin.driverslist.driverdetail.DriverDetailFragment">
+
+    <data>
+        <variable
+            name="data"
+            type="com.congxiaoyao.xber_admin.driverslist.module.CarDetailParcel" />
+    </data>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.congxiaoyao.xber_admin.widget.XberDividerLayout
+            android:layout_marginTop="8dp"
+            android:background="#ffffff"
+            app:divider_size="2px"
+            app:divider_color="#e6e6e6"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:layout_height="56dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:tint="#b9b9b9"
+                    android:src="@drawable/ic_driver"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:textColor="#666666"
+                    android:text="用户名"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:paddingRight="16dp"
+                    android:textSize="15sp"
+                    tools:text="丛圣杰"
+                    android:text="@{data.userInfo.name}" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#e6e6e6"
+                android:layout_marginLeft="56dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingLeft="16dp"
+                android:layout_height="56dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:tint="#b9b9b9"
+                    android:src="@drawable/ic_gender"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:textColor="#666666"
+                    android:text="性别"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:paddingRight="16dp"
+                    android:textSize="15sp"
+                    android:text="@{data.userInfo.gender == 1 ? `男`:`女`}"
+                    tools:text="男" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#e6e6e6"
+                android:layout_marginLeft="56dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:layout_height="56dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:tint="#b9b9b9"
+                    android:src="@drawable/ic_time"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:textColor="#666666"
+                    android:text="年龄"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:paddingRight="16dp"
+                    android:textSize="15sp"
+                    tools:text="18"
+                    android:text="@{data.userInfo.age+``}" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#e6e6e6"
+                android:layout_marginLeft="56dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingLeft="16dp"
+                android:layout_height="56dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:tint="#b9b9b9"
+                    android:src="@drawable/ic_car_type"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textSize="16sp"
+                    android:textColor="#666666"
+                    android:text="车型"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:paddingRight="16dp"
+                    android:textSize="15sp"
+                    tools:text="玛莎拉蒂"
+                    android:text="@{data.spec}" />
+
+            </LinearLayout>
+
+        </com.congxiaoyao.xber_admin.widget.XberDividerLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+</layout>

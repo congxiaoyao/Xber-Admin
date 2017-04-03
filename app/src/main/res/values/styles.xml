@@ -7,11 +7,16 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlHighlight">@color/colorPrimary</item>
+        <item name="android:windowIsTranslucent" >true</item>
+        <item name="android:windowContentTransitions" >true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="AppTheme.TranslucentStatus" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -20,6 +25,10 @@
         <!--<item name="actionModeBackground">@color/colorLightGreen</item>-->
         <item name="toolbarNavigationButtonStyle">@style/MyNavigationButtonStyle</item>
         <item name="actionModeCloseButtonStyle">@style/myActionModeCloseButtonStyle</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay.Search" parent="AppTheme.AppBarOverlay">
+        <item name="colorAccent" >#ffffff</item>
     </style>
 
     <style name="myActionModeCloseButtonStyle" parent="@style/Widget.AppCompat.ActionButton.CloseMode">
@@ -73,5 +82,14 @@
     <style name="myActionButton" parent="Base.Widget.AppCompat.ActionButton">
         <item name="android:colorAccent">@color/colorPrimary</item>
     </style>
+
+    <style name="SwipeBackLayout">
+        <item name="edge_size">50dip</item>
+        <item name="shadow_left">@drawable/shadow_left</item>
+        <item name="shadow_right">@drawable/shadow_right</item>
+        <item name="shadow_bottom">@drawable/shadow_bottom</item>
+    </style>
+
+    <attr name="SwipeBackLayoutStyle" format="reference"/>
 
 </resources>

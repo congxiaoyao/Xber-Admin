@@ -1,6 +1,6 @@
 package com.congxiaoyao.xber_admin.login;
 
-import com.congxiaoyao.Admin;
+import com.congxiaoyao.xber_admin.Admin;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
 

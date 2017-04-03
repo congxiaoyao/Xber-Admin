@@ -1,11 +1,9 @@
 package com.congxiaoyao.xber_admin.driverslist;
 
-import android.support.v7.widget.RecyclerView;
-
 import com.chad.library.adapter.base.BaseSectionQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.chad.library.adapter.base.entity.SectionEntity;
 import com.congxiaoyao.xber_admin.R;
+import com.congxiaoyao.xber_admin.driverslist.module.DriverSection;
 
 import java.util.List;
 

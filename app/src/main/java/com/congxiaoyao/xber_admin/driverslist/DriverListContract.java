@@ -1,6 +1,6 @@
 package com.congxiaoyao.xber_admin.driverslist;
 
-import com.congxiaoyao.httplib.response.CarDetail;
+import com.congxiaoyao.xber_admin.driverslist.module.DriverSection;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
 

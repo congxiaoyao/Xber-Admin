@@ -1,22 +1,15 @@
 package com.congxiaoyao.xber_admin.driverslist;
 
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.widget.Button;
-
 import com.congxiaoyao.httplib.request.CarRequest;
-import com.congxiaoyao.httplib.request.TaskRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.CarDetail;
-import com.congxiaoyao.httplib.response.TaskListRsp;
+import com.congxiaoyao.xber_admin.driverslist.module.DriverSection;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenterImpl;
-import com.congxiaoyao.xber_admin.service.SyncOrderedList;
 import com.congxiaoyao.xber_admin.utils.Token;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
-import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 import java.util.ArrayList;
@@ -25,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
-import rx.functions.Action1;
 import rx.functions.Func1;
 
 /**

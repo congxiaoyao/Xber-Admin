@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapPoi;
@@ -14,20 +18,24 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
-import com.congxiaoyao.Admin;
 import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
 import com.congxiaoyao.xber_admin.dispatch.DispatchTaskActivity;
 import com.congxiaoyao.xber_admin.driverslist.DriverListActivity;
+import com.congxiaoyao.xber_admin.driverslist.taskdetail.TaskDetailActivity;
+import com.congxiaoyao.xber_admin.helpers.MapActivityHelper;
 import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
 import com.congxiaoyao.xber_admin.monitoring.XberMonitor;
+import com.congxiaoyao.xber_admin.publishedtask.PublishedTaskActivity;
 import com.congxiaoyao.xber_admin.service.StompService;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
 import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 import com.congxiaoyao.xber_admin.spotmanage.SpotManageActivity;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.congxiaoyao.xber_admin.utils.VersionUtils;
+import com.congxiaoyao.xber_admin.utils.ViewPoster;
+import com.congxiaoyao.xber_admin.widget.CustomViewPager;
 import com.congxiaoyao.xber_admin.widget.LoadingLayout;
 
 import java.util.List;
@@ -62,14 +70,7 @@ public class MainActivity extends StompBaseActivity {
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
         });
-        if (VersionUtils.LOLLIPOP_MR1AndPlus) {
-            View statusBar = binding.statusBar;
-            statusBar.setVisibility(View.VISIBLE);
-            statusBar.setBackgroundColor(Color.parseColor("#55000000"));
-            ViewGroup.LayoutParams layoutParams = statusBar.getLayoutParams();
-            layoutParams.height = DisplayUtils.getStatusBarHeight(this);
-            statusBar.requestLayout();
-        }
+        MapActivityHelper.showStatusBar(binding.statusBar);
 
         pagerAdapter = new TopBarPagerAdapter(binding.animationLayer,
                 binding.topBarPager);
@@ -220,6 +221,8 @@ public class MainActivity extends StompBaseActivity {
             startActivity(new Intent(this, DriverListActivity.class));
         } else if (menuId == R.id.menu_spot) {
             startActivity(new Intent(this, SpotManageActivity.class));
+        } else if (menuId == R.id.menu_task_has_sent) {
+            startActivity(new Intent(this,PublishedTaskActivity.class));
         }
     }
 

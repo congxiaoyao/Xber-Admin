@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.ToolbarWidgetWrapper;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.congxiaoyao.location.utils.RoundList;
 import com.congxiaoyao.xber_admin.login.LoginActivity;

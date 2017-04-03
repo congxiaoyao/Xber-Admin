@@ -1,6 +1,8 @@
 package com.congxiaoyao.xber_admin.spotmanage;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.ContentLoadingProgressBar;
@@ -23,11 +25,14 @@ import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.congxiaoyao.httplib.response.Spot;
 import com.congxiaoyao.xber_admin.R;
+import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableViewImpl;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
+import com.congxiaoyao.xber_admin.utils.MathUtils;
 import com.daimajia.swipe.SwipeLayout;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -60,7 +65,7 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
             public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 switch (view.getId()) {
                     case R.id.tv_spot_delete:
-                        showDeleteDialog();
+                        showDeleteDialog(getData().get(position));
                         recyclerView.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -69,13 +74,17 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
                         }, 200);
                         break;
                     case R.id.tv_spot_revise:
-                        showReviseDialog();
+                        SelectSpotActivity.startForUpdate(SpotManagerFragment.this,
+                                getData().get(position));
                         recyclerView.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 closeOpenedItems();
                             }
                         }, 200);
+                        break;
+                    case R.id.btn_more:
+                        ((SwipeLayout) view.getParent().getParent()).open();
                         break;
                 }
             }
@@ -86,6 +95,12 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
                 if (openedItems.isEmpty()) return false;
                 closeOpenedItems();
                 return true;
+            }
+        });
+        view.findViewById(R.id.btn_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SelectSpotActivity.startForAdd(SpotManagerFragment.this);
             }
         });
         if (presenter != null) {
@@ -110,6 +125,7 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
         viewHolder.setText(R.id.tv_spot_name, data.getSpotName());
         viewHolder.addOnClickListener(R.id.tv_spot_delete);
         viewHolder.addOnClickListener(R.id.tv_spot_revise);
+        viewHolder.addOnClickListener(R.id.btn_more);
 
         SwipeLayout swipeLayout = (SwipeLayout) viewHolder.itemView;
         swipeLayout.addSwipeListener(new SwipeListenerAdapter(){
@@ -117,6 +133,22 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
             public void onStartOpen(SwipeLayout layout) {
                 closeOpenedItems();
                 openedItems.offer(layout);
+            }
+
+            @Override
+            public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+                int total = -DisplayUtils.dp2px(getContext(), 160);
+                float alpha = MathUtils.map(0, total, 1, 0, leftOffset);
+                layout.findViewById(R.id.btn_more).setAlpha(alpha);
+                Log.d(TAG.ME, "onUpdate: total = " + total +
+                        " leftOffset = " + leftOffset);
+                if (leftOffset == 0) {
+                    closeOpenedItems();
+                }
+            }
+
+            @Override
+            public void onClose(SwipeLayout layout) {
             }
         });
     }
@@ -128,6 +160,13 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            presenter.refreshData();
+        }
+    }
 
     @Override
     public void scrollToTop() {
@@ -136,23 +175,22 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
 
     @Override
     public void hideSwipeRefreshLoading() {
-
+        hideLoading();
     }
 
-    public void showDeleteDialog() {
+    public void showDeleteDialog(final Spot spot) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
         dialog.setTitle("是否删除该位置");
         dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                Toast.makeText(getContext(), "爱删不删", Toast.LENGTH_SHORT).show();
             }
         });
         dialog.setPositiveButton("是", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getContext(), "不给你删", Toast.LENGTH_SHORT).show();
+                presenter.remove(spot);
                 dialog.dismiss();
             }
         });

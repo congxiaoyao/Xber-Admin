@@ -43,7 +43,14 @@
         <activity android:name=".dispatch.DispatchTaskActivity" />
         <activity android:name=".settings.SettingsActivity" />
         <activity android:name=".spotmanage.SpotManageActivity" />
-        <activity android:name=".driverslist.DriverItemActivity" />
+        <activity android:name=".driverslist.driverdetail.DriverDetailActivity" />
+        <activity android:name=".driverslist.taskdetail.TaskDetailActivity" />
+        <activity android:name=".driverslist.taskdetail.TraceDetailActivity"
+            android:theme="@style/AppTheme.TranslucentStatus" />
+        <activity
+            android:name=".spotmanage.SelectSpotActivity"
+            android:theme="@style/AppTheme.TranslucentStatus" />
+        <activity android:name=".spotmanage.SearchPoiActivity" />
     </application>
 
 </manifest>

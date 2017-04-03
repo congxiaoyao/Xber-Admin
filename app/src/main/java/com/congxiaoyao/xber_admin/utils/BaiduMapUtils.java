@@ -11,6 +11,7 @@ import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.Projection;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.congxiaoyao.location.utils.Line;
 import com.congxiaoyao.xber_admin.TAG;
 
@@ -48,10 +49,29 @@ public class BaiduMapUtils {
         return line.getLength() / 2;
     }
 
-    public static void moveToLatLng(BaiduMap map, double lat, double lng, int zoom) {
+    public static void moveToBounds(BaiduMap map, LatLngBounds bounds, int width, int height) {
+        MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(bounds,
+                width, height);
+        map.setMapStatus(update);
+    }
+
+    public static void moveToLatLng(BaiduMap map, double lat, double lng, int zoom, boolean animate) {
+        if (animate) {
+            moveToLatLng(map, lat, lng, zoom);
+            return;
+        }
         MapStatus mMapStatus = new MapStatus.Builder()
                 .target(new LatLng(lat, lng))
                 .zoom(zoom).build();
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        map.setMapStatus(mMapStatusUpdate);
+    }
+
+    public static void moveToLatLng(BaiduMap map, double lat, double lng, int zoom) {
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(new LatLng(lat, lng))
+                .zoom(zoom)
+                .build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         map.animateMapStatus(mMapStatusUpdate);
     }

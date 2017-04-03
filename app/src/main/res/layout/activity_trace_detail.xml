@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="isLoaded"
+            type="boolean" />
+
+        <import type="android.view.View" />
+    </data>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_trace_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.congxiaoyao.xber_admin.driverslist.taskdetail.TraceDetailActivity">
+
+        <com.baidu.mapapi.map.TextureMapView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:visibility="gone"
+            android:id="@+id/map_view"/>
+
+        <com.congxiaoyao.xber_admin.widget.SquareImageView
+            android:layout_width="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
+            android:transitionName="@string/shared_view_name"
+            android:clickable="true"
+            android:src="@drawable/trace_preview2"
+            android:visibility="@{isLoaded?View.GONE:View.VISIBLE}"
+            android:id="@+id/img_trace_preview" />
+
+        <android.support.v4.widget.ContentLoadingProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleInverse"
+            android:layout_centerInParent="true"
+            android:visibility="@{isLoaded?View.GONE:View.VISIBLE}"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:clickable="true"
+            android:id="@+id/top_view"
+            android:visibility="@{isLoaded?View.GONE:View.VISIBLE}"
+            android:background="@color/colorZhihuWhite"
+            android:layout_above="@+id/img_trace_preview"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:clickable="true"
+            android:id="@+id/bottom_view"
+            android:visibility="@{isLoaded?View.GONE:View.VISIBLE}"
+            android:background="@color/colorZhihuWhite"
+            android:layout_below="@id/img_trace_preview"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/colorAccent"
+            android:layout_alignParentTop="true"
+            android:visibility="visible"
+            android:id="@+id/status_bar"/>
+    </RelativeLayout>
+</layout>

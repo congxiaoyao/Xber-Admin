@@ -13,7 +13,6 @@ import android.view.ViewGroup;
  */
 public class DisplayUtils {
 
-    private static Rect frame = new Rect();
     private static Point point = new Point();
 
     /**

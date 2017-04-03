@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.congxiaoyao.Admin;
 import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
 import com.congxiaoyao.xber_admin.service.StompService;

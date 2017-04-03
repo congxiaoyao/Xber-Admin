@@ -3,11 +3,9 @@ package com.congxiaoyao.xber_admin.mvpbase.view;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -145,12 +143,7 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
      * @return 创建一个当没有数据的时候显示的view
      */
     protected View createEmptyView() {
-        TextView textView = new TextView(getContext());
-        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        textView.setGravity(Gravity.CENTER);
-        textView.setText("抱歉，暂时没有内容哦~");
-        return textView;
+        return inflater.inflate(R.layout.view_empty, container, false);
     }
 
     /**
@@ -242,7 +235,7 @@ public abstract class PagedListLoadableViewImpl<T extends PagedListLoadablePrese
         }
 
         if (adapter.getEmptyView() != null) {
-            adapter.setEmptyView(null);
+            ((ViewGroup) adapter.getEmptyView()).removeAllViews();
             changed = true;
         }
 

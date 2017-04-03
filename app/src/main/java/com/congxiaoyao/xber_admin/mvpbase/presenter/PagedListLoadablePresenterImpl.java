@@ -234,7 +234,6 @@ public abstract class PagedListLoadablePresenterImpl<T extends ListLoadableView>
 
     @Override
     public void onEmptyDataError(EmptyDataException exception) {
-        super.onEmptyDataError(exception);
         view.showDataEmpty();
     }
 }

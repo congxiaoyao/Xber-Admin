@@ -17,6 +17,7 @@ public interface SpotManagerContract {
 
     interface Presenter extends ListLoadablePresenter{
 
+        void remove(Spot spot);
     }
 
 }

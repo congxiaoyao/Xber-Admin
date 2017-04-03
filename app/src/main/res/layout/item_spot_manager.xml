@@ -35,7 +35,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
@@ -44,6 +44,7 @@
             android:layout_marginLeft="16dp"
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
+            android:id="@+id/img_icon"
             android:layout_height="match_parent"
             android:src="@drawable/icon_location_start"/>
 
@@ -52,10 +53,22 @@
             android:gravity="center_vertical"
             android:layout_marginLeft="16dp"
             android:text="济南"
+            android:layout_toRightOf="@id/img_icon"
             android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
 
-    </LinearLayout>
+        <ImageView
+            android:layout_width="48dp"
+            android:scaleType="center"
+            android:layout_height="match_parent"
+            android:tint="#888888"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:layout_alignParentRight="true"
+            android:id="@+id/btn_more"
+            android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"/>
+
+
+    </RelativeLayout>
 
 </com.daimajia.swipe.SwipeLayout>

@@ -95,12 +95,7 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
      * @return 创建一个当没有数据的时候显示的view
      */
     protected View createEmptyView() {
-        TextView textView = new TextView(getContext());
-        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        textView.setGravity(Gravity.CENTER);
-        textView.setText("抱歉，暂时没有内容哦~");
-        return textView;
+        return inflater.inflate(R.layout.view_empty, container, false);
     }
 
     /**
@@ -116,23 +111,6 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
             }
         });
         return view;
-    }
-
-    /**
-     * @return 创建一个当拉取完所有数据的时候显示的内容
-     */
-    protected View createEofView() {
-        TextView textView = new TextView(getContext());
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams
-                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        textView.setLayoutParams(layoutParams);
-        textView.setGravity(Gravity.CENTER_HORIZONTAL);
-        textView.setText("# EOF #");
-        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorLightGray));
-        textView.setTextSize(15);
-        textView.setPadding(0, DisplayUtils.dp2px(getContext(), 10),
-                0, DisplayUtils.dp2px(getContext(), 10));
-        return textView;
     }
 
     @Override
@@ -202,7 +180,6 @@ public abstract class ListLoadableViewImpl<T extends ListLoadablePresenter, D> e
         }
 
         if (adapter.getEmptyView() != null) {
-            Log.d(TAG.ME, "showNothing: ListLoadableViewImpl empty view not null");
             ((ViewGroup) adapter.getEmptyView()).removeAllViews();
             changed = true;
         }

@@ -1,7 +1,6 @@
 package com.congxiaoyao.xber_admin.driverslist;
 
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -9,11 +8,9 @@ import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.QuickContactBadge;
 
 import com.bigkoo.quicksidebar.QuickSideBarTipsView;
 import com.bigkoo.quicksidebar.QuickSideBarView;
@@ -23,8 +20,10 @@ import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.congxiaoyao.httplib.response.BasicUserInfo;
 import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.xber_admin.R;
-import com.congxiaoyao.xber_admin.driverslist.bean.BasicUserInfoParcel;
-import com.congxiaoyao.xber_admin.driverslist.bean.CarDetailParcel;
+import com.congxiaoyao.xber_admin.driverslist.module.BasicUserInfoParcel;
+import com.congxiaoyao.xber_admin.driverslist.module.CarDetailParcel;
+import com.congxiaoyao.xber_admin.driverslist.module.DriverSection;
+import com.congxiaoyao.xber_admin.driverslist.driverdetail.DriverDetailActivity;
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableViewImpl;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
@@ -63,9 +62,10 @@ public class DriverListFragment extends ListLoadableViewImpl<DriverListContract.
         recyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Intent intent = new Intent(getContext(), DriverItemActivity.class);
+                if (getData().get(position).isHeader) return;
+                Intent intent = new Intent(getContext(), DriverDetailActivity.class);
                 CarDetail t = getData().get(position).t;
-                CarDetailParcel parcel = getParcel(t);
+                CarDetailParcel parcel = carDetailToParcel(t);
                 intent.putExtra(DriverListActivity.EXTRA_CARDETIAL, parcel);
                 startActivity(intent);
             }
@@ -91,10 +91,15 @@ public class DriverListFragment extends ListLoadableViewImpl<DriverListContract.
 
     @Override
     public void scrollToTop() {
-
+        recyclerView.smoothScrollToPosition(0);
     }
 
-    public CarDetailParcel getParcel(CarDetail t) {
+    @Override
+    protected boolean isSupportToolbarDoubleClick() {
+        return true;
+    }
+
+    public CarDetailParcel carDetailToParcel(CarDetail t) {
         CarDetailParcel parcel = new CarDetailParcel();
         BasicUserInfoParcel basicUserInfoParcel = new BasicUserInfoParcel();
         BasicUserInfo userInfo = t.getUserInfo();

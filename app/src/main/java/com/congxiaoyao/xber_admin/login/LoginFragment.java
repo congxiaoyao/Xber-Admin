@@ -1,10 +1,7 @@
 package com.congxiaoyao.xber_admin.login;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.databinding.tool.util.StringUtils;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.congxiaoyao.Admin;
+import com.congxiaoyao.xber_admin.Admin;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.FragmentLoginBinding;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableViewImpl;

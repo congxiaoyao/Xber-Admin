@@ -16,4 +16,9 @@
     <string name="please_select_end_time">请选择结束时间</string>
     <string name="query_success">^_^ 查询成功!</string>
     <string name="empty_data">暂时没有数据~</string>
+    <string name="please_name_it">给这个地方起个名字吧！</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="shared_view_name">tracePreview</string>
 </resources>

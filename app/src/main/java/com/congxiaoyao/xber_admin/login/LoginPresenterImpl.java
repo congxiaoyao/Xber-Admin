@@ -1,21 +1,15 @@
 package com.congxiaoyao.xber_admin.login;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.os.Build;
-import android.util.Log;
 
-import com.congxiaoyao.Admin;
+import com.congxiaoyao.xber_admin.Admin;
 import com.congxiaoyao.httplib.request.LoginRequest;
 import com.congxiaoyao.httplib.request.body.LoginBody;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.LoginInfoResponse;
 import com.congxiaoyao.httplib.response.exception.LoginException;
-import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.utils.Token;
-
-import java.net.SocketTimeoutException;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
