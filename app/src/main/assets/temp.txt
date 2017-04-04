@@ -1,0 +1,17 @@
+03-28 23:47:06.525 D: handleMessage: data = 1490716024654
+03-28 23:47:06.840 D: handleMessage: data = 1490716024923
+03-28 23:47:11.444 D: handleMessage: data = 1490716031356
+03-28 23:47:16.457 D: handleMessage: data = 1490716035815
+03-28 23:47:21.465 D: handleMessage: data = 1490716039746
+03-28 23:47:26.468 D: handleMessage: data = 1490716042945
+03-28 23:47:30.860 D: handleMessage: data = 1490716047271
+03-28 23:47:30.979 D: handleMessage: data = 1490716047362
+03-28 23:47:31.493 D: handleMessage: data = 1490716047854
+03-28 23:47:32.008 D: handleMessage: data = 1490716048327
+03-28 23:47:32.641 D: handleMessage: data = 1490716048927
+03-28 23:47:33.356 D: handleMessage: data = 1490716049603
+03-28 23:47:34.251 D: handleMessage: data = 1490716050459
+03-28 23:47:35.082 D: handleMessage: data = 1490716051246
+03-28 23:47:35.696 D: handleMessage: data = 1490716051821
+03-28 23:47:36.457 D: handleMessage: data = 1490716052874
+03-28 23:47:39.114 D: handleMessage: data = 1490716055490

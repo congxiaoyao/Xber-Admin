@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.congxiaoyao.xber_admin.widget.XberDividerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="8dp"
+    app:divider_color="#e6e6e6"
+    app:divider_size="2px"
+    app:enable_footer="true"
+    app:enable_header="true"
+    android:orientation="vertical"
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="16dp"
+            android:layout_height="match_parent"
+            android:text="    丛圣杰"
+            android:drawableLeft="@drawable/avatar_small"
+            android:id="@+id/tv_driver_name"
+            android:textColor="@color/colorBlack"
+            android:gravity="center_vertical" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/btn_more"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:tint="#b9b9b9"
+                android:layout_gravity="center"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha" />
+
+        </FrameLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:id="@+id/ll_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_location"
+                    android:tint="#b9b9b9"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="起始地："
+                    android:textSize="15sp"
+                    android:textColor="@color/colorDarkGray"
+                    android:gravity="center_vertical" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="天津"
+                    android:textSize="15sp"
+                    android:id="@+id/tv_start_spot"
+                    android:textColor="@color/colorDarkGray"
+                    android:gravity="center_vertical" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_location"
+                    android:tint="#b9b9b9"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="目的地："
+                    android:textSize="15sp"
+                    android:textColor="@color/colorDarkGray"
+                    android:gravity="center_vertical" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="北京"
+                    android:textSize="15sp"
+                    android:id="@+id/tv_end_spot"
+                    android:textColor="@color/colorDarkGray"
+                    android:gravity="center_vertical" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_task_detail"
+                    android:tint="#b9b9b9"
+                    android:padding="1dp"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/img_icon"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp" />
+
+                <TextView
+                    android:layout_toRightOf="@id/img_icon"
+                    android:layout_width="match_parent"
+                    android:textSize="15sp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_transport_content"
+                    android:text="非常非常危险的化学品！"
+                    android:layout_marginTop="11dp"
+                    android:textColor="@color/colorDarkGray"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:text="2017年4月3日"
+            android:id="@+id/tv_start_time"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:paddingRight="8dp"
+            android:textColor="@color/colorLightGreen"
+            android:gravity="center_vertical|right" />
+
+    </LinearLayout>
+</com.congxiaoyao.xber_admin.widget.XberDividerLayout>
