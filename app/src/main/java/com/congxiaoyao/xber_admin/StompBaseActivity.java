@@ -101,7 +101,15 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
         @Override
         public void onInnerError(Throwable throwable) {
             getLoadingLayout().hideLoading();
-            Toast.makeText(StompBaseActivity.this, "内部错误", Toast.LENGTH_SHORT).show();
+            new AlertDialog.Builder(StompBaseActivity.this)
+                    .setTitle("内部错误")
+                    .setMessage("发生了奇怪的错误 请重启软件")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    }).show();
         }
     };
 

@@ -2,60 +2,44 @@ package com.congxiaoyao.xber_admin;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
+import android.support.v4.view.GravityCompat;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.MapPoi;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.Marker;
-import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
-import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
 import com.congxiaoyao.xber_admin.dispatch.DispatchTaskActivity;
 import com.congxiaoyao.xber_admin.driverslist.DriverListActivity;
-import com.congxiaoyao.xber_admin.driverslist.taskdetail.TaskDetailActivity;
 import com.congxiaoyao.xber_admin.helpers.MapActivityHelper;
 import com.congxiaoyao.xber_admin.helpers.NavigationHelper;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
-import com.congxiaoyao.xber_admin.monitoring.XberMonitor;
+import com.congxiaoyao.xber_admin.monitoring.XberMonitorMapFragment;
 import com.congxiaoyao.xber_admin.publishedtask.PublishedTaskActivity;
 import com.congxiaoyao.xber_admin.service.StompService;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
-import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 import com.congxiaoyao.xber_admin.spotmanage.SpotManageActivity;
-import com.congxiaoyao.xber_admin.utils.DisplayUtils;
-import com.congxiaoyao.xber_admin.utils.VersionUtils;
-import com.congxiaoyao.xber_admin.utils.ViewPoster;
-import com.congxiaoyao.xber_admin.widget.CustomViewPager;
+import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 import com.congxiaoyao.xber_admin.widget.LoadingLayout;
 
 import java.util.List;
 
 import rx.functions.Action1;
 
+import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.GpsSampleRsp;
+
 public class MainActivity extends StompBaseActivity {
 
     private NavigationHelper helper;
     private ActivityMainBinding binding;
     private TopBarPagerAdapter pagerAdapter;
-    private BaiduMap baiduMap;
 
-    private XberMonitor monitor;
+    private XberMonitorMapFragment monitorFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        baiduMap = binding.mapView.getMap();
         helper = new NavigationHelper(binding.navView,
                 R.menu.navigation, R.layout.nav_main, R.layout.nav_header);
         helper.onItemSelected(new Action1<Integer>() {
@@ -92,13 +76,16 @@ public class MainActivity extends StompBaseActivity {
         });
         binding.loadingLayout.below(R.id.top_bar_pager, 16);
 
-        monitor = new XberMonitor(binding.mapView, baiduMap, new StompServiceProvider() {
-            @Override
-            public StompService getService() {
-                return stompService;
-            }
-        });
-        configBaiduMap();
+        monitorFragment = XberMonitorMapFragment
+                .newInstance(new StompServiceProvider() {
+                    @Override
+                    public StompService getService() {
+                        return stompService;
+                    }
+                });
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.map_container,
+                monitorFragment).commit();
 
 //        binding.topBarPager.setCurrentItem(1, false);
 //        binding.topBarPager.postDelayed(new Runnable() {
@@ -109,47 +96,19 @@ public class MainActivity extends StompBaseActivity {
 //        }, 200);
     }
 
-    private void configBaiduMap() {
-        UiSettings uiSettings = baiduMap.getUiSettings();
-        uiSettings.setRotateGesturesEnabled(false);
-        baiduMap.showMapIndoorPoi(false);
-        baiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
-            @Override
-            public void onMapStatusChangeStart(MapStatus mapStatus) {
-
-            }
-
-            @Override
-            public void onMapStatusChange(MapStatus mapStatus) {
-
-            }
-
-            @Override
-            public void onMapStatusChangeFinish(MapStatus mapStatus) {
-                monitor.onMapStatusChangeFinish(mapStatus);
-            }
-        });
-
-        baiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                return monitor.onMarkerClick(marker);
-            }
-        });
-
-        baiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                monitor.onMapClick(latLng);
-            }
-
-            @Override
-            public boolean onMapPoiClick(MapPoi mapPoi) {
-                return false;
-            }
-        });
-
-        BaiduMapUtils.moveToLatLng(baiduMap, 39.066252, 117.147011);
+    /**
+     * 如果没通过检查 返回false
+     * 返回false将会自动延时重试
+     * @param runnable
+     * @return
+     */
+    private boolean checkAndRetry(Runnable runnable) {
+        if (monitorFragment == null || monitorFragment.getBaiduMap() == null
+                || monitorFragment.getMonitor() == null) {
+            binding.getRoot().postDelayed(runnable, 100);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -157,34 +116,63 @@ public class MainActivity extends StompBaseActivity {
      */
     @Override
     protected void onStompPrepared() {
+        boolean pass = checkAndRetry(new Runnable() {
+            @Override
+            public void run() {
+                onStompPrepared();
+            }
+        });
+        if (!pass) return;
         pagerAdapter.setEnabled(true);
-        LatLng latLng = BaiduMapUtils.getScreenCenterLatLng(this, baiduMap);
-        double radius = BaiduMapUtils.getScreenRadius(this, baiduMap);
+        LatLng latLng = BaiduMapUtils.getScreenCenterLatLng(this, monitorFragment.getBaiduMap());
+        double radius = BaiduMapUtils.getScreenRadius(this, monitorFragment.getBaiduMap());
 //        stompService.nearestNTrace(latLng.latitude, latLng.longitude, radius, 100);
     }
 
     @Override
-    public void onCarAdd(long carId, SyncOrderedList<GpsSampleRspOuterClass.GpsSampleRsp> trace) {
-        monitor.onCarAdd(carId, trace);
+    public void onCarAdd(final long carId, final SyncOrderedList<GpsSampleRsp> trace) {
+        boolean pass = checkAndRetry(new Runnable() {
+            @Override
+            public void run() {
+                onCarAdd(carId, trace);
+            }
+        });
+        if (!pass) return;
+        monitorFragment.getMonitor().onCarAdd(carId, trace);
     }
 
     @Override
-    public void onCarRemove(long carId) {
-        monitor.onCarRemove(carId);
+    public void onCarRemove(final long carId) {
+        boolean pass = checkAndRetry(new Runnable() {
+            @Override
+            public void run() {
+                onCarRemove(carId);
+            }
+        });
+        if (!pass) return;
+        monitorFragment.getMonitor().onCarRemove(carId);
     }
 
     public void onTraceAllCar() {
-        monitor.onTraceAllCar();
+        boolean pass = checkAndRetry(new Runnable() {
+            @Override
+            public void run() {
+                onTraceAllCar();
+            }
+        });
+        if (!pass) return;
+        monitorFragment.getMonitor().onTraceAllCar();
     }
 
-    public void onTraceSpecifiedCar(List<Long> carIds) {
-        monitor.onTraceSpecifiedCar(carIds);
-    }
-
-    @Override
-    protected void onResume() {
-        binding.mapView.onResume();
-        super.onResume();
+    public void onTraceSpecifiedCar(final List<Long> carIds) {
+        boolean pass = checkAndRetry(new Runnable() {
+            @Override
+            public void run() {
+                onTraceSpecifiedCar(carIds);
+            }
+        });
+        if (!pass) return;
+        monitorFragment.getMonitor().onTraceSpecifiedCar(carIds);
     }
 
     @Override
@@ -195,16 +183,8 @@ public class MainActivity extends StompBaseActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        binding.mapView.onPause();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
-        binding.mapView.onDestroy();
-        monitor.close();
     }
 
     @Override
@@ -215,7 +195,9 @@ public class MainActivity extends StompBaseActivity {
     public void onItemSelected(int menuId) {
         if (menuId == R.id.menu_car_monitor) {
             binding.drawerLayout.closeDrawers();
-        } else if (menuId == R.id.menu_task_send) {
+            return;
+        }
+        if (menuId == R.id.menu_task_send) {
             startActivity(new Intent(this, DispatchTaskActivity.class));
         } else if (menuId == R.id.menu_drivers) {
             startActivity(new Intent(this, DriverListActivity.class));
@@ -224,15 +206,20 @@ public class MainActivity extends StompBaseActivity {
         } else if (menuId == R.id.menu_task_has_sent) {
             startActivity(new Intent(this,PublishedTaskActivity.class));
         }
+        pauseMap();
+    }
+
+    private void pauseMap() {
+        if (monitorFragment != null) {
+            monitorFragment.onPause();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if (pagerAdapter == null) {
-            super.onBackPressed();
-            return;
-        }
-        if (!pagerAdapter.onBackPressed()) {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (pagerAdapter == null ||!pagerAdapter.onBackPressed()) {
             super.onBackPressed();
         }
     }

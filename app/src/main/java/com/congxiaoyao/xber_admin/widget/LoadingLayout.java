@@ -99,10 +99,10 @@ public class LoadingLayout extends RelativeLayout {
         mProgress.setColorSchemeColors(ContextCompat.getColor(getContext(),
                 R.color.colorPrimary));
         mProgress.setAlpha(MAX_ALPHA);
-        mProgress.start();
     }
 
     public void showLoading() {
+        mProgress.start();
         mCircleView.setVisibility(View.VISIBLE);
         mCircleView.clearAnimation();
         ObjectAnimator.ofFloat(mCircleView, "alpha", 0.2f, 1)
@@ -111,6 +111,7 @@ public class LoadingLayout extends RelativeLayout {
     }
 
     public void hideLoading() {
+        mProgress.stop();
         mCircleView.clearAnimation();
         mCircleView.startAnimation(scaleDownAnimation);
     }

@@ -1,19 +1,27 @@
 package com.congxiaoyao.xber_admin.publishedtask;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.congxiaoyao.httplib.response.Task;
+import com.congxiaoyao.httplib.response.TaskRsp;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ActivityTaskTrackBinding;
 import com.congxiaoyao.xber_admin.databinding.ItemTaskStateBinding;
+import com.congxiaoyao.xber_admin.driverslist.driverdetail.HistoryTaskFragment;
+import com.congxiaoyao.xber_admin.driverslist.module.ParcelTaskRsp;
+import com.congxiaoyao.xber_admin.driverslist.taskdetail.TaskDetailActivity;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
@@ -27,8 +35,7 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 public class TaskTrackActivity extends SwipeBackActivity {
 
-    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm",
-            Locale.CHINA);
+    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
 
     private ActivityTaskTrackBinding binding;
     private TaskAndDriver task;
@@ -85,8 +92,43 @@ public class TaskTrackActivity extends SwipeBackActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        finish();
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (task.getStatus() != Task.STATUS_COMPLETED) {
+            return super.onCreateOptionsMenu(menu);
+        }
+        menu.add("查看详情").setOnMenuItemClickListener(new MenuItem
+                .OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                ParcelTaskRsp taskRsp = taskAndDriverToParcelTaskRsp(task);
+                Intent intent = new Intent(TaskTrackActivity.this,
+                        TaskDetailActivity.class);
+                intent.putExtra(HistoryTaskFragment.EXTRA_KEY, taskRsp);
+                startActivity(intent, ActivityOptionsCompat
+                        .makeSceneTransitionAnimation(TaskTrackActivity.this).toBundle());
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private ParcelTaskRsp taskAndDriverToParcelTaskRsp(TaskAndDriver taskAndDriver) {
+        ParcelTaskRsp taskRsp = new ParcelTaskRsp();
+        taskRsp.setTaskId(taskAndDriver.getTaskId());
+        taskRsp.setStartSpot(taskAndDriver.getStartSpot());
+        taskRsp.setEndSpot(taskAndDriver.getEndSpot());
+        taskRsp.setContent(taskAndDriver.getContent());
+        taskRsp.setCreateUser(taskAndDriver.getCreateUser());
+        taskRsp.setRealStartTime(taskAndDriver.getRealStartTime());
+        taskRsp.setRealEndTime(taskAndDriver.getRealEndTime());
+        taskRsp.setStatus(taskAndDriver.getStatus());
+        taskRsp.setNote(taskAndDriver.getNote());
+        return taskRsp;
     }
 
     class LocationQueryView implements LoadableView<LocationQueryPresenter> {

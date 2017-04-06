@@ -95,7 +95,8 @@ public class SelectSpotActivity extends AppCompatActivity {
         spot = intent.getParcelableExtra(EXTRA_KEY);
         if (spot != null) {
             BaiduMapUtils.moveToLatLng(baiduMap, spot.getLatitude(), spot.getLongitude(), 18);
-            binding.editText.setText(spot.getSpotName());
+            binding.editText.setText("");
+            binding.editText.append(spot.getSpotName());
         }
     }
 
@@ -190,6 +191,7 @@ public class SelectSpotActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) return;
         SuggestionInfo info = data.getParcelableExtra(SearchPoiActivity.EXTRA_KEY);
         if (info != null) {
             BaiduMapUtils.moveToLatLng(baiduMap, info.pt.latitude, info.pt.longitude, 18);

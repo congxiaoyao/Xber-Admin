@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="#f0f0f0"
+    android:layout_height="match_parent">
+
+    <com.congxiaoyao.xber_admin.widget.XberDividerLayout
+        app:divider_color="@color/colorPrimary"
+        app:divider_size="2px"
+        app:divider_padding_left="8dp"
+        app:divider_bottom="true"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="17sp"
+            android:gravity="center"
+            app:divider_top="true"
+            android:text="第一项" />
+        <TextView
+            app:divider_top="true"
+            app:divider_padding_left="24dp"
+            app:divider_padding_right="24dp"
+            app:divider_color="#b44bb8"
+
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="17sp"
+            android:gravity="center"
+            android:text="第二项" />
+
+        <TextView
+            app:divider_top="true"
+            app:divider_padding_left="48dp"
+            app:divider_padding_right="48dp"
+            app:divider_color="#008d58"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="17sp"
+            android:gravity="center"
+            android:text="第三项" />
+
+        <TextView
+            app:divider_top="true"
+            app:divider_padding_left="72dp"
+            app:divider_padding_right="72dp"
+            app:divider_color="#efb11f"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="17sp"
+            android:gravity="center"
+            android:text="第四项" />
+
+
+    </com.congxiaoyao.xber_admin.widget.XberDividerLayout>
+</LinearLayout>

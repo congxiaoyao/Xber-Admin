@@ -43,6 +43,7 @@ public class VersionUtils {
 
     public static boolean LOLLIPOP_MR1AndPlus = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1;
 
+    public static boolean M_AND_PLUS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     /**
      * 那个版本及以上
      * @param version

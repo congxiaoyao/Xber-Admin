@@ -3,7 +3,9 @@ package com.congxiaoyao.xber_admin.driverslist.taskdetail;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +75,7 @@ public class TracePreviewHelper implements TraceContract.View ,BaiduMap.Snapshot
         list = verticalIntervalLimitFilter(list);
         //绘制折线
         OverlayOptions ooPolyline = new PolylineOptions().width(8)
-                .color(getContext().getColor(R.color.colorPrimary))
+                .color(ContextCompat.getColor(getContext(), R.color.colorPrimary))
                 .points(list);
         baiduMap.addOverlay(ooPolyline);
         //绘制点
@@ -82,7 +84,7 @@ public class TracePreviewHelper implements TraceContract.View ,BaiduMap.Snapshot
         for (int i = 0; i < len; i++) {
             int index = (int) MathUtils.map(0, len - 1, 0, list.size() - 1, i);
             optionList.add(new DotOptions().center(list.get(index))
-                    .color(getContext().getColor(R.color.colorPrimaryDark))
+                    .color(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark))
                     .radius(12));
         }
         baiduMap.addOverlays(optionList);
@@ -222,6 +224,11 @@ public class TracePreviewHelper implements TraceContract.View ,BaiduMap.Snapshot
                     mapView.onDestroy();
                     mapView = null;
                 }
+            }
+        }, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                Log.e(TAG.ME, "call: ", throwable);
             }
         });
     }

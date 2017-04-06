@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.GpsSampleRsp;
 
@@ -171,6 +172,13 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
     }
 
     public void close() {
+        if (runningCars != null) {
+            Set<Long> keySet = runningCars.keySet();
+            for (Long carId : keySet) {
+                runningCars.get(carId).destroy();
+            }
+        }
+        runningCars.clear();
         factory.clear();
     }
 

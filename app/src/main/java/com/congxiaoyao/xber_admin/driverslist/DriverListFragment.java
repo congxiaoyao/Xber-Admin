@@ -99,7 +99,7 @@ public class DriverListFragment extends ListLoadableViewImpl<DriverListContract.
         return true;
     }
 
-    public CarDetailParcel carDetailToParcel(CarDetail t) {
+    public static CarDetailParcel carDetailToParcel(CarDetail t) {
         CarDetailParcel parcel = new CarDetailParcel();
         BasicUserInfoParcel basicUserInfoParcel = new BasicUserInfoParcel();
         BasicUserInfo userInfo = t.getUserInfo();

@@ -140,8 +140,6 @@ public class SpotManagerFragment extends ListLoadableViewImpl<SpotManagerContrac
                 int total = -DisplayUtils.dp2px(getContext(), 160);
                 float alpha = MathUtils.map(0, total, 1, 0, leftOffset);
                 layout.findViewById(R.id.btn_more).setAlpha(alpha);
-                Log.d(TAG.ME, "onUpdate: total = " + total +
-                        " leftOffset = " + leftOffset);
                 if (leftOffset == 0) {
                     closeOpenedItems();
                 }

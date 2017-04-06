@@ -9,10 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
@@ -24,16 +26,20 @@ import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.congxiaoyao.adapter.base.binding.BindingAdapterHelper;
 import com.congxiaoyao.adapter.base.binding.annotations.ItemLayout;
 import com.congxiaoyao.xber_admin.R;
+import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.databinding.ActivitySearchPoiBinding;
 import com.congxiaoyao.xber_admin.databinding.ItemPoiSuggestionBinding;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
+import java.lang.reflect.Field;
 import java.util.List;
+
+import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 import static com.baidu.mapapi.search.sug.SuggestionResult.*;
 
-public class SearchPoiActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class SearchPoiActivity extends SwipeBackActivity implements SearchView.OnQueryTextListener {
 
     private ActivitySearchPoiBinding binding;
     private BaseQuickAdapter adapter;
@@ -44,6 +50,8 @@ public class SearchPoiActivity extends AppCompatActivity implements SearchView.O
 
     public static final String EXTRA_KEY = "SPOT";
 
+    private TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +59,8 @@ public class SearchPoiActivity extends AppCompatActivity implements SearchView.O
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("搜索地点");
+
+        showEmptyDataView();
 
         progressBar = (ContentLoadingProgressBar) binding.getRoot().findViewById(R.id.content_progress_bar);
 
@@ -67,7 +77,11 @@ public class SearchPoiActivity extends AppCompatActivity implements SearchView.O
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
                 SuggestionInfo info = suggestions.get(position);
                 LatLng pt = info.pt;
-                if (pt == null) return;
+                if (pt == null) {
+                    textView.setText("");
+                    textView.append(info.key);
+                    return;
+                }
                 Intent intent = new Intent();
                 intent.putExtra(EXTRA_KEY, info);
                 setResult(RESULT_OK, intent);
@@ -104,9 +118,20 @@ public class SearchPoiActivity extends AppCompatActivity implements SearchView.O
         menuItem.collapseActionView();
         menuItem.expandActionView();
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        initSearchSrcTextView(searchView);
         searchView.setOnQueryTextListener(SearchPoiActivity.this);
         boolean b = super.onCreateOptionsMenu(menu);
         return b;
+    }
+
+    private void initSearchSrcTextView(SearchView searchView) {
+        try {
+            Field field = searchView.getClass().getDeclaredField("mSearchSrcTextView");
+            field.setAccessible(true);
+            textView = (TextView) field.get(searchView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -117,10 +142,21 @@ public class SearchPoiActivity extends AppCompatActivity implements SearchView.O
     @Override
     public boolean onQueryTextSubmit(String query) {
         hindEmptyDataView();
-        if (query == null || query.isEmpty()) return false;
+        if (query == null || query.isEmpty()) {
+            adapter.getData().clear();
+            adapter.notifyDataSetChanged();
+            showEmptyDataView();
+            return false;
+        }
         search.requestSuggestion(new SuggestionSearchOption().keyword(query).city("天津"));
         showLoading();
         return true;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
     }
 
     @Override
@@ -143,11 +179,11 @@ public class SearchPoiActivity extends AppCompatActivity implements SearchView.O
     }
 
     public void showEmptyDataView() {
-        binding.tvEmpty.setVisibility(View.VISIBLE);
+        binding.emptyView.setVisibility(View.VISIBLE);
     }
 
     public void hindEmptyDataView() {
-        binding.tvEmpty.setVisibility(View.GONE);
+        binding.emptyView.setVisibility(View.GONE);
     }
 
     @Override

@@ -34,6 +34,7 @@ import com.congxiaoyao.location.utils.RoundList;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
+import com.congxiaoyao.xber_admin.utils.VersionUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -76,8 +77,12 @@ public class ChooseTimeFragment extends Fragment {
                              Bundle savedInstanceState) {
         final CoordinatorLayout view = (CoordinatorLayout) inflater.inflate(R.layout.fragment_date_start,
                 container, false);
-        todayDrawable = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.item_today_xiaomi);
-        todayDrawable.addLayer(new TextDrawable());
+        todayDrawable = (LayerDrawable) ContextCompat.getDrawable(getContext(),
+                R.drawable.item_today_xiaomi);
+        if (VersionUtils.M_AND_PLUS && todayDrawable != null) {
+            todayDrawable.mutate();
+            todayDrawable.addLayer(new TextDrawable());
+        }
 
         getDispatchTaskActivity().showWeekLine();
         getDispatchTaskActivity().showToolbarButton().setOnClickListener(new View.OnClickListener() {

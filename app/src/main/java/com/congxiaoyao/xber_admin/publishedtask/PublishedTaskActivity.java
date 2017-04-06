@@ -6,6 +6,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import com.congxiaoyao.httplib.response.Task;
 import com.congxiaoyao.xber_admin.Admin;
@@ -31,7 +33,7 @@ public class PublishedTaskActivity extends SwipeBackActivity {
         binding.viewPager.setOffscreenPageLimit(5);
         binding.viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
         binding.tabs.setupWithViewPager(binding.viewPager);
-        binding.tabs.setSelectedTabIndicatorColor(getColor(R.color.colorWhite));
+        binding.tabs.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.colorWhite));
     }
 
     @Override
@@ -47,7 +49,7 @@ public class PublishedTaskActivity extends SwipeBackActivity {
 
         public ViewPagerAdapter(FragmentManager fm) {
             super(fm);
-            titles = new String[]{"已送达","待出发", "运输中"};
+            titles = new String[]{"已送达", "待出发", "运输中"};
             int[] requsetTypes = {Task.STATUS_COMPLETED, Task.STATUS_EXECUTING, Task.STATUS_DELIVERED};
             fragments = new PublishedTaskListFragment[titles.length];
             for (int i = 0; i < titles.length; i++) {

@@ -36,14 +36,36 @@
 
             <include layout="@layout/view_progress_bar" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/empty_data"
-                android:id="@+id/tv_empty"
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:text="@string/empty_data"-->
+                <!--android:id="@+id/tv_empty"-->
+                <!--android:visibility="gone"-->
+                <!--tools:visibility="visible"/>-->
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical" android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:visibility="gone"
-                tools:visibility="visible"/>
+                android:id="@+id/empty_view"
+                android:background="#F3F3F3"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_empty"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="还没有内容"
+                    android:textSize="15sp"
+                    android:layout_marginTop="15dp"
+                    />
+            </LinearLayout>
 
         </FrameLayout>
 

@@ -17,7 +17,7 @@ import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
  * 一个简单的只带一个toolbar的Activity 里面的内容由Fragment展示
  * 此Activity的实现遵循Mvp设计模式 将view的内容全部交由Fragment来处理
  * 同时负责初始化Presenter 设置基本的返回按钮监听和程序标题
- *
+ * <p>
  * Created by congxiaoyao on 2016/8/25.
  */
 public abstract class SimpleMvpActivity extends SwipeBackActivity {
@@ -53,12 +53,14 @@ public abstract class SimpleMvpActivity extends SwipeBackActivity {
 
     /**
      * toolbar上显示的标题
+     *
      * @return
      */
     public abstract String getToolbarTitle();
 
     /**
      * 通过参数{@param baseView}创建一个Presenter
+     *
      * @param baseView 这里的参数是{@link SimpleMvpActivity#getFragment()}方法的返回值
      * @return BasePresenter的实现类
      */

@@ -41,8 +41,14 @@ public class LoginFragment extends LoadableViewImpl<LoginContract.Presenter>
         if (admin != null) {
             String username = admin.getUserName();
             String password = admin.getPassword();
-            if (username != null) binding.etUsername.setText(username);
-            if (password != null) binding.etPassword.setText(password);
+            if (username != null) {
+                binding.etUsername.setText("");
+                binding.etUsername.append(username);
+            }
+            if (password != null) {
+                binding.etPassword.setText("");
+                binding.etPassword.append(password);
+            }
         }
         presenter.setLoginResult(LoginActivity.CODE_RESULT_FAILED);
         return binding.getRoot();

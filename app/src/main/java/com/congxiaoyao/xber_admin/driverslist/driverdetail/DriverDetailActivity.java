@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.view.View;
@@ -60,7 +61,8 @@ public class DriverDetailActivity extends SwipeBackActivity implements Collapsib
         binding.viewPager.setOffscreenPageLimit(2);
         binding.viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
         binding.tabs.setupWithViewPager(binding.viewPager);
-        binding.tabs.setSelectedTabIndicatorColor(getColor(R.color.colorWhite));
+        binding.tabs.setSelectedTabIndicatorColor(ContextCompat
+                .getColor(this, R.color.colorWhite));
 
         binding.imgAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +139,7 @@ public class DriverDetailActivity extends SwipeBackActivity implements Collapsib
     }
 
     public CarDetailParcel getCarDetail() {
-        if (parcel==null) {
+        if (parcel == null) {
             Intent intent = getIntent();
             parcel = intent.getParcelableExtra(DriverListActivity.EXTRA_CARDETIAL);
         }

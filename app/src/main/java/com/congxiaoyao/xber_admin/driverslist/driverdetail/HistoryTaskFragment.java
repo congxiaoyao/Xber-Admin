@@ -51,28 +51,10 @@ public class HistoryTaskFragment
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         progressBar = (ContentLoadingProgressBar) view.findViewById(R.id.content_progress_bar);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setColorSchemeColors(getContext().getColor(R.color.colorPrimary));
+        swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         super.onCreateView(inflater, container, savedInstanceState);
         recyclerView.setAdapter(getAdapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
-            @Override
-            public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                switch (view.getId()) {
-                    case R.id.btn_more:
-                        onTimeButtonClick(getData().get(position));
-                        break;
-                    case R.id.ll_container:
-                        ParcelTaskRsp taskRsp = taskRspToParcelable(getData().get(position));
-                        Intent intent = new Intent(getContext(), TaskDetailActivity.class);
-                        intent.putExtra(EXTRA_KEY, taskRsp);
-                        ActivityCompat.startActivity(getContext(),
-                                intent, ActivityOptionsCompat
-                                        .makeSceneTransitionAnimation((Activity) getContext()).toBundle());
-                        break;
-                }
-            }
-        });
         if (presenter != null) presenter.subscribe();
         return view;
     }
@@ -153,14 +135,32 @@ public class HistoryTaskFragment
     }
 
     @Override
-    protected void convert(BaseViewHolder viewHolder, TaskRsp taskRsp) {
+    protected void convert(final BaseViewHolder viewHolder, TaskRsp taskRsp) {
         super.convert(viewHolder, taskRsp);
         viewHolder.setText(R.id.tv_start_spot, taskRsp.getStartSpot().getSpotName());
         viewHolder.setText(R.id.tv_end_spot, taskRsp.getEndSpot().getSpotName());
         viewHolder.setText(R.id.tv_start_time, format.format(taskRsp.getRealStartTime()));
         viewHolder.setText(R.id.tv_transport_content, taskRsp.getContent());
-        viewHolder.addOnClickListener(R.id.btn_more);
-        viewHolder.addOnClickListener(R.id.ll_container);
+        viewHolder.getView(R.id.btn_more).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTimeButtonClick(getData().get(viewHolder.getAdapterPosition()));
+            }
+        });
+        viewHolder.getView(R.id.ll_container).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParcelTaskRsp taskRsp = taskRspToParcelable(getData()
+                        .get(viewHolder.getAdapterPosition()));
+                Intent intent = new Intent(getContext(), TaskDetailActivity.class);
+                intent.putExtra(EXTRA_KEY, taskRsp);
+                ActivityCompat.startActivity(getContext(),
+                        intent, ActivityOptionsCompat
+                                .makeSceneTransitionAnimation((Activity) getContext())
+                                .toBundle());
+
+            }
+        });
     }
 
     public View createHeaderTask(TaskRsp taskRsp) {

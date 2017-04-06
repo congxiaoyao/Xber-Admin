@@ -52,7 +52,14 @@
             android:name=".spotmanage.SelectSpotActivity"
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity android:name=".spotmanage.SearchPoiActivity" />
-        <activity android:name=".publishedtask.TaskTrackActivity"></activity>
+        <activity android:name=".publishedtask.TaskTrackActivity" />
+        <activity android:name=".DividerTestActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
     </application>
 
 </manifest>

@@ -9,6 +9,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -129,7 +130,7 @@ implements TraceContract.View{
     public void showTrace(List<LatLng> list) {
         //绘制折线
         OverlayOptions ooPolyline = new PolylineOptions().width(8)
-                .color(getContext().getColor(R.color.colorPrimary))
+                .color(ContextCompat.getColor(getContext(), R.color.colorPrimary))
                 .points(list);
         baiduMap.addOverlay(ooPolyline);
 

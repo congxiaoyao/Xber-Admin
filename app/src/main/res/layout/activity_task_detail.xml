@@ -69,7 +69,8 @@
                         android:layout_width="match_parent"
                         app:divider_size="2px"
                         app:divider_color="#e6e6e6"
-                        app:enable_header="true"
+                        app:divider_top="true"
+                        app:divider_bottom="true"
                         android:orientation="vertical"
                         android:id="@+id/sender_container"
                         android:visibility="gone"
@@ -81,6 +82,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:orientation="horizontal"
+                            app:divider_bottom="true"
                             android:paddingRight="16dp"
                             android:layout_height="40dp">
 
@@ -216,7 +218,8 @@
                     <com.congxiaoyao.xber_admin.widget.XberDividerLayout
                         app:divider_size="2px"
                         app:divider_color="#e6e6e6"
-                        app:enable_header="true"
+                        app:divider_top="true"
+                        app:divider_bottom="true"
                         android:layout_marginTop="8dp"
                         android:orientation="vertical"
                         android:background="#ffffff"
@@ -224,6 +227,7 @@
                         android:layout_height="wrap_content">
 
                         <FrameLayout
+                            app:divider_bottom="true"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <View
@@ -279,6 +283,8 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            app:divider_bottom="true"
+                            app:divider_padding_left="56dp"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:orientation="horizontal"
@@ -312,12 +318,6 @@
                                 android:gravity="center_vertical" />
 
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="2px"
-                            android:layout_marginLeft="56dp"
-                            android:background="#e6e6e6" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -395,7 +395,8 @@
                     <com.congxiaoyao.xber_admin.widget.XberDividerLayout
                         app:divider_size="2px"
                         app:divider_color="#e6e6e6"
-                        app:enable_header="true"
+                        app:divider_top="true"
+                        app:divider_bottom="true"
                         android:layout_width="match_parent"
                         android:orientation="vertical"
                         android:layout_marginTop="8dp"
@@ -403,6 +404,7 @@
                         android:layout_height="wrap_content">
 
                         <FrameLayout
+                            app:divider_bottom="true"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <View
@@ -485,7 +487,8 @@
                     <com.congxiaoyao.xber_admin.widget.XberDividerLayout
                         app:divider_size="2px"
                         app:divider_color="#e6e6e6"
-                        app:enable_header="true"
+                        app:divider_top="true"
+                        app:divider_bottom="true"
                         android:layout_width="match_parent"
                         android:orientation="vertical"
                         android:layout_marginTop="8dp"
@@ -494,6 +497,7 @@
                         android:layout_height="wrap_content">
 
                         <FrameLayout
+                            app:divider_bottom="true"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <View
@@ -556,6 +560,7 @@
                         </FrameLayout>
 
                         <TextView
+                            app:divider_top="true"
                             android:layout_width="match_parent"
                             android:layout_height="32dp"
                             android:background="?android:attr/selectableItemBackground"

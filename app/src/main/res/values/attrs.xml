@@ -16,6 +16,10 @@
     <declare-styleable name="XberDividerLayout" >
         <attr name="divider_size" format="dimension"/>
         <attr name="divider_color" format="color" />
+        <attr name="divider_padding_left" format="dimension"/>
+        <attr name="divider_padding_right" format="dimension"/>
+        <attr name="divider_top" format="boolean" />
+        <attr name="divider_bottom" format="boolean" />
         <attr name="enable_header" format="boolean"/>
         <attr name="enable_footer" format="boolean" />
     </declare-styleable>
