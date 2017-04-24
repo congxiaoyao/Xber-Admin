@@ -30,6 +30,7 @@ public class PublishedTaskActivity extends SwipeBackActivity {
         getSupportActionBar().setTitle("我的派发记录");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         binding.tabs.setTabMode(TabLayout.MODE_FIXED);
+        if (admin == null) return;
         binding.viewPager.setOffscreenPageLimit(5);
         binding.viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
         binding.tabs.setupWithViewPager(binding.viewPager);
@@ -50,7 +51,7 @@ public class PublishedTaskActivity extends SwipeBackActivity {
         public ViewPagerAdapter(FragmentManager fm) {
             super(fm);
             titles = new String[]{"已送达", "待出发", "运输中"};
-            int[] requsetTypes = {Task.STATUS_COMPLETED, Task.STATUS_EXECUTING, Task.STATUS_DELIVERED};
+            int[] requsetTypes = {Task.STATUS_COMPLETED, Task.STATUS_DELIVERED, Task.STATUS_EXECUTING};
             fragments = new PublishedTaskListFragment[titles.length];
             for (int i = 0; i < titles.length; i++) {
                 fragments[i] = new PublishedTaskListFragment();

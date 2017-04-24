@@ -19,6 +19,12 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
+    <style name="AppTheme.Welcome" parent="AppTheme">
+        <item name="colorPrimary">#fafafa</item>
+        <item name="colorPrimaryDark">#fafafa</item>
+        <item name="colorAccent">#fafafa</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <!--<item name="android:actionBarItemBackground">@drawable/bg_menu_btn</item>-->
         <!--<item name="colorControlHighlight">@color/colorDarkGreen</item>-->

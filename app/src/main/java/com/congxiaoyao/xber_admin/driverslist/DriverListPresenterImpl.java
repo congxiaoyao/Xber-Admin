@@ -73,22 +73,20 @@ public class DriverListPresenterImpl extends ListLoadablePresenterImpl<DriverLis
                                 indexMap.put(section.header.charAt(0), i);
                             }
                         }
+                        int value = 0;
+                        for (int i = 'A'; i <= 'Z'; i++) {
+                            Integer index = indexMap.get((char) i);
+                            if (index == null) {
+                                indexMap.put((char) i, value);
+                            }else {
+                                value = index;
+                            }
+                        }
                         return drivers;
                     }
                 });
         return observable;
     }
-//    public void foo(int page){
-//        final long userId = 1;
-//        final TaskRequest taskRequest = XberRetrofit.create(TaskRequest.class);
-//        taskRequest.getTask(userId, page, 20, 1,
-//                System.currentTimeMillis(), Token.value).flatMap(new Func1<TaskListRsp, Observable<TaskListRsp>>() {
-//            @Override
-//            public Observable<TaskListRsp> call(TaskListRsp taskListRsp) {
-//                return taskRequest.getTask(userId, 0, 20, 2, System.currentTimeMillis(), Token.value);
-//            }
-//        });
-//    }
 
     public DriverSection carDetail2DriverSection(CarDetail carDetail,HanyuPinyinOutputFormat format) {
         String name = carDetail.getUserInfo().getName();

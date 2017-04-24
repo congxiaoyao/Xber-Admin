@@ -1,10 +1,8 @@
 package com.congxiaoyao.xber_admin.publishedtask;
 
-import com.congxiaoyao.httplib.response.TaskRsp;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
-import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
-import com.congxiaoyao.xber_admin.publishedtask.bean.TaskAndDriver;
+import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
 
 /**
  * Created by congxiaoyao on 2017/4/3.
@@ -12,7 +10,7 @@ import com.congxiaoyao.xber_admin.publishedtask.bean.TaskAndDriver;
 
 public interface PublishedTaskContract {
 
-    interface View extends ListLoadableView<Presenter, TaskAndDriver> {
+    interface View extends ListLoadableView<Presenter, TaskRspAndDriver> {
 
     }
 

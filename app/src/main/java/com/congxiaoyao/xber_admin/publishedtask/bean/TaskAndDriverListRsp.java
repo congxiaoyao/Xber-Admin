@@ -2,7 +2,6 @@ package com.congxiaoyao.xber_admin.publishedtask.bean;
 
 import com.congxiaoyao.httplib.response.Page;
 import com.congxiaoyao.httplib.response.Pageable;
-import com.congxiaoyao.httplib.response.TaskRsp;
 
 import java.util.Date;
 import java.util.List;
@@ -11,10 +10,10 @@ import java.util.List;
  * Created by congxiaoyao on 2017/4/3.
  */
 
-public class TaskAndDriverListRsp implements Pageable<TaskAndDriver> {
+public class TaskAndDriverListRsp implements Pageable<TaskRspAndDriver> {
 
     private Date timestamp;
-    private List<TaskAndDriver> list;
+    private List<TaskRspAndDriver> list;
     private Page page;
 
     public Date getTimestamp() {
@@ -25,11 +24,11 @@ public class TaskAndDriverListRsp implements Pageable<TaskAndDriver> {
         this.timestamp = timestamp;
     }
 
-    public List<TaskAndDriver> getList() {
+    public List<TaskRspAndDriver> getList() {
         return list;
     }
 
-    public void setList(List<TaskAndDriver> list) {
+    public void setList(List<TaskRspAndDriver> list) {
         this.list = list;
     }
 
@@ -43,7 +42,7 @@ public class TaskAndDriverListRsp implements Pageable<TaskAndDriver> {
     }
 
     @Override
-    public List<TaskAndDriver> getCurrentPageData() {
+    public List<TaskRspAndDriver> getCurrentPageData() {
         return getList();
     }
 

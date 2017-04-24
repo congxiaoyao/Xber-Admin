@@ -88,6 +88,7 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 //                baiduMap.addOverlay(markerOptions);
 //            }
         };
+        runningCar.setMapView(mapView);
         runningCars.put(carId, runningCar);
     }
 

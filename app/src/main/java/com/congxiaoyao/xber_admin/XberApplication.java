@@ -2,6 +2,8 @@ package com.congxiaoyao.xber_admin;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.congxiaoyao.xber_admin.utils.Token;
@@ -17,7 +19,9 @@ public class XberApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        long pre = System.currentTimeMillis();
         SDKInitializer.initialize(this);
+        Log.d("cxy", "time = " + (System.currentTimeMillis() - pre));
         Token.value = "";
     }
 

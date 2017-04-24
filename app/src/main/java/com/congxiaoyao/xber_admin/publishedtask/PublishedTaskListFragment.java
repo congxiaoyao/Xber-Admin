@@ -13,15 +13,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.driverslist.DriverListActivity;
 import com.congxiaoyao.xber_admin.driverslist.DriverListFragment;
 import com.congxiaoyao.xber_admin.driverslist.driverdetail.DriverDetailActivity;
 import com.congxiaoyao.xber_admin.mvpbase.view.PagedListLoadableViewImpl;
-import com.congxiaoyao.xber_admin.publishedtask.bean.TaskAndDriver;
+import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
 
 import java.text.SimpleDateFormat;
 
@@ -30,7 +28,7 @@ import java.text.SimpleDateFormat;
  */
 
 public class PublishedTaskListFragment
-        extends PagedListLoadableViewImpl<PublishedTaskContract.Presenter,TaskAndDriver>
+        extends PagedListLoadableViewImpl<PublishedTaskContract.Presenter,TaskRspAndDriver>
         implements PublishedTaskContract.View{
 
     public static final String KEY_TASK = "KEY_TASK";
@@ -52,7 +50,7 @@ public class PublishedTaskListFragment
 //                switch (view.getId()) {
 //                    case R.id.ll_container:
 //                        Intent intent = new Intent(getContext(), TaskTrackActivity.class);
-//                        TaskAndDriver taskAndDriver = getData().get(position);
+//                        TaskRspAndDriver taskAndDriver = getData().get(position);
 //                        intent.putExtra(KEY_TASK, taskAndDriver);
 //                        startActivity(intent);
 //                        break;
@@ -66,20 +64,20 @@ public class PublishedTaskListFragment
         return view;
     }
 
-    private void listenMenuClick(PopupMenu menu, final TaskAndDriver taskAndDriver) {
+    private void listenMenuClick(PopupMenu menu, final TaskRspAndDriver taskRspAndDriver) {
         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.menu_drivers) {
                     Intent intent = new Intent(getContext(), DriverDetailActivity.class);
                     intent.putExtra(DriverListActivity.EXTRA_CARDETIAL,
-                            DriverListFragment.carDetailToParcel(taskAndDriver.getCarDetail()));
+                            DriverListFragment.carDetailToParcel(taskRspAndDriver.getCarDetail()));
                     startActivity(intent);
                     return true;
                 }
                 if (item.getItemId() == R.id.menu_note) {
                     new AlertDialog.Builder(getContext())
-                            .setMessage(taskAndDriver.getNote()).show();
+                            .setMessage(taskRspAndDriver.getNote()).show();
                     return true;
                 }
                 return false;
@@ -93,7 +91,7 @@ public class PublishedTaskListFragment
     }
 
     @Override
-    protected void convert(final BaseViewHolder viewHolder, TaskAndDriver data) {
+    protected void convert(final BaseViewHolder viewHolder, TaskRspAndDriver data) {
         viewHolder.setText(R.id.tv_driver_name, "    "+data.getCarDetail().getUserInfo().getName())
                 .setText(R.id.tv_start_spot, data.getStartSpot().getSpotName())
                 .setText(R.id.tv_end_spot, data.getEndSpot().getSpotName())
@@ -103,8 +101,8 @@ public class PublishedTaskListFragment
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), TaskTrackActivity.class);
-                TaskAndDriver taskAndDriver = getData().get(viewHolder.getAdapterPosition());
-                intent.putExtra(KEY_TASK, taskAndDriver);
+                TaskRspAndDriver taskRspAndDriver = getData().get(viewHolder.getAdapterPosition());
+                intent.putExtra(KEY_TASK, taskRspAndDriver);
                 startActivity(intent);
             }
         });

@@ -119,6 +119,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
 
     @Override
     protected void onResume() {
+        long pre = System.currentTimeMillis();
         super.onResume();
         Observable.just(1).map(new Func1<Integer, Admin>() {
             @Override
@@ -126,12 +127,12 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
                 Admin admin = Admin.fromSharedPreference(StompBaseActivity.this);
                 return admin;
             }
-        }).subscribeOn(Schedulers.io()).filter(new Func1<Admin, Boolean>() {
+        }).filter(new Func1<Admin, Boolean>() {
             @Override
             public Boolean call(Admin admin) {
                 return admin != null;
             }
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Admin>() {
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Admin>() {
             @Override
             public void call(Admin admin) {
                 Token.value = admin.getToken();
@@ -139,6 +140,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
                 tokenSafeOnResume(admin);
             }
         });
+        Log.d("cxy", "on resume time = " + (System.currentTimeMillis() - pre));
     }
 
     protected void tokenSafeOnResume(Admin admin) {
@@ -200,14 +202,16 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
             return;
         }
         connectCount = 0;
-        getLoadingLayout().showLoading();
         connection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
+                getLoadingLayout().showLoading();
                 StompService.StompServiceBinder binder = (StompService.StompServiceBinder) service;
                 stompService = binder.getStompService();
                 stompService.setOnCarChangeListener(StompBaseActivity.this);
+                long pre = System.currentTimeMillis();
                 stompService.connect(lifeCycle);
+                Log.d("cxy", "connect prepare time = " + (System.currentTimeMillis() - pre));
             }
 
             @Override

@@ -15,6 +15,7 @@ public class TraceCtrlFactory {
     private RecycleBin<NormalTraceCtrl> normalBin;
     private RecycleBin<BazierTraceCtrl> bazierBin;
     private RecycleBin<InfiniteTraceCtrl> infBin;
+    private RecycleBin<HoldPositionCtrl> holdBin;
 
     public TraceCtrlFactory(int normalSize, int bazierSize, int infSize) {
         normalBin = new RecycleBin<NormalTraceCtrl>(normalSize) {
@@ -33,6 +34,12 @@ public class TraceCtrlFactory {
             @Override
             public InfiniteTraceCtrl createTraceCtrl() {
                 return new InfiniteTraceCtrl();
+            }
+        };
+        holdBin = new RecycleBin<HoldPositionCtrl>(infSize) {
+            @Override
+            public HoldPositionCtrl createTraceCtrl() {
+                return new HoldPositionCtrl();
             }
         };
     }
@@ -55,10 +62,17 @@ public class TraceCtrlFactory {
         return obtain;
     }
 
+    public HoldPositionCtrl hold() {
+        HoldPositionCtrl obtain = holdBin.obtain();
+        obtain.recycleBin = holdBin;
+        return obtain;
+    }
+
     public void clear() {
         clearRecycleBin(bazierBin);
         clearRecycleBin(normalBin);
         clearRecycleBin(infBin);
+        clearRecycleBin(holdBin);
     }
 
     private void clearRecycleBin(RecycleBin bin) {
@@ -77,16 +91,23 @@ public class TraceCtrlFactory {
 
         public T obtain() {
             if (linkedList.isEmpty()) {
-                return createTraceCtrl();
+                T traceCtrl = createTraceCtrl();
+                traceCtrl.id = (int) (Math.random() * 1000);
+                Log.d(TAG.ME, "TraceCtrlFactory: new traceCtrl"+traceCtrl.id);
+                return traceCtrl;
             }
-            Log.d(TAG.ME, "obtain: from recycle bin");
-            return linkedList.pollFirst();
+            T t = linkedList.pollFirst();
+            Log.d(TAG.ME, "TraceCtrlFactory: from recycle bin "+t.id);
+            return t;
         }
 
         public void recycle(T t) {
+            Log.d(TAG.ME, "TraceCtrlFactory: recycle traceCtrl" + t.id);
             if (linkedList.size() < maxSize) {
-                t.isUsing = false;
-                linkedList.addLast(t);
+                if (t.isUsing) {
+                    t.isUsing = false;
+                    linkedList.addLast(t);
+                }
             }
         }
 

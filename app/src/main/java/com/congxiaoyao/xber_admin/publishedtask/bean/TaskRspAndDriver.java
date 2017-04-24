@@ -4,17 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.congxiaoyao.httplib.response.CarDetail;
-import com.congxiaoyao.httplib.response.Spot;
 import com.congxiaoyao.httplib.response.Task;
 import com.congxiaoyao.xber_admin.spotmanage.ParcelSpot;
-
-import java.util.Date;
 
 /**
  * Created by congxiaoyao on 2017/4/3.
  */
 
-public class TaskAndDriver implements Parcelable {
+public class TaskRspAndDriver implements Parcelable {
 
     private Long taskId;
 
@@ -201,10 +198,10 @@ public class TaskAndDriver implements Parcelable {
         dest.writeString(this.note);
     }
 
-    public TaskAndDriver() {
+    public TaskRspAndDriver() {
     }
 
-    protected TaskAndDriver(Parcel in) {
+    protected TaskRspAndDriver(Parcel in) {
         this.taskId = (Long) in.readValue(Long.class.getClassLoader());
         this.carId = (Long) in.readValue(Long.class.getClassLoader());
         this.startTime = (Long) in.readValue(Long.class.getClassLoader());
@@ -220,15 +217,15 @@ public class TaskAndDriver implements Parcelable {
         this.note = in.readString();
     }
 
-    public static final Parcelable.Creator<TaskAndDriver> CREATOR = new Parcelable.Creator<TaskAndDriver>() {
+    public static final Parcelable.Creator<TaskRspAndDriver> CREATOR = new Parcelable.Creator<TaskRspAndDriver>() {
         @Override
-        public TaskAndDriver createFromParcel(Parcel source) {
-            return new TaskAndDriver(source);
+        public TaskRspAndDriver createFromParcel(Parcel source) {
+            return new TaskRspAndDriver(source);
         }
 
         @Override
-        public TaskAndDriver[] newArray(int size) {
-            return new TaskAndDriver[size];
+        public TaskRspAndDriver[] newArray(int size) {
+            return new TaskRspAndDriver[size];
         }
     };
 }

@@ -5,12 +5,11 @@ import com.congxiaoyao.httplib.request.TaskRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.httplib.response.Spot;
-import com.congxiaoyao.httplib.response.Task;
 import com.congxiaoyao.httplib.response.TaskListRsp;
 import com.congxiaoyao.httplib.response.TaskRsp;
 import com.congxiaoyao.httplib.response.exception.LoginException;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.PagedListLoadablePresenterImpl;
-import com.congxiaoyao.xber_admin.publishedtask.bean.TaskAndDriver;
+import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
 import com.congxiaoyao.xber_admin.publishedtask.bean.TaskAndDriverListRsp;
 import com.congxiaoyao.xber_admin.spotmanage.ParcelSpot;
 import com.congxiaoyao.xber_admin.utils.Token;
@@ -91,11 +90,11 @@ public class PublishedTaskListPresenter extends PagedListLoadablePresenterImpl<P
     }
 
     private void insertCarDetailsToRsp(List<CarDetail> carDetails, TaskAndDriverListRsp rsp) {
-        List<TaskAndDriver> list = rsp.getList();
+        List<TaskRspAndDriver> list = rsp.getList();
         for (CarDetail carDetail : carDetails) {
-            for (TaskAndDriver taskAndDriver : list) {
-                if (carDetail.getCarId().equals(taskAndDriver.getCarId())) {
-                    taskAndDriver.setCarDetail(carDetail);
+            for (TaskRspAndDriver taskRspAndDriver : list) {
+                if (carDetail.getCarId().equals(taskRspAndDriver.getCarId())) {
+                    taskRspAndDriver.setCarDetail(carDetail);
                 }
             }
         }
@@ -105,23 +104,23 @@ public class PublishedTaskListPresenter extends PagedListLoadablePresenterImpl<P
         TaskAndDriverListRsp rsp = new TaskAndDriverListRsp();
         rsp.setPage(taskListRsp.getPage());
         rsp.setTimestamp(taskListRsp.getTimestamp());
-        List<TaskAndDriver> list = new ArrayList<>(taskListRsp.getTaskList().size());
+        List<TaskRspAndDriver> list = new ArrayList<>(taskListRsp.getTaskList().size());
         for (TaskRsp taskRsp : taskListRsp.getTaskList()) {
-            TaskAndDriver taskAndDriver = new TaskAndDriver();
-            taskAndDriver.setCarId(taskRsp.getCarId());
-            taskAndDriver.setTaskId(taskRsp.getTaskId());
-            taskAndDriver.setStartTime(dateToTime(taskRsp.getStartTime()));
-            taskAndDriver.setStartSpot(toParcelSpot(taskRsp.getStartSpot()));
-            taskAndDriver.setEndTime(dateToTime(taskRsp.getEndTime()));
-            taskAndDriver.setEndSpot(toParcelSpot(taskRsp.getEndSpot()));
-            taskAndDriver.setContent(taskRsp.getContent());
-            taskAndDriver.setCreateUser(taskRsp.getCreateUser());
-            taskAndDriver.setCreateTime(dateToTime(taskRsp.getCreateTime()));
-            taskAndDriver.setRealStartTime(dateToTime(taskRsp.getRealStartTime()));
-            taskAndDriver.setRealEndTime(dateToTime(taskRsp.getRealEndTime()));
-            taskAndDriver.setStatus(taskRsp.getStatus());
-            taskAndDriver.setNote(taskRsp.getNote());
-            list.add(taskAndDriver);
+            TaskRspAndDriver taskRspAndDriver = new TaskRspAndDriver();
+            taskRspAndDriver.setCarId(taskRsp.getCarId());
+            taskRspAndDriver.setTaskId(taskRsp.getTaskId());
+            taskRspAndDriver.setStartTime(dateToTime(taskRsp.getStartTime()));
+            taskRspAndDriver.setStartSpot(toParcelSpot(taskRsp.getStartSpot()));
+            taskRspAndDriver.setEndTime(dateToTime(taskRsp.getEndTime()));
+            taskRspAndDriver.setEndSpot(toParcelSpot(taskRsp.getEndSpot()));
+            taskRspAndDriver.setContent(taskRsp.getContent());
+            taskRspAndDriver.setCreateUser(taskRsp.getCreateUser());
+            taskRspAndDriver.setCreateTime(dateToTime(taskRsp.getCreateTime()));
+            taskRspAndDriver.setRealStartTime(dateToTime(taskRsp.getRealStartTime()));
+            taskRspAndDriver.setRealEndTime(dateToTime(taskRsp.getRealEndTime()));
+            taskRspAndDriver.setStatus(taskRsp.getStatus());
+            taskRspAndDriver.setNote(taskRsp.getNote());
+            list.add(taskRspAndDriver);
         }
         rsp.setList(list);
         return rsp;

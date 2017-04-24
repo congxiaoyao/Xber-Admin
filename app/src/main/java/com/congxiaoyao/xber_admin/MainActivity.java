@@ -1,13 +1,23 @@
 package com.congxiaoyao.xber_admin;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.view.GravityCompat;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.baidu.mapapi.model.LatLng;
+import com.congxiaoyao.httplib.NetWorkConfig;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
 import com.congxiaoyao.xber_admin.dispatch.DispatchTaskActivity;
 import com.congxiaoyao.xber_admin.driverslist.DriverListActivity;
@@ -35,11 +45,15 @@ public class MainActivity extends StompBaseActivity {
     private TopBarPagerAdapter pagerAdapter;
 
     private XberMonitorMapFragment monitorFragment;
+    private Admin admin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        long pre = System.currentTimeMillis();
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        Log.d("cxy", "binding time = " + (System.currentTimeMillis() - pre));
+
         helper = new NavigationHelper(binding.navView,
                 R.menu.navigation, R.layout.nav_main, R.layout.nav_header);
         helper.onItemSelected(new Action1<Integer>() {
@@ -54,7 +68,10 @@ public class MainActivity extends StompBaseActivity {
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
         });
+        Log.d("cxy", "NavigationHelper time = " + (System.currentTimeMillis() - pre));
+
         MapActivityHelper.showStatusBar(binding.statusBar);
+        Log.d("cxy", "showStatusBar time = " + (System.currentTimeMillis() - pre));
 
         pagerAdapter = new TopBarPagerAdapter(binding.animationLayer,
                 binding.topBarPager);
@@ -74,7 +91,10 @@ public class MainActivity extends StompBaseActivity {
                 }
             }
         });
+        Log.d("cxy", "pagerAdapter time = " + (System.currentTimeMillis() - pre));
+
         binding.loadingLayout.below(R.id.top_bar_pager, 16);
+        Log.d("cxy", "loadingLayout time = " + (System.currentTimeMillis() - pre));
 
         monitorFragment = XberMonitorMapFragment
                 .newInstance(new StompServiceProvider() {
@@ -86,6 +106,7 @@ public class MainActivity extends StompBaseActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.map_container,
                 monitorFragment).commit();
+        Log.d("cxy", "on create time = " + (System.currentTimeMillis() - pre));
 
 //        binding.topBarPager.setCurrentItem(1, false);
 //        binding.topBarPager.postDelayed(new Runnable() {
@@ -105,7 +126,7 @@ public class MainActivity extends StompBaseActivity {
     private boolean checkAndRetry(Runnable runnable) {
         if (monitorFragment == null || monitorFragment.getBaiduMap() == null
                 || monitorFragment.getMonitor() == null) {
-            binding.getRoot().postDelayed(runnable, 100);
+            binding.getRoot().postDelayed(runnable, 1000);
             return false;
         }
         return true;
@@ -126,7 +147,7 @@ public class MainActivity extends StompBaseActivity {
         pagerAdapter.setEnabled(true);
         LatLng latLng = BaiduMapUtils.getScreenCenterLatLng(this, monitorFragment.getBaiduMap());
         double radius = BaiduMapUtils.getScreenRadius(this, monitorFragment.getBaiduMap());
-//        stompService.nearestNTrace(latLng.latitude, latLng.longitude, radius, 100);
+        stompService.nearestNTrace(latLng.latitude, latLng.longitude, 1000, 100);
     }
 
     @Override
@@ -177,14 +198,36 @@ public class MainActivity extends StompBaseActivity {
 
     @Override
     protected void tokenSafeOnResume(Admin admin) {
+        this.admin = admin;
         super.tokenSafeOnResume(admin);
         ((TextView) helper.getHeaderView().findViewById(R.id.tv_user_name))
                 .setText(admin.getNickName());
     }
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+//        PushService.startPushService(this, NetWorkConfig.WS_URL, admin.getToken(), userId);
+    }
+
+    private void openJobService() {
+        if (admin != null) {
+            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+            PersistableBundle extras = new PersistableBundle();
+            extras.putString(PushService.EXTRA_TOKEN,admin.getToken());
+            extras.putString(PushService.EXTRA_URL, NetWorkConfig.WS_URL);
+            extras.putLong(PushService.EXTRA_USER_ID, admin.getUserId());
+            JobInfo jobInfo = new JobInfo.Builder(1, new ComponentName(getPackageName(),
+                    PushHelper.class.getName()))
+                    .setPeriodic(2000)
+                    .setExtras(extras)
+//                    .setPersisted(true)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .build();
+            jobScheduler.schedule(jobInfo);
+        }
     }
 
     @Override

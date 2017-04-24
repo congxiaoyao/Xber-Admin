@@ -9,7 +9,7 @@
 
         <variable
             name="task"
-            type="com.congxiaoyao.xber_admin.publishedtask.bean.TaskAndDriver" />
+            type="com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver" />
     </data>
 
     <LinearLayout

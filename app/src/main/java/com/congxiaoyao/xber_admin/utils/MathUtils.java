@@ -8,8 +8,6 @@ import com.congxiaoyao.location.utils.Ray;
 
 public class MathUtils {
 
-    private static final Ray ray = new Ray(0, 0, 0, 0);
-
     public static float map(float from1, float to1, float from2, float to2, float value) {
         float lenV = value - from1;
         float len1 = to1 - from1;
@@ -29,8 +27,15 @@ public class MathUtils {
     }
 
     public static float latLngToAngle(double dLat, double dLng) {
-        ray.setP1(dLng, dLat);
-        return (float) Math.toDegrees(ray.getRayAngle());
+        return (float) Math.toDegrees(new Ray(0, 0,dLng, dLat).getRayAngle());
     }
 
+    public static boolean amIFaster(double meLat, double meLng, double angle, double lat, double lng) {
+        Ray ray = new Ray(0, 0, 1, 0);
+        ray.rotate(Math.toRadians(angle));
+        ray.rotate(-Math.PI / 2);
+        ray.translate(meLng, meLat);
+        int x = ray.whichSide(lng, lat);
+        return x == 1;
+    }
 }

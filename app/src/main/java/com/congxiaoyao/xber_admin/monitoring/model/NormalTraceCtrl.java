@@ -18,6 +18,7 @@ public class NormalTraceCtrl extends TraceCtrl{
 
     @Override
     protected void animate(float progress) {
+
         crtLat = MathUtils.map(0, 1, start.getLat(), end.getLat(), progress);
         crtLng = MathUtils.map(0, 1, start.getLng(), end.getLng(), progress);
         //在最后的两秒内将车头调转过来 但是如果整个运行时间不足两秒 则认为这是一个转向动画

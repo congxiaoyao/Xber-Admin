@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -15,18 +13,15 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.congxiaoyao.httplib.response.Task;
-import com.congxiaoyao.httplib.response.TaskRsp;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ActivityTaskTrackBinding;
 import com.congxiaoyao.xber_admin.databinding.ItemTaskStateBinding;
 import com.congxiaoyao.xber_admin.driverslist.driverdetail.HistoryTaskFragment;
 import com.congxiaoyao.xber_admin.driverslist.module.ParcelTaskRsp;
 import com.congxiaoyao.xber_admin.driverslist.taskdetail.TaskDetailActivity;
-import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
-import com.congxiaoyao.xber_admin.mvpbase.view.LoadableViewImpl;
-import com.congxiaoyao.xber_admin.publishedtask.bean.TaskAndDriver;
+import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -38,7 +33,7 @@ public class TaskTrackActivity extends SwipeBackActivity {
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
 
     private ActivityTaskTrackBinding binding;
-    private TaskAndDriver task;
+    private TaskRspAndDriver task;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +60,7 @@ public class TaskTrackActivity extends SwipeBackActivity {
             createItem("等待执行任务", format.format(task.getStartTime()), true);
         }
         if (task.getStatus() == Task.STATUS_EXECUTING) {
-            createItem("任务执行中", format.format(task.getRealStartTime()), false);
+            createItem("开始执行任务", format.format(task.getRealStartTime()), false);
             ItemTaskStateBinding taskStateBinding = createItem("当前位置", "查询中...", true);
             new LocationQueryPresenter(new LocationQueryView(taskStateBinding)).subscribe();
         }
@@ -117,17 +112,17 @@ public class TaskTrackActivity extends SwipeBackActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private ParcelTaskRsp taskAndDriverToParcelTaskRsp(TaskAndDriver taskAndDriver) {
+    private ParcelTaskRsp taskAndDriverToParcelTaskRsp(TaskRspAndDriver taskRspAndDriver) {
         ParcelTaskRsp taskRsp = new ParcelTaskRsp();
-        taskRsp.setTaskId(taskAndDriver.getTaskId());
-        taskRsp.setStartSpot(taskAndDriver.getStartSpot());
-        taskRsp.setEndSpot(taskAndDriver.getEndSpot());
-        taskRsp.setContent(taskAndDriver.getContent());
-        taskRsp.setCreateUser(taskAndDriver.getCreateUser());
-        taskRsp.setRealStartTime(taskAndDriver.getRealStartTime());
-        taskRsp.setRealEndTime(taskAndDriver.getRealEndTime());
-        taskRsp.setStatus(taskAndDriver.getStatus());
-        taskRsp.setNote(taskAndDriver.getNote());
+        taskRsp.setTaskId(taskRspAndDriver.getTaskId());
+        taskRsp.setStartSpot(taskRspAndDriver.getStartSpot());
+        taskRsp.setEndSpot(taskRspAndDriver.getEndSpot());
+        taskRsp.setContent(taskRspAndDriver.getContent());
+        taskRsp.setCreateUser(taskRspAndDriver.getCreateUser());
+        taskRsp.setRealStartTime(taskRspAndDriver.getRealStartTime());
+        taskRsp.setRealEndTime(taskRspAndDriver.getRealEndTime());
+        taskRsp.setStatus(taskRspAndDriver.getStatus());
+        taskRsp.setNote(taskRspAndDriver.getNote());
         return taskRsp;
     }
 
