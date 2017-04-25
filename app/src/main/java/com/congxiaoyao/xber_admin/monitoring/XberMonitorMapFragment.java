@@ -31,7 +31,6 @@ public class XberMonitorMapFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         mapView = new TextureMapView(getActivity());
-        monitor = new XberMonitor(mapView, mapView.getMap(), stompProvider);
         configBaiduMap(mapView.getMap());
         return mapView;
     }
@@ -60,14 +59,15 @@ public class XberMonitorMapFragment extends Fragment {
         baiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                return monitor.onMarkerClick(marker);
+                if (monitor != null) monitor.onMarkerClick(marker);
+                return true;
             }
         });
 
         baiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                monitor.onMapClick(latLng);
+                if (monitor != null) monitor.onMapClick(latLng);
             }
 
             @Override
@@ -106,12 +106,17 @@ public class XberMonitorMapFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        monitor = new XberMonitor(mapView, mapView.getMap(), stompProvider);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mapView.onPause();
+        if (monitor != null) {
+            monitor.close();
+            monitor = null;
+        }
     }
 
     @Override

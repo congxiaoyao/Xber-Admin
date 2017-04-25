@@ -40,6 +40,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="17dp"
                         android:textSize="14sp"
+                        android:id="@+id/tv_car_plate"
                         android:textColor="#ffffff"
                         android:layout_gravity="center"
                         android:text="津A123456" />

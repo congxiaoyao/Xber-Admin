@@ -8,11 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.view.GravityCompat;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -202,9 +198,21 @@ public class MainActivity extends StompBaseActivity {
         super.tokenSafeOnResume(admin);
         ((TextView) helper.getHeaderView().findViewById(R.id.tv_user_name))
                 .setText(admin.getNickName());
+        Log.d(TAG.ME, "tokenSafeOnResume: ");
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG.ME, "onPause: ");
+        unBindService();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG.ME, "onStop: ");
+    }
 
     @Override
     protected void onDestroy() {

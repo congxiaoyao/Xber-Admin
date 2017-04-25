@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.congxiaoyao.httplib.response.CarDetail" />
+
+        <variable
+            name="presenter"
+            type="com.congxiaoyao.xber_admin.monitoring.carinfo.CarInfoContract.Presenter" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:background="#fdfdfd"
+                android:orientation="vertical"
+                android:layout_height="48dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textSize="16sp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:textColor="@color/colorBlack"
+                    android:text="车辆信息" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="#e6e6e6" />
+
+            <com.congxiaoyao.xber_admin.widget.XberDividerLayout
+                android:background="#ffffff"
+                app:divider_size="2px"
+                app:divider_color="#e6e6e6"
+                app:divider_padding_left="56dp"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    app:divider_bottom="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="16dp"
+                    android:layout_height="48dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:tint="#b9b9b9"
+                        android:src="@drawable/ic_driver" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:textSize="16sp"
+                        android:textColor="#666666"
+                        android:text="司机名" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:paddingRight="16dp"
+                        android:textSize="15sp"
+                        tools:text="丛圣杰"
+                        android:text="@{data.userInfo.name}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    app:divider_bottom="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:paddingLeft="16dp"
+                    android:layout_height="48dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:tint="#b9b9b9"
+                        android:src="@drawable/ic_plate" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:textSize="16sp"
+                        android:textColor="#666666"
+                        android:text="车牌" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:paddingRight="16dp"
+                        android:textSize="15sp"
+                        android:text="@{data.plate}"
+                        tools:text="津A123737" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    app:divider_bottom="true"
+                    app:divider_padding_left="0dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:paddingLeft="16dp"
+                    android:layout_height="48dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:tint="#b9b9b9"
+                        android:src="@drawable/ic_car_type" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:textSize="16sp"
+                        android:textColor="#666666"
+                        android:text="车型" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:paddingRight="16dp"
+                        android:textSize="15sp"
+                        tools:text="玛莎拉蒂"
+                        android:text="@{data.spec}" />
+
+                </LinearLayout>
+
+            </com.congxiaoyao.xber_admin.widget.XberDividerLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/MyButton"
+                android:textSize="@dimen/sp_16"
+                android:padding="16dp"
+                android:onClick="@{presenter.onClick}"
+                android:enabled="@{data!=null}"
+                android:text="查看司机" />
+        </LinearLayout>
+
+        <include layout="@layout/view_progress_bar" />
+    </FrameLayout>
+</layout>

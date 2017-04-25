@@ -159,6 +159,16 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
         }).show();
     }
 
+    public boolean isNetworkConnected() {
+        ConnectivityManager mConnectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+        if (mNetworkInfo != null) {
+            return mNetworkInfo.isAvailable();
+        }
+        return false;
+    }
+
     public void rebindService() {
         unbindService(connection);
         Observable.just(0).delay(500, TimeUnit.MILLISECONDS)
@@ -186,16 +196,6 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
                 });
     }
 
-    public boolean isNetworkConnected() {
-        ConnectivityManager mConnectivityManager = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-        if (mNetworkInfo != null) {
-            return mNetworkInfo.isAvailable();
-        }
-        return false;
-    }
-
     public void bindService() {
         if (userId == -1 || Token.value.equals("")) {
             login();
@@ -219,6 +219,13 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
             }
         };
         StompService.bind(Token.value, userId, connection, this);
+    }
+
+    public void unBindService() {
+        if (connection != null) {
+            unbindService(connection);
+            connection = null;
+        }
     }
 
     @Override

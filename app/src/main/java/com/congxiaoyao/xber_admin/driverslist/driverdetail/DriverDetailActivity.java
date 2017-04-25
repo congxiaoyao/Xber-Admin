@@ -40,6 +40,7 @@ public class DriverDetailActivity extends SwipeBackActivity implements Collapsib
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_driver_detail);
+        binding.tvCarPlate.setText(getCarDetail().getPlate());
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getCarDetail().getUserInfo().getName());

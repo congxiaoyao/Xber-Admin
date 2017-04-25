@@ -1,5 +1,6 @@
 package com.congxiaoyao.xber_admin.monitoring;
 
+import android.app.Activity;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,8 +15,11 @@ import com.baidu.mapapi.model.LatLng;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.StompBaseActivity.StompServiceProvider;
 import com.congxiaoyao.xber_admin.TAG;
+import com.congxiaoyao.xber_admin.monitoring.carinfo.CarInfoPresenter;
+import com.congxiaoyao.xber_admin.monitoring.carinfo.CarInfoView;
 import com.congxiaoyao.xber_admin.monitoring.model.TraceCtrlFactory;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
+import com.congxiaoyao.xber_admin.widget.BottomDialog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,6 +46,7 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
     private TraceCtrlFactory factory;
 
     private Map<Long, RunningCar> runningCars = new HashMap<>();
+    private CarInfoPresenter presenter;
 
     public XberMonitor(TextureMapView mapView, BaiduMap baiduMap,
                        StompServiceProvider serviceProvider) {
@@ -71,23 +76,11 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
             Log.e(TAG.ME, "onCarAdd: 按说这里不应该查到东西的！！");
             runningCar.destroy();
         }
-        runningCar = new RunningCar(factory,baiduMap,trace){
-//            @Override
-//            protected void requestInf(double lat, double lng) {
-//                MarkerOptions markerOptions = new MarkerOptions();
-//                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_location_goal));
-//                markerOptions.position(new LatLng(lat, lng));
-//                baiduMap.addOverlay(markerOptions);
-//            }
-//
-//            @Override
-//            protected void requestNormal(double lat, double lng) {
-//                MarkerOptions markerOptions = new MarkerOptions();
-//                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_location_start));
-//                markerOptions.position(new LatLng(lat, lng));
-//                baiduMap.addOverlay(markerOptions);
-//            }
-        };
+        try {
+            runningCar = new RunningCar(factory,baiduMap,trace);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
         runningCar.setMapView(mapView);
         runningCars.put(carId, runningCar);
     }
@@ -107,6 +100,11 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        long carId = getCarId(marker);
+        if (carId != 0) {
+            presenter = new CarInfoPresenter(new CarInfoView((Activity)
+                    mapView.getContext()), carId);
+        }
         return true;
     }
 
@@ -115,7 +113,6 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 
     @Override
     public void onMapClick(final LatLng latLng) {
-
         if (testData == null) {
             testData = getTestData();
             lastData = testData.getLast();
@@ -173,6 +170,11 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
     }
 
     public void close() {
+        Log.d(TAG.ME, "XberMonitor close: ");
+        if (presenter != null) {
+            presenter.unSubscribe();
+            presenter = null;
+        }
         if (runningCars != null) {
             Set<Long> keySet = runningCars.keySet();
             for (Long carId : keySet) {

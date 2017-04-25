@@ -42,12 +42,15 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
     public static final String tag = RunningCar.class.getSimpleName();
     public static final int WAIT_TIME = 1000;
 
+    private boolean destroy = false;
+
     private long carID;
     private final Marker marker;
     private SyncOrderedList<GpsSampleRsp> data;
     private TraceCtrlFactory factory;
 
     private TraceCtrl currentTrace;
+    private GpsSampleRsp currentGps;
     private TextureMapView mapView;
 
     public void setMapView(TextureMapView mapView) {
@@ -66,7 +69,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.xber_red_car));
-        GpsSampleRsp gpsSampleRsp = data.takeFirst();
+        GpsSampleRsp gpsSampleRsp = currentGps = data.takeFirst();
         markerOptions.position(toLatLnt(gpsSampleRsp));
         markerOptions.anchor(0.5f, 0.5f);
         marker = (Marker) map.addOverlay(markerOptions);
@@ -85,6 +88,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
 
     @Override
     public void handleMessage(Message msg) {
+        if (destroy) return;
         TraceCtrl traceCtrl = (TraceCtrl) msg.obj;
         //此段轨迹动画播放结束
         if (traceCtrl.shouldStop()) {
@@ -114,15 +118,23 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
         //从推测的轨迹中切换过来 所以不一定跟新的点能很好的契合 需要创建一段过渡轨迹
         if (traceCtrl instanceof InfiniteTraceCtrl || traceCtrl instanceof HoldPositionCtrl) {
             GpsSampleRsp position = data.getFirst();
+            //这是一种异常情况 正常情况下基本不会出现
+            if (position == null) {
+                Log.e(TAG.ME, "dispatchNewTraceCtrl: InfiniteTraceCtrl结束但是还是没有数据");
+                return;
+            }
             float newAngle = MathUtils.latLngToAngle(position.getVlat(),
                     position.getVlng());
             //我超前新数据同时我可以等他一会
             if (MathUtils.amIFaster(traceCtrl.crtLat, traceCtrl.crtLng, traceCtrl.rotate,
                     position.getLat(), position.getLng()) &&
                     Math.abs(traceCtrl.rotate - newAngle) < 60) {
-                Log.d(tag, "dispatchNewTraceCtrl: 超前 等待中...");
+                Log.d(tag, "dispatchNewTraceCtrl: 超前 等待中... ");
+                builder.clear();
                 sendMessage(createHoldMessage(newAngle, builder.setLat(traceCtrl.crtLat)
                         .setLng(traceCtrl.crtLng).build(), WAIT_TIME));
+                position.setLat(position.getLat() + position.getVlat() * WAIT_TIME / 1000);
+                position.setLng(position.getLng() + position.getVlng() * WAIT_TIME / 1000);
                 return;
             }
             //我落后新数据
@@ -132,6 +144,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
             double time = distance / speed * 1000;
             if(time > 5000) time = 5000;
             Log.d(tag, "dispatchNewTraceCtrl: 追赶... " + (long) time + "ms");
+            builder.clear();
             Message normalMessage = createNormalMessage(traceCtrl.rotate,
                     builder.setLat(traceCtrl.crtLat).setLng(traceCtrl.crtLng)
                             .setTime(position.getTime() - (long) time).build(), position);
@@ -140,7 +153,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
         }
         //开始下一段动画
         float rftRotate = traceCtrl.getCurrentRotate();
-        GpsSampleRsp gpsSampleRsp = data.takeFirst();
+        GpsSampleRsp gpsSampleRsp = currentGps = data.takeFirst();
         Log.d(tag, "dispatchNewTraceCtrl: data = " + gpsSampleRsp.getTime());
         sendMessage(data.isEmpty() ? createInfMessage(rftRotate, gpsSampleRsp) :
                 createNormalMessage(rftRotate, gpsSampleRsp, data.getFirst()));
@@ -156,7 +169,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
 
     private Message createHoldMessage(float refRotate, GpsSampleRsp point, long time) {
         Message message = Message.obtain();
-        message.what = (int) point.getCarId();
+        message.what = (int) carID;
         HoldPositionCtrl hold = factory.hold().init(refRotate, point, time);
         message.obj = hold;
         Log.d(TAG.ME, "createHoldMessage: create hold " + hold.id);
@@ -166,7 +179,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
 
     private Message createInfMessage(float refRotate, GpsSampleRsp point) {
         Message message = Message.obtain();
-        message.what = (int) point.getCarId();
+        message.what = (int) carID;
         InfiniteTraceCtrl infinite = factory.infinite().init(refRotate, point);
         message.obj = infinite;
         Log.d(TAG.ME, "createInfMessage: create infinite " + infinite.id);
@@ -176,7 +189,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
 
     private Message createNormalMessage(float refRotate, GpsSampleRsp from, GpsSampleRsp to) {
         Message message = Message.obtain();
-        message.what = (int) from.getCarId();
+        message.what = (int) carID;
         NormalTraceCtrl normal = factory.normal().init(refRotate, from, to);
         message.obj = normal;
         Log.d(TAG.ME, "createNormalMessage: create normal " + normal.id);
@@ -212,9 +225,10 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
     }
 
     public void destroy() {
-        currentTrace.recycle();
-        marker.remove();
-        data.clear();
+        destroy = true;
         removeMessages((int) carID);
+        if (currentTrace != null) currentTrace.recycle();
+        if (marker != null) marker.remove();
+        if (data != null) data.clear();
     }
 }
