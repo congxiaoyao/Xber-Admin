@@ -43,6 +43,8 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
     private Subscription shouldReconnect;
     private int connectCount = 0;
 
+    private AlertDialog reconnectDialog;
+
     private StompService.StompLifeCycle lifeCycle = new StompService.StompLifeCycle() {
         @Override
         public void onStompOpened() {
@@ -154,13 +156,24 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
     }
 
     public void showReconnectDialog(String message) {
-        new AlertDialog.Builder(this).setTitle("错误")
+        if (reconnectDialog != null) return;
+        reconnectDialog = new AlertDialog.Builder(this).setTitle("错误")
                 .setMessage(message).setPositiveButton("重新连接", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                rebindService();
-            }
-        }).show();
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        rebindService();
+                    }
+                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        reconnectDialog = null;
+                    }
+                }).setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        reconnectDialog = null;
+                    }
+                }).show();
     }
 
     public boolean isNetworkConnected() {
@@ -205,6 +218,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
             login();
             return;
         }
+        reconnectDialog = null;
         connectCount = 0;
         connection = new ServiceConnection() {
             @Override

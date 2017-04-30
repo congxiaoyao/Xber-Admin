@@ -26,6 +26,8 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
+import static com.congxiaoyao.xber_admin.driverslist.DriverListFragment.carDetailToParcel;
+
 /**
  * Created by congxiaoyao on 2017/4/3.
  */
@@ -94,7 +96,7 @@ public class PublishedTaskListPresenter extends PagedListLoadablePresenterImpl<P
         for (CarDetail carDetail : carDetails) {
             for (TaskRspAndDriver taskRspAndDriver : list) {
                 if (carDetail.getCarId().equals(taskRspAndDriver.getCarId())) {
-                    taskRspAndDriver.setCarDetail(carDetail);
+                    taskRspAndDriver.setCarDetail(carDetailToParcel(carDetail));
                 }
             }
         }

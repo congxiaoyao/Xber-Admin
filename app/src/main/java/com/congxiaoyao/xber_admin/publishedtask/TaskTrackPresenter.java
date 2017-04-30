@@ -3,6 +3,7 @@ package com.congxiaoyao.xber_admin.publishedtask;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.congxiaoyao.httplib.request.CarRequest;
 import com.congxiaoyao.httplib.request.TaskRequest;
@@ -28,6 +29,8 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
+
+import static com.congxiaoyao.xber_admin.driverslist.DriverListFragment.carDetailToParcel;
 
 /**
  * Created by congxiaoyao on 2017/4/30.
@@ -76,6 +79,7 @@ public class TaskTrackPresenter extends BasePresenterImpl<TaskTrackContact.View>
                                         .getCarInfo(taskRsp.getCarId(), Token.value), new Func2<TaskRsp, CarDetail, TaskRspAndDriver>() {
                                     @Override
                                     public TaskRspAndDriver call(TaskRsp taskRsp, CarDetail carDetail) {
+
                                         return merge(taskRsp, carDetail);
                                     }
                                 });
@@ -92,6 +96,13 @@ public class TaskTrackPresenter extends BasePresenterImpl<TaskTrackContact.View>
     }
 
     private TaskRspAndDriver merge(TaskRsp taskRsp, CarDetail carDetail) {
+        TaskRspAndDriver taskRspAndDriver = getTaskRspWithoutDriver(taskRsp);
+        taskRspAndDriver.setCarDetail(carDetailToParcel(carDetail));
+        return taskRspAndDriver;
+    }
+
+    @NonNull
+    public static TaskRspAndDriver getTaskRspWithoutDriver(TaskRsp taskRsp) {
         TaskRspAndDriver taskRspAndDriver = new TaskRspAndDriver();
         taskRspAndDriver.setCarId(taskRsp.getCarId());
         taskRspAndDriver.setTaskId(taskRsp.getTaskId());
@@ -106,16 +117,15 @@ public class TaskTrackPresenter extends BasePresenterImpl<TaskTrackContact.View>
         taskRspAndDriver.setRealEndTime(dateToTime(taskRsp.getRealEndTime()));
         taskRspAndDriver.setStatus(taskRsp.getStatus());
         taskRspAndDriver.setNote(taskRsp.getNote());
-        taskRspAndDriver.setCarDetail(carDetail);
         return taskRspAndDriver;
     }
 
-    public Long dateToTime(Date date) {
+    public static Long dateToTime(Date date) {
         if (date == null) return null;
         return date.getTime();
     }
 
-    public ParcelSpot toParcelSpot(Spot spot) {
+    public static ParcelSpot toParcelSpot(Spot spot) {
         ParcelSpot parcelSpot = new ParcelSpot(spot.getSpotId(),
                 spot.getSpotName(), spot.getLatitude(), spot.getLongitude());
         return parcelSpot;

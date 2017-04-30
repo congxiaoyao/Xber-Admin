@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.httplib.response.Task;
+import com.congxiaoyao.xber_admin.driverslist.module.CarDetailParcel;
 import com.congxiaoyao.xber_admin.spotmanage.ParcelSpot;
 
 /**
@@ -39,13 +40,13 @@ public class TaskRspAndDriver implements Parcelable {
 
     private String note;
 
-    private CarDetail carDetail;
+    private CarDetailParcel carDetail;
 
-    public CarDetail getCarDetail() {
+    public CarDetailParcel getCarDetail() {
         return carDetail;
     }
 
-    public void setCarDetail(CarDetail carDetail) {
+    public void setCarDetail(CarDetailParcel carDetail) {
         this.carDetail = carDetail;
     }
 
@@ -196,6 +197,7 @@ public class TaskRspAndDriver implements Parcelable {
         dest.writeValue(this.realEndTime);
         dest.writeValue(this.status);
         dest.writeString(this.note);
+        dest.writeParcelable(this.carDetail, flags);
     }
 
     public TaskRspAndDriver() {
@@ -215,6 +217,7 @@ public class TaskRspAndDriver implements Parcelable {
         this.realEndTime = (Long) in.readValue(Long.class.getClassLoader());
         this.status = (Integer) in.readValue(Integer.class.getClassLoader());
         this.note = in.readString();
+        this.carDetail = in.readParcelable(CarDetailParcel.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<TaskRspAndDriver> CREATOR = new Parcelable.Creator<TaskRspAndDriver>() {

@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Handler;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuCompat;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.Toolbar;
@@ -15,8 +16,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.congxiaoyao.httplib.request.TaskRequest;
+import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
+import com.congxiaoyao.httplib.response.GpsSamplePo;
 import com.congxiaoyao.httplib.response.Task;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ActivityTaskTrackBinding;
@@ -32,6 +44,7 @@ import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
 import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
 import com.congxiaoyao.xber_admin.publishedtask.bean.TaskTrackContact;
+import com.congxiaoyao.xber_admin.utils.Token;
 import com.xiaomi.mipush.sdk.MiPushMessage;
 import com.xiaomi.mipush.sdk.PushMessageHelper;
 
@@ -42,6 +55,15 @@ import java.util.List;
 import java.util.Locale;
 
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
+import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.observables.ConnectableObservable;
+import rx.plugins.RxJavaErrorHandler;
+import rx.subjects.PublishSubject;
+
+import static com.baidu.mapapi.search.geocode.ReverseGeoCodeResult.*;
 
 public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackContact.View{
 
@@ -80,13 +102,18 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
         if (task.getStatus() == Task.STATUS_EXECUTING) {
             createItem("开始执行任务", format.format(task.getRealStartTime()), false);
             ItemTaskStateBinding taskStateBinding = createItem("当前位置", "查询中...", true);
-            new LocationQueryPresenter(new LocationQueryView(taskStateBinding)).subscribe();
+            new LocationQueryPresenter(new LocationQueryView(taskStateBinding),
+                    task.getTaskId()).subscribe();
         }
         if (task.getStatus() == Task.STATUS_COMPLETED) {
             createItem("开始执行任务", format.format(task.getRealStartTime()), false);
             createItem("结束行程", format.format(task.getRealEndTime()), false);
             if (task.getRealEndTime() - task.getEndTime() <= 0) {
-                createItem("按时完成！", "✔", true);
+                ItemTaskStateBinding itemBinding = createItem("按时完成！", "✔", true);
+                ((TextView) itemBinding.getRoot().findViewById(R.id.textView2))
+                        .setTextColor(ContextCompat.getColor(this, R.color.colorLightGreen));
+                ((TextView) itemBinding.getRoot().findViewById(R.id.textView))
+                        .setTextColor(ContextCompat.getColor(this, R.color.colorLightGreen));
             } else {
                 createItem("未在规定时间内完成", "\uD83D\uDE1C", true);
             }
@@ -116,9 +143,8 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
                 menu.add("查看该司机").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        CarDetailParcel parcel = DriverListFragment.carDetailToParcel(task.getCarDetail());
                         Intent intent = new Intent(TaskTrackActivity.this, DriverDetailActivity.class);
-                        intent.putExtra(DriverListActivity.EXTRA_CARDETIAL, parcel);
+                        intent.putExtra(DriverListActivity.EXTRA_CARDETIAL, task.getCarDetail());
                         startActivity(intent);
                         return true;
                     }
@@ -155,12 +181,8 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("出现了一些错误");
         setContentView(parent);
-        View view = getLayoutInflater().inflate(R.layout.view_empty,
+        getLayoutInflater().inflate(R.layout.view_empty,
                 (ViewGroup) parent.findViewById(R.id.fragment_content), true);
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
-                view.getLayoutParams();
-        layoutParams.gravity = Gravity.CENTER_VERTICAL;
-        view.requestLayout();
     }
 
     @Override
@@ -261,20 +283,72 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
 
     class LocationQueryPresenter extends BasePresenterImpl<LocationQueryView> {
 
-        public LocationQueryPresenter(LocationQueryView view) {
+        private final Long taskId;
+
+        public LocationQueryPresenter(LocationQueryView view, Long taskId) {
             super(view);
+            this.taskId = taskId;
         }
 
         @Override
         public void subscribe() {
             view.showLoading();
-            new Handler().postDelayed(new Runnable() {
+            XberRetrofit.create(TaskRequest.class)
+                    .getLastPosition(taskId, Token.value)
+            .map(new Func1<GpsSamplePo, LatLng>() {
                 @Override
-                public void run() {
-                    view.hideLoading();
-                    view.showLocation("山东省 济南市");
+                public LatLng call(GpsSamplePo gpsSamplePo) {
+                    return new LatLng(gpsSamplePo.getLatitude(), gpsSamplePo.getLongitude());
                 }
-            }, 1000);
+            }).flatMap(new Func1<LatLng, Observable<ReverseGeoCodeResult>>() {
+                @Override
+                public Observable<ReverseGeoCodeResult> call(LatLng latLng) {
+                    return subscribeGeoResult(latLng);
+                }
+            }).subscribe(new Action1<ReverseGeoCodeResult>() {
+                @Override
+                public void call(ReverseGeoCodeResult reverseGeoCodeResult) {
+                    AddressComponent address = reverseGeoCodeResult.getAddressDetail();
+                    view.showLocation(address.province + " " + address.city);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    exceptionDispatcher.dispatchException(throwable);
+                }
+            });
+
+        }
+
+        public Observable<ReverseGeoCodeResult> subscribeGeoResult(LatLng latLng) {
+            return Observable.just(latLng).flatMap(new Func1<LatLng, Observable<ReverseGeoCodeResult>>() {
+                @Override
+                public Observable<ReverseGeoCodeResult> call(final LatLng latLng) {
+                    Observable<ReverseGeoCodeResult> observable = Observable.create(new Observable.OnSubscribe<ReverseGeoCodeResult>() {
+                        @Override
+                        public void call(final Subscriber<? super ReverseGeoCodeResult> subscriber) {
+                            GeoCoder geoCoder = GeoCoder.newInstance();
+                            geoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
+                                @Override
+                                public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
+                                }
+
+                                @Override
+                                public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+                                    if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+                                        subscriber.onError(new RuntimeException());
+                                    }else {
+                                        subscriber.onNext(result);
+                                    }
+                                }
+                            });
+                            geoCoder.reverseGeoCode(new ReverseGeoCodeOption()
+                                    .location(latLng));
+                        }
+                    });
+                    return observable;
+                }
+            });
         }
 
         @Override

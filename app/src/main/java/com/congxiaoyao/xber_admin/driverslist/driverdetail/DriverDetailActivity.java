@@ -94,12 +94,8 @@ public class DriverDetailActivity extends SwipeBackActivity implements Collapsib
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("出现了一些错误");
         setContentView(parent);
-        View view = getLayoutInflater().inflate(R.layout.view_empty,
+        getLayoutInflater().inflate(R.layout.view_empty,
                 (ViewGroup) parent.findViewById(R.id.fragment_content), true);
-        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
-                view.getLayoutParams();
-        layoutParams.gravity = Gravity.CENTER_VERTICAL;
-        view.requestLayout();
     }
 
     @Override

@@ -76,7 +76,7 @@ public class PublishedTaskListFragment
                 if (item.getItemId() == R.id.menu_drivers) {
                     Intent intent = new Intent(getContext(), DriverDetailActivity.class);
                     intent.putExtra(DriverListActivity.EXTRA_CARDETIAL,
-                            DriverListFragment.carDetailToParcel(taskRspAndDriver.getCarDetail()));
+                            taskRspAndDriver.getCarDetail());
                     startActivity(intent);
                     return true;
                 }

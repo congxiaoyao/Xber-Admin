@@ -26,9 +26,16 @@ import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.driverslist.module.ParcelTaskRsp;
 import com.congxiaoyao.xber_admin.driverslist.taskdetail.TaskDetailActivity;
 import com.congxiaoyao.xber_admin.mvpbase.view.PagedListLoadableViewImpl;
+import com.congxiaoyao.xber_admin.publishedtask.PublishedTaskListFragment;
+import com.congxiaoyao.xber_admin.publishedtask.TaskTrackActivity;
+import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
 import com.congxiaoyao.xber_admin.spotmanage.ParcelSpot;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static com.congxiaoyao.xber_admin.driverslist.DriverListFragment.carDetailToParcel;
+import static com.congxiaoyao.xber_admin.publishedtask.TaskTrackPresenter.getTaskRspWithoutDriver;
 
 /**
  * Created by guo on 2017/3/29.
@@ -68,7 +75,8 @@ public class HistoryTaskFragment
         parcelTaskRsp.setNote(taskRsp.getNote());
         parcelTaskRsp.setTaskId(taskRsp.getTaskId());
         parcelTaskRsp.setStatus(taskRsp.getStatus());
-        parcelTaskRsp.setRealEndTime(taskRsp.getRealEndTime().getTime());
+        Date realEndTime = taskRsp.getRealEndTime();
+        parcelTaskRsp.setRealEndTime(realEndTime == null ? null : realEndTime.getTime());
         parcelTaskRsp.setRealStartTime(taskRsp.getRealStartTime().getTime());
         return parcelTaskRsp;
     }
@@ -163,7 +171,7 @@ public class HistoryTaskFragment
         });
     }
 
-    public View createHeaderTask(TaskRsp taskRsp) {
+    public View createHeaderTask(final TaskRsp taskRsp) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.item_history_task,
                 recyclerView, false);
         ((TextView) view.findViewById(R.id.tv_start_spot))
@@ -183,6 +191,16 @@ public class HistoryTaskFragment
         state.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
 
         view.findViewById(R.id.btn_more).setVisibility(View.GONE);
+        view.findViewById(R.id.ll_container).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), TaskTrackActivity.class);
+                TaskRspAndDriver taskRspAndDriver = getTaskRspWithoutDriver(taskRsp);
+                taskRspAndDriver.setCarDetail(((DriverDetailActivity) getContext()).getCarDetail());
+                intent.putExtra(PublishedTaskListFragment.KEY_TASK, taskRspAndDriver);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 

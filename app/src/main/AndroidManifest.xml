@@ -65,7 +65,7 @@
             android:name=".spotmanage.SelectSpotActivity"
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity android:name=".spotmanage.SearchPoiActivity" />
-        <activity android:name=".publishedtask.TaskTrackActivity" />
+        <activity android:name=".publishedtask.TaskTrackActivity"/>
         <activity android:name=".DividerTestActivity" />
         <activity
             android:name=".WelcomeActivity"

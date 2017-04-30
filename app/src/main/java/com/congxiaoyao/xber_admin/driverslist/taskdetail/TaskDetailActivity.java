@@ -53,12 +53,8 @@ public class TaskDetailActivity extends AppCompatActivity {
             setSupportActionBar(binding.toolbar);
             getSupportActionBar().setTitle("发生了一些错误");
             binding.llContainer.removeAllViews();
-            View view = getLayoutInflater().inflate(R.layout.view_empty,
+            getLayoutInflater().inflate(R.layout.view_empty,
                     binding.llContainer, true);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
-                    view.getLayoutParams();
-            layoutParams.gravity = Gravity.CENTER_VERTICAL;
-            view.requestLayout();
             return;
 
         }
