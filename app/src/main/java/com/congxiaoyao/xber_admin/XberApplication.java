@@ -1,12 +1,18 @@
 package com.congxiaoyao.xber_admin;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.congxiaoyao.xber_admin.utils.Token;
+import com.xiaomi.mipush.sdk.MiPushClient;
+
+import java.util.List;
+
+import static android.app.ActivityManager.*;
 
 /**
  * Created by congxiaoyao on 2017/3/14.
@@ -15,12 +21,17 @@ import com.congxiaoyao.xber_admin.utils.Token;
 public class XberApplication extends Application {
 
     private Bitmap previewBitmap;
+    public static final String APP_KEY = "5971757218356";
+    public static final String APP_ID = "2882303761517572356";
 
     @Override
     public void onCreate() {
         super.onCreate();
         long pre = System.currentTimeMillis();
-        SDKInitializer.initialize(this);
+        if (shouldInit()) {
+            SDKInitializer.initialize(this);
+            MiPushClient.registerPush(this, APP_ID, APP_KEY);
+        }
         Log.d("cxy", "time = " + (System.currentTimeMillis() - pre));
         Token.value = "";
     }
@@ -40,5 +51,18 @@ public class XberApplication extends Application {
 
     public Bitmap getCachedBitmap() {
         return previewBitmap;
+    }
+
+    private boolean shouldInit() {
+        ActivityManager am = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE));
+        List<RunningAppProcessInfo> processInfos = am.getRunningAppProcesses();
+        String mainProcessName = getPackageName();
+        int myPid = android.os.Process.myPid();
+        for (RunningAppProcessInfo info : processInfos) {
+            if (info.pid == myPid && mainProcessName.equals(info.processName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

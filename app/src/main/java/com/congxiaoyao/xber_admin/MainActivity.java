@@ -217,26 +217,8 @@ public class MainActivity extends StompBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        PushService.startPushService(this, NetWorkConfig.WS_URL, admin.getToken(), userId);
     }
 
-    private void openJobService() {
-        if (admin != null) {
-            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-            PersistableBundle extras = new PersistableBundle();
-            extras.putString(PushService.EXTRA_TOKEN,admin.getToken());
-            extras.putString(PushService.EXTRA_URL, NetWorkConfig.WS_URL);
-            extras.putLong(PushService.EXTRA_USER_ID, admin.getUserId());
-            JobInfo jobInfo = new JobInfo.Builder(1, new ComponentName(getPackageName(),
-                    PushHelper.class.getName()))
-                    .setPeriodic(2000)
-                    .setExtras(extras)
-//                    .setPersisted(true)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .build();
-            jobScheduler.schedule(jobInfo);
-        }
-    }
 
     @Override
     protected LoadingLayout getLoadingLayout() {

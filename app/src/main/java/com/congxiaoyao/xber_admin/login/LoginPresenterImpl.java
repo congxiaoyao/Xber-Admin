@@ -10,6 +10,7 @@ import com.congxiaoyao.httplib.response.LoginInfoResponse;
 import com.congxiaoyao.httplib.response.exception.LoginException;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.utils.Token;
+import com.xiaomi.mipush.sdk.MiPushClient;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -67,6 +68,8 @@ public class LoginPresenterImpl extends BasePresenterImpl<LoginContract.View>
                 Token.processTokenAndSave(view.getContext(), loginInfoResponse.getAuthToken());
                 admin.setUserId(loginInfoResponse.getUserId());
                 admin.setToken(Token.value);
+                MiPushClient.setUserAccount(view.getContext(),
+                        String.valueOf(loginInfoResponse.getUserId()), null);
                 admin.save(view.getContext());
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<LoginInfoResponse>() {

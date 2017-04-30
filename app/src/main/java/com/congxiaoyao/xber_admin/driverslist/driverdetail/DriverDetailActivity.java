@@ -13,9 +13,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ActivityDriverDetailBinding;
@@ -39,8 +43,14 @@ public class DriverDetailActivity extends SwipeBackActivity implements Collapsib
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CarDetailParcel carDetail = getCarDetail();
+        if (carDetail == null) {
+            showError();
+            return;
+        }
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_driver_detail);
-        binding.tvCarPlate.setText(getCarDetail().getPlate());
+        binding.tvCarPlate.setText(carDetail.getPlate());
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getCarDetail().getUserInfo().getName());
@@ -76,6 +86,20 @@ public class DriverDetailActivity extends SwipeBackActivity implements Collapsib
                 }
             }
         });
+    }
+
+    public void showError() {
+        View parent = getLayoutInflater().inflate(R.layout.activity_standard, null);
+        Toolbar toolbar = (Toolbar) parent.findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("出现了一些错误");
+        setContentView(parent);
+        View view = getLayoutInflater().inflate(R.layout.view_empty,
+                (ViewGroup) parent.findViewById(R.id.fragment_content), true);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
+                view.getLayoutParams();
+        layoutParams.gravity = Gravity.CENTER_VERTICAL;
+        view.requestLayout();
     }
 
     @Override

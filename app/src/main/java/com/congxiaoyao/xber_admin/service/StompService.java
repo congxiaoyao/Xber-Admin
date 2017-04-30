@@ -123,6 +123,9 @@ public class StompService extends Service implements Action1<Throwable> {
             @Override
             public void call(LifecycleEvent lifecycleEvent) {
                 switch (lifecycleEvent.getType()) {
+                    case OPENED:
+                        lifeCycle.onStompOpened();
+                        break;
                     case CLOSED:
                         lifeCycle.onStompClose(lifecycleEvent.getCode());
                         break;
@@ -585,6 +588,8 @@ public class StompService extends Service implements Action1<Throwable> {
     }
 
     public interface StompLifeCycle {
+
+        void onStompOpened();
 
         void onStompConnect();
 

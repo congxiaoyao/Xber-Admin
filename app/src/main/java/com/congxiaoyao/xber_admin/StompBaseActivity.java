@@ -45,8 +45,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
 
     private StompService.StompLifeCycle lifeCycle = new StompService.StompLifeCycle() {
         @Override
-        public void onStompConnect() {
-            Log.d(TAG.ME, "onStompConnect: ");
+        public void onStompOpened() {
             shouldReconnect = Observable.just("连接超时\n请重新连接").delay(4, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -61,6 +60,11 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
                             Log.d(TAG.ME, "call: ", throwable);
                         }
                     });
+        }
+
+        @Override
+        public void onStompConnect() {
+            Log.d(TAG.ME, "onStompConnect: ");
         }
 
         @Override

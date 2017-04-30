@@ -60,8 +60,13 @@ public class PublishedTaskListFragment
 //                }
 //            }
 //        });
-        if (presenter != null) presenter.subscribe();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (presenter != null) presenter.subscribe();
     }
 
     private void listenMenuClick(PopupMenu menu, final TaskRspAndDriver taskRspAndDriver) {

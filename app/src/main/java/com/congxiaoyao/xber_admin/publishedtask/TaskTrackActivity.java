@@ -6,52 +6,70 @@ import android.databinding.DataBindingUtil;
 import android.os.Handler;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.os.Bundle;
+import android.support.v4.view.MenuCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.congxiaoyao.httplib.response.Task;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ActivityTaskTrackBinding;
 import com.congxiaoyao.xber_admin.databinding.ItemTaskStateBinding;
+import com.congxiaoyao.xber_admin.driverslist.DriverListActivity;
+import com.congxiaoyao.xber_admin.driverslist.DriverListFragment;
+import com.congxiaoyao.xber_admin.driverslist.driverdetail.DriverDetailActivity;
 import com.congxiaoyao.xber_admin.driverslist.driverdetail.HistoryTaskFragment;
+import com.congxiaoyao.xber_admin.driverslist.module.CarDetailParcel;
 import com.congxiaoyao.xber_admin.driverslist.module.ParcelTaskRsp;
 import com.congxiaoyao.xber_admin.driverslist.taskdetail.TaskDetailActivity;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
 import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
+import com.congxiaoyao.xber_admin.publishedtask.bean.TaskTrackContact;
+import com.xiaomi.mipush.sdk.MiPushMessage;
+import com.xiaomi.mipush.sdk.PushMessageHelper;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
-public class TaskTrackActivity extends SwipeBackActivity {
+public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackContact.View{
 
+    public static final String TITLE = "订单跟踪";
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
 
     private ActivityTaskTrackBinding binding;
-    private TaskRspAndDriver task;
+
+    private TaskTrackContact.Presenter presenter;
+    private ContentLoadingProgressBar progressBar;
+    private Menu menu;
+    private List<Runnable> addMenuActions = new ArrayList<>(2);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        new TaskTrackPresenter(this).subscribe();
+    }
+
+    @Override
+    public void showTask(final TaskRspAndDriver task) {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_task_track);
         setSupportActionBar(binding.toolbar);
-        task = getIntent().getParcelableExtra(PublishedTaskListFragment.KEY_TASK);
         if (task == null) {
-            getSupportActionBar().setTitle("出现了一些错误");
-            View view = getLayoutInflater().inflate(R.layout.view_empty,
-                    binding.llContainer, true);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
-                    view.getLayoutParams();
-            layoutParams.gravity = Gravity.CENTER_VERTICAL;
-            view.requestLayout();
+            showError();
             return;
         }
-        getSupportActionBar().setTitle("订单跟踪");
+        getSupportActionBar().setTitle(TITLE);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         binding.setTask(task);
 
@@ -72,7 +90,43 @@ public class TaskTrackActivity extends SwipeBackActivity {
             } else {
                 createItem("未在规定时间内完成", "\uD83D\uDE1C", true);
             }
+            Runnable action = new Runnable() {
+                @Override
+                public void run() {
+                    menu.add("查看详情").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            ParcelTaskRsp taskRsp = taskAndDriverToParcelTaskRsp(task);
+                            Intent intent = new Intent(TaskTrackActivity.this,
+                                    TaskDetailActivity.class);
+                            intent.putExtra(HistoryTaskFragment.EXTRA_KEY, taskRsp);
+                            startActivity(intent, ActivityOptionsCompat
+                                    .makeSceneTransitionAnimation(TaskTrackActivity.this).toBundle());
+                            return true;
+                        }
+                    }).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                }
+            };
+            if (menu == null) addMenuActions.add(action);
+            else action.run();
         }
+        Runnable action = new Runnable() {
+            @Override
+            public void run() {
+                menu.add("查看该司机").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        CarDetailParcel parcel = DriverListFragment.carDetailToParcel(task.getCarDetail());
+                        Intent intent = new Intent(TaskTrackActivity.this, DriverDetailActivity.class);
+                        intent.putExtra(DriverListActivity.EXTRA_CARDETIAL, parcel);
+                        startActivity(intent);
+                        return true;
+                    }
+                }).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);;
+            }
+        };
+        if (menu == null) addMenuActions.add(action);
+        else action.run();
     }
 
     private ItemTaskStateBinding createItem(String title, String subTitle, boolean isFooter) {
@@ -86,30 +140,65 @@ public class TaskTrackActivity extends SwipeBackActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        for (Runnable addMenuAction : addMenuActions) {
+            addMenuAction.run();
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void showError() {
+        View parent = getLayoutInflater().inflate(R.layout.activity_standard, null);
+        Toolbar toolbar = (Toolbar) parent.findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("出现了一些错误");
+        setContentView(parent);
+        View view = getLayoutInflater().inflate(R.layout.view_empty,
+                (ViewGroup) parent.findViewById(R.id.fragment_content), true);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
+                view.getLayoutParams();
+        layoutParams.gravity = Gravity.CENTER_VERTICAL;
+        view.requestLayout();
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (task.getStatus() != Task.STATUS_COMPLETED) {
-            return super.onCreateOptionsMenu(menu);
+    public void showLoading() {
+        View parent = getLayoutInflater().inflate(R.layout.activity_standard, null);
+        Toolbar toolbar = (Toolbar) parent.findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(TITLE);
+        progressBar = (ContentLoadingProgressBar) getLayoutInflater()
+                .inflate(R.layout.view_progress_bar,
+                        (ViewGroup) parent.findViewById(R.id.fragment_content), true)
+                .findViewById(R.id.content_progress_bar);
+
+        setContentView(parent);
+        progressBar.show();
+    }
+
+    @Override
+    public void hideLoading() {
+        if (progressBar != null) {
+            progressBar.hide();
         }
-        menu.add("查看详情").setOnMenuItemClickListener(new MenuItem
-                .OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                ParcelTaskRsp taskRsp = taskAndDriverToParcelTaskRsp(task);
-                Intent intent = new Intent(TaskTrackActivity.this,
-                        TaskDetailActivity.class);
-                intent.putExtra(HistoryTaskFragment.EXTRA_KEY, taskRsp);
-                startActivity(intent, ActivityOptionsCompat
-                        .makeSceneTransitionAnimation(TaskTrackActivity.this).toBundle());
-                return true;
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void setPresenter(TaskTrackContact.Presenter presenter) {
+        this.presenter = presenter;
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 
     private ParcelTaskRsp taskAndDriverToParcelTaskRsp(TaskRspAndDriver taskRspAndDriver) {
@@ -124,6 +213,14 @@ public class TaskTrackActivity extends SwipeBackActivity {
         taskRsp.setStatus(taskRspAndDriver.getStatus());
         taskRsp.setNote(taskRspAndDriver.getNote());
         return taskRsp;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter != null) {
+            presenter.unSubscribe();
+        }
     }
 
     class LocationQueryView implements LoadableView<LocationQueryPresenter> {
