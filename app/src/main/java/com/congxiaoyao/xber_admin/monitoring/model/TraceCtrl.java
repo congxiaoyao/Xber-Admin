@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.baidu.mapapi.model.LatLng;
 import com.congxiaoyao.xber_admin.TAG;
+import com.congxiaoyao.xber_admin.monitoring.RunningCar;
 import com.congxiaoyao.xber_admin.utils.MathUtils;
 
 import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.GpsSampleRsp;
@@ -86,7 +87,7 @@ public abstract class TraceCtrl {
         return progress >= 1.0f || !isUsing;
     }
 
-    public void calculateAndPost(Handler handler) {
+    public void calculateAndPost(Handler handler, int currentAnimationState) {
         checkUsing(true, "请先调用初始化函数进行初始化");
 
         if (lastTime == 0) lastTime = System.currentTimeMillis();
@@ -112,6 +113,14 @@ public abstract class TraceCtrl {
         message.what = (int) start.getCarId();
         message.obj = this;
 
+
+        //如果是静态轨迹(没有补间动画)则直接延时到动画结束
+        if (currentAnimationState == RunningCar.STATE_STATIC) {
+            handler.sendMessageDelayed(message, totalTime - elapsedTime);
+            lastTime = now;
+            return;
+        }
+
         //每一帧的时间间隔为16毫秒
         //但是在每一个TraceCtrl的最后一帧可能并不能延时完整的16
         long unitTime = totalTime - elapsedTime >= 16 ? 16 : totalTime - elapsedTime;
@@ -128,6 +137,10 @@ public abstract class TraceCtrl {
     }
 
     protected abstract void animate(float progress);
+
+    public void resumeFromStatic() {
+        lastTime = 0;
+    }
 
     public void recycle() {
         recycleBin.recycle(this);

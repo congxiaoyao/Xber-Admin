@@ -339,6 +339,7 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
                                         subscriber.onError(new RuntimeException());
                                     }else {
                                         subscriber.onNext(result);
+                                        subscriber.onCompleted();
                                     }
                                 }
                             });

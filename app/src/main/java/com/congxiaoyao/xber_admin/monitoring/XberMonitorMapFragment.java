@@ -2,20 +2,21 @@ package com.congxiaoyao.xber_admin.monitoring;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapViewLayoutParams;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.map.UiSettings;
 import com.baidu.mapapi.model.LatLng;
 import com.congxiaoyao.xber_admin.StompBaseActivity;
-import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 
 /**
@@ -82,6 +83,7 @@ public class XberMonitorMapFragment extends Fragment {
                 BaiduMapUtils.moveToLatLng(baiduMap, 39.066252, 117.147011);
             }
         });
+
     }
 
     public static XberMonitorMapFragment newInstance(StompBaseActivity.StompServiceProvider provider) {

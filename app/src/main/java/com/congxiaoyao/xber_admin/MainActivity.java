@@ -1,19 +1,15 @@
 package com.congxiaoyao.xber_admin;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.view.GravityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.baidu.mapapi.model.LatLng;
-import com.congxiaoyao.httplib.NetWorkConfig;
 import com.congxiaoyao.xber_admin.databinding.ActivityMainBinding;
 import com.congxiaoyao.xber_admin.dispatch.DispatchTaskActivity;
 import com.congxiaoyao.xber_admin.driverslist.DriverListActivity;
@@ -143,7 +139,7 @@ public class MainActivity extends StompBaseActivity {
         pagerAdapter.setEnabled(true);
         LatLng latLng = BaiduMapUtils.getScreenCenterLatLng(this, monitorFragment.getBaiduMap());
         double radius = BaiduMapUtils.getScreenRadius(this, monitorFragment.getBaiduMap());
-        stompService.nearestNTrace(latLng.latitude, latLng.longitude, 1000, 100);
+//        stompService.nearestNTrace(latLng.latitude, latLng.longitude, 1000, 100);
     }
 
     @Override
@@ -217,6 +213,10 @@ public class MainActivity extends StompBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (binding != null) {
+            binding.unbind();
+            binding = null;
+        }
     }
 
 
@@ -256,4 +256,5 @@ public class MainActivity extends StompBaseActivity {
             super.onBackPressed();
         }
     }
+
 }

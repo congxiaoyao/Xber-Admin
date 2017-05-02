@@ -6,11 +6,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdate;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.TextureMapView;
@@ -25,10 +21,9 @@ import com.congxiaoyao.xber_admin.monitoring.model.NormalTraceCtrl;
 import com.congxiaoyao.xber_admin.monitoring.model.TraceCtrl;
 import com.congxiaoyao.xber_admin.monitoring.model.TraceCtrlFactory;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
-import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 import com.congxiaoyao.xber_admin.utils.MathUtils;
 
-import java.util.ArrayList;
+import javax.inject.Inject;
 
 import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.GpsSampleRsp;
 
@@ -41,35 +36,39 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
     public static final String KEY_CAR_ID = "CAR_ID";
     public static final String tag = RunningCar.class.getSimpleName();
     public static final int WAIT_TIME = 1000;
-
-    private boolean destroy = false;
+    public static final int MAX_PURSUE_TIME = 5000;
+    public static final int STATE_STATIC = 0;
+    public static final int STATE_DYNAMIC = 1;
+    public static final int ARG_RESUME = 100;
 
     private long carID;
     private final Marker marker;
     private SyncOrderedList<GpsSampleRsp> data;
-    private TraceCtrlFactory factory;
 
     private TraceCtrl currentTrace;
-    private GpsSampleRsp currentGps;
-    private TextureMapView mapView;
+    private int currentAnimationState;
 
-    public void setMapView(TextureMapView mapView) {
-        this.mapView = mapView;
-    }
+    @Inject TextureMapView mapView;
+    @Inject BaiduMap map;
+    @Inject TraceCtrlFactory factory;
+
+    private boolean destroy = false;
 
     private GpsSampleRsp.Builder builder = GpsSampleRsp.newBuilder();
 
-    public RunningCar(TraceCtrlFactory factory, BaiduMap map, SyncOrderedList<GpsSampleRsp> data) {
+    public RunningCar(XberMonitor xberMonitor, SyncOrderedList<GpsSampleRsp> data,
+                      int currentAnimationState) {
         super();
-        this.factory = factory;
+        this.currentAnimationState = currentAnimationState;
+        DaggerXberMonitor_MonitorComponent.builder().xberMonitor(xberMonitor)
+                .build().inject(this);
         this.data = data;
         if (data == null || data.size() == 0) {
             throw new RuntimeException("上来给了我一个空的list?? 是不是出错了");
         }
-
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.xber_red_car));
-        GpsSampleRsp gpsSampleRsp = currentGps = data.takeFirst();
+        GpsSampleRsp gpsSampleRsp = data.takeFirst();
         markerOptions.position(toLatLnt(gpsSampleRsp));
         markerOptions.anchor(0.5f, 0.5f);
         marker = (Marker) map.addOverlay(markerOptions);
@@ -88,7 +87,17 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
 
     @Override
     public void handleMessage(Message msg) {
+        Log.d(tag, "handleMessage: ");
         if (destroy) return;
+
+        //处理从静态恢复为动态的特殊消息
+        if (msg.arg1 == ARG_RESUME) {
+            removeMessages((int) carID);
+            currentTrace.resumeFromStatic();
+            sendMessage(createMessage(currentTrace));
+            return;
+        }
+
         TraceCtrl traceCtrl = (TraceCtrl) msg.obj;
         //此段轨迹动画播放结束
         if (traceCtrl.shouldStop()) {
@@ -97,7 +106,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
         }
         currentTrace = traceCtrl;
         //计算这一帧的位置 并发送延时消息准备计算下一帧
-        traceCtrl.calculateAndPost(this);
+        traceCtrl.calculateAndPost(this, currentAnimationState);
 
         //根据计算结果更新位置
         LatLng latLng = traceCtrl.getCurrentLatLng();
@@ -128,7 +137,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
             //我超前新数据同时我可以等他一会
             if (MathUtils.amIFaster(traceCtrl.crtLat, traceCtrl.crtLng, traceCtrl.rotate,
                     position.getLat(), position.getLng()) &&
-                    Math.abs(traceCtrl.rotate - newAngle) < 60) {
+                    Math.abs(traceCtrl.rotate - newAngle) < 45) {
                 Log.d(tag, "dispatchNewTraceCtrl: 超前 等待中... ");
                 builder.clear();
                 sendMessage(createHoldMessage(newAngle, builder.setLat(traceCtrl.crtLat)
@@ -142,7 +151,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
                     position.getLng(), position.getLat()).getLength();
             double speed = new VectorD(position.getVlng(), position.getVlat()).mag();
             double time = distance / speed * 1000;
-            if(time > 5000) time = 5000;
+            if(time > MAX_PURSUE_TIME) time = MAX_PURSUE_TIME;
             Log.d(tag, "dispatchNewTraceCtrl: 追赶... " + (long) time + "ms");
             builder.clear();
             Message normalMessage = createNormalMessage(traceCtrl.rotate,
@@ -153,7 +162,7 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
         }
         //开始下一段动画
         float rftRotate = traceCtrl.getCurrentRotate();
-        GpsSampleRsp gpsSampleRsp = currentGps = data.takeFirst();
+        GpsSampleRsp gpsSampleRsp = data.takeFirst();
         Log.d(tag, "dispatchNewTraceCtrl: data = " + gpsSampleRsp.getTime());
         sendMessage(data.isEmpty() ? createInfMessage(rftRotate, gpsSampleRsp) :
                 createNormalMessage(rftRotate, gpsSampleRsp, data.getFirst()));
@@ -165,6 +174,14 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
 
     protected void requestNormal(double lat, double lng) {
 
+    }
+
+    private Message createMessage(TraceCtrl traceCtrl) {
+        Message message = Message.obtain();
+        message.what = (int) carID;
+        message.obj = traceCtrl;
+        Log.d(TAG.ME, "createMassage: create traceCtrl");
+        return message;
     }
 
     private Message createHoldMessage(float refRotate, GpsSampleRsp point, long time) {
@@ -216,8 +233,17 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
         currentTrace.recycle();
     }
 
-    private static LatLng toLatLnt(GpsSampleRsp gps) {
-        return new LatLng(gps.getLat(), gps.getLng());
+    public void changeToStatic() {
+        if (currentAnimationState == STATE_STATIC) return;
+        currentAnimationState = STATE_STATIC;
+    }
+
+    public void changeToDynamic() {
+        if (currentAnimationState == STATE_DYNAMIC) return;
+        currentAnimationState = STATE_DYNAMIC;
+        Message message = Message.obtain();
+        message.arg1 = ARG_RESUME;
+        sendMessage(message);
     }
 
     public long getCarID() {
@@ -229,6 +255,13 @@ public class RunningCar extends Handler implements SyncOrderedList.DataReceiveLi
         removeMessages((int) carID);
         if (currentTrace != null) currentTrace.recycle();
         if (marker != null) marker.remove();
-        if (data != null) data.clear();
+        if (data != null) {
+            data.setCallback(null);
+            data.clear();
+        }
+    }
+
+    private static LatLng toLatLnt(GpsSampleRsp gps) {
+        return new LatLng(gps.getLat(), gps.getLng());
     }
 }

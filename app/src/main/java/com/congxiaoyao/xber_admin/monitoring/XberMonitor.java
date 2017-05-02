@@ -2,14 +2,22 @@ package com.congxiaoyao.xber_admin.monitoring;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapViewLayoutParams;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.Projection;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.congxiaoyao.xber_admin.R;
@@ -32,12 +40,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
+
 import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.GpsSampleRsp;
+import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.registerAllExtensions;
+import static com.congxiaoyao.xber_admin.monitoring.RunningCar.STATE_DYNAMIC;
 
 /**
  * Created by congxiaoyao on 2017/3/24.
  */
 
+@Module
 public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 
     private TextureMapView mapView;
@@ -57,6 +72,42 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
         this.baiduMap = baiduMap;
         this.serviceProvider = serviceProvider;
         this.factory = new TraceCtrlFactory(10, 10, 10);
+
+        Button button = new Button(mapView.getContext());
+        button.setText("BUTTON????");
+        button.setOnClickListener(new View.OnClickListener() {
+            private int state = STATE_DYNAMIC;
+            @Override
+            public void onClick(View v) {
+                state = (state + 1) % 2;
+                if (state == STATE_DYNAMIC) {
+                    changeToDynamic();
+                }else {
+                    changeToStatic();
+                }
+            }
+        });
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = 960;
+        ((ViewGroup) mapView.getParent()).addView(button, params);
+
+    }
+
+    public void changeToStatic() {
+        Set<Long> carIds = runningCars.keySet();
+        for (Long carId : carIds) {
+            RunningCar runningCar = runningCars.get(carId);
+            runningCar.changeToStatic();
+        }
+    }
+
+    public void changeToDynamic() {
+        Set<Long> carIds = runningCars.keySet();
+        for (Long carId : carIds) {
+            RunningCar runningCar = runningCars.get(carId);
+            runningCar.changeToDynamic();
+        }
     }
 
     @Override
@@ -77,11 +128,10 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
             runningCar.destroy();
         }
         try {
-            runningCar = new RunningCar(factory,baiduMap,trace);
+            runningCar = new RunningCar(this, trace, STATE_DYNAMIC);
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
-        runningCar.setMapView(mapView);
         runningCars.put(carId, runningCar);
     }
 
@@ -188,5 +238,27 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
     private static long getCarId(Marker marker) {
         final Bundle bundle = marker.getExtraInfo();
         return bundle.getLong(RunningCar.KEY_CAR_ID);
+    }
+
+
+    @Provides
+    public TextureMapView providesTextureMapView() {
+        return mapView;
+    }
+
+    @Provides
+    public TraceCtrlFactory providesTraceCtrlFactory() {
+        return factory;
+    }
+
+    @Provides
+    public BaiduMap providesBaiduMap() {
+        return baiduMap;
+    }
+
+    @Component(modules = XberMonitor.class)
+    public interface MonitorComponent {
+
+        void inject(RunningCar runningCar);
     }
 }

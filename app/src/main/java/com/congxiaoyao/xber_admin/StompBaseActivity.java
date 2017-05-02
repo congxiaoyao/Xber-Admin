@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.congxiaoyao.location.model.GpsSampleRspOuterClass;
 import com.congxiaoyao.xber_admin.login.LoginActivity;
@@ -35,6 +34,8 @@ import rx.schedulers.Schedulers;
 
 public abstract class StompBaseActivity extends AppCompatActivity implements StompService.OnCarChangeListener {
 
+    private static final int MAX_RETRY = 3;
+
     protected long userId = -1;
 
     private ServiceConnection connection;
@@ -44,6 +45,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
     private int connectCount = 0;
 
     private AlertDialog reconnectDialog;
+    private int retryTimes = 0;
 
     private StompService.StompLifeCycle lifeCycle = new StompService.StompLifeCycle() {
         @Override
@@ -54,7 +56,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
                     .subscribe(new Action1<String>() {
                         @Override
                         public void call(String s) {
-                            showReconnectDialog(s);
+                            shouldReconnect(s);
                         }
                     }, new Action1<Throwable>() {
                         @Override
@@ -84,7 +86,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
         @Override
         public void onStompError() {
             Log.d(TAG.ME, "onStompError: ");
-            showReconnectDialog("Stomp服务发生错误 请重新连接");
+            shouldReconnect("Stomp服务发生错误 请重新连接");
         }
 
         @Override
@@ -94,6 +96,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
                 if (shouldReconnect != null) {
                     shouldReconnect.unsubscribe();
                 }
+                retryTimes = 0;
                 onStompPrepared();
                 getLoadingLayout().hideLoading();
             }
@@ -107,13 +110,32 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
         @Override
         public void onInnerError(Throwable throwable) {
             getLoadingLayout().hideLoading();
+            final Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                    startActivity(new Intent(StompBaseActivity.this, WelcomeActivity.class));
+                }
+            };
             new AlertDialog.Builder(StompBaseActivity.this)
                     .setTitle("内部错误")
                     .setMessage("发生了奇怪的错误 请重启软件")
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            finish();
+                            runnable.run();
+                        }
+                    })
+                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            runnable.run();
+                        }
+                    })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            runnable.run();
                         }
                     }).show();
         }
@@ -155,7 +177,14 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
         }
     }
 
-    public void showReconnectDialog(String message) {
+    public void shouldReconnect(String message) {
+        getLoadingLayout().hideLoading();
+        //内部先进行三次重连
+        if (retryTimes < MAX_RETRY) {
+            retryTimes++;
+            rebindService();
+            return;
+        }
         if (reconnectDialog != null) return;
         reconnectDialog = new AlertDialog.Builder(this).setTitle("错误")
                 .setMessage(message).setPositiveButton("重新连接", new DialogInterface.OnClickListener() {
@@ -265,6 +294,7 @@ public abstract class StompBaseActivity extends AppCompatActivity implements Sto
     protected void onDestroy() {
         super.onDestroy();
         if (connection != null) unbindService(connection);
+        if (shouldReconnect != null) shouldReconnect.unsubscribe();
     }
 
     protected abstract LoadingLayout getLoadingLayout();
