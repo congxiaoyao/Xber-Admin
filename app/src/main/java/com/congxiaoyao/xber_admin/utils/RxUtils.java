@@ -25,24 +25,32 @@ import rx.schedulers.Schedulers;
 
 public class RxUtils {
 
-    public static <T> Observable.Transformer toMainThread() {
-        Observable.Transformer<T, T> transformer = new Observable.Transformer<T, T>() {
+    public static <T> Observable.Transformer<T, T> defaultScheduler() {
+        return new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> tObservable) {
-                return tObservable.<T>observeOn(AndroidSchedulers.mainThread());
+                return tObservable.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
             }
         };
-        return transformer;
     }
 
-    public static <T> Observable.Transformer toIoThread() {
-        Observable.Transformer<T, T> transformer = new Observable.Transformer<T, T>() {
+    public static <T> Observable.Transformer<T,T> toMainThread() {
+        return new Observable.Transformer<T, T>() {
+            @Override
+            public Observable<T> call(Observable<T> tObservable) {
+                return tObservable.observeOn(AndroidSchedulers.mainThread());
+            }
+        };
+    }
+
+    public static <T> Observable.Transformer<T,T> toIoThread() {
+        return new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> tObservable) {
                 return tObservable.observeOn(Schedulers.io());
             }
         };
-        return transformer;
     }
 
     /**
@@ -92,7 +100,7 @@ public class RxUtils {
         };
     }
 
-    public static <T> Observable.Transformer toScheduler(final Scheduler scheduler) {
+    public static <T> Observable.Transformer<T, T> toScheduler(final Scheduler scheduler) {
         Observable.Transformer<T, T> transformer = new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> tObservable) {

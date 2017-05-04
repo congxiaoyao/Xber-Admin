@@ -22,6 +22,8 @@ public interface CarInfoContract {
     interface Presenter extends BasePresenter {
 
         void onClick(android.view.View view);
+
+        void onShowLocation(android.view.View view);
     }
 
 

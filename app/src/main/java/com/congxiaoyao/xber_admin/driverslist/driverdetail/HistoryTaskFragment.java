@@ -50,6 +50,7 @@ public class HistoryTaskFragment
     private RecyclerView recyclerView;
     private SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日");
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TaskRsp executingTask;
 
     @Nullable
     @Override
@@ -119,12 +120,18 @@ public class HistoryTaskFragment
 
     @Override
     public void addExecutingTask(final TaskRsp taskRsp) {
+        executingTask = taskRsp;
         recyclerView.post(new Runnable() {
             @Override
             public void run() {
                 getAdapter().addHeaderView(createHeaderTask(taskRsp));
             }
         });
+    }
+
+    @Override
+    public void showDataEmpty() {
+        if (executingTask == null) super.showDataEmpty();
     }
 
     @Override

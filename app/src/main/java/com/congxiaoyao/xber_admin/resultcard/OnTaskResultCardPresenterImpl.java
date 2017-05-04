@@ -1,14 +1,19 @@
 package com.congxiaoyao.xber_admin.resultcard;
 
+import android.util.SparseArray;
+
 import com.congxiaoyao.httplib.request.CarRequest;
+import com.congxiaoyao.httplib.request.LocationRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.CarDetail;
+import com.congxiaoyao.httplib.response.CarPosition;
 import com.congxiaoyao.httplib.response.Spot;
 import com.congxiaoyao.httplib.response.exception.EmptyDataException;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +21,8 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -27,14 +34,16 @@ public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResul
 
     private Spot start;
     private Spot end;
-    private Action1<List<CarDetail>> callback;
+    private Action2<List<CarDetail>, List<CarPosition>> callback;
+    private List<CarDetail> temp;
+    private List<CarPosition> carPositions;
 
     public OnTaskResultCardPresenterImpl(OnTaskResultCardContract.View view) {
         super(view);
     }
 
     @Override
-    public void getCarOnTask(Spot start, Spot end, Action1<List<CarDetail>> callback) {
+    public void getCarOnTask(Spot start, Spot end, Action2<List<CarDetail>, List<CarPosition>> callback) {
         this.start = start;
         this.end = end;
         this.callback = callback;
@@ -47,6 +56,41 @@ public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResul
         Long endId = end == null ? null : end.getSpotId();
         Subscription subscribe = XberRetrofit.create(CarRequest.class)
                 .getCarsOnTask(startId, endId, Token.value)
+                .map(new Func1<List<CarDetail>, List<Long>>() {
+                    @Override
+                    public List<Long> call(List<CarDetail> carDetails) {
+                        temp = carDetails;
+                        List<Long> carIds = new ArrayList<Long>(carDetails.size());
+                        for (CarDetail carDetail : carDetails) {
+                            carIds.add(carDetail.getCarId());
+                        }
+                        return carIds;
+                    }
+                })
+                .flatMap(new Func1<List<Long>, Observable<List<CarPosition>>>() {
+                    @Override
+                    public Observable<List<CarPosition>> call(List<Long> longs) {
+                        return XberRetrofit.create(LocationRequest.class).getRunningCars(longs, Token.value);
+                    }
+                })
+                .map(new Func1<List<CarPosition>, List<CarDetail>>() {
+                    @Override
+                    public List<CarDetail> call(List<CarPosition> carPositions) {
+                        OnTaskResultCardPresenterImpl.this.carPositions = carPositions;
+                        SparseArray<CarDetail> array = new SparseArray<CarDetail>(temp.size());
+                        for (CarDetail carDetail : temp) {
+                            array.append((int) ((long) carDetail.getCarId()), carDetail);
+                        }
+                        List<CarDetail> result = new ArrayList<CarDetail>(carPositions.size());
+                        for (CarPosition carPosition : carPositions) {
+                            CarDetail carDetail = array.get((int) ((long) carPosition.getCarId()));
+                            if (carDetail != null) {
+                                result.add(carDetail);
+                            }
+                        }
+                        return result;
+                    }
+                })
                 .compose(RxUtils.<List<CarDetail>>delayWhenTimeEnough(400))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -70,7 +114,7 @@ public class OnTaskResultCardPresenterImpl extends BasePresenterImpl<OnTaskResul
         final Runnable runnable = callback == null ? null : new Runnable() {
             @Override
             public void run() {
-                callback.call(carDetails);
+                callback.call(carDetails, carPositions);
             }
         };
         Observable.just(1).observeOn(AndroidSchedulers.mainThread())

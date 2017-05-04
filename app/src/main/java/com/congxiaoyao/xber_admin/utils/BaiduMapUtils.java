@@ -28,31 +28,68 @@ public class BaiduMapUtils {
     private static final Point temp = new Point();
 
     public static LatLng getScreenCenterLatLng(Context context, BaiduMap baiduMap) {
-        if (screenCenter == null) {
-            screenCenter = new Point();
-            ((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenCenter);
-            screenCenter.x = screenCenter.x / 2;
-            screenCenter.y = screenCenter.y / 2;
-        }
+        getScreenCenterPoint((Activity) context);
         return baiduMap.getProjection().fromScreenLocation(screenCenter);
     }
 
-    public static double getScreenRadius(Context context, BaiduMap baiduMap) {
-        if (screenSize == null) {
-            screenSize = new Point();
-            ((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenSize);
+    private static void getScreenCenterPoint(Activity context) {
+        if (screenCenter == null) {
+            screenCenter = new Point();
+            context.getWindowManager().getDefaultDisplay().getSize(screenCenter);
+            screenCenter.x = screenCenter.x / 2;
+            screenCenter.y = screenCenter.y / 2;
         }
+    }
+
+    public static double getScreenRadius(Context context, BaiduMap baiduMap) {
+        getScreenSize((Activity) context);
         Projection projection = baiduMap.getProjection();
-        LatLng rb = projection.fromScreenLocation(ZERO);
-        LatLng lt = projection.fromScreenLocation(screenSize);
+        LatLng lt = projection.fromScreenLocation(ZERO);
+        LatLng rb = projection.fromScreenLocation(screenSize);
         Line line = new Line(lt.longitude, lt.latitude, rb.longitude, rb.latitude);
         return line.getLength() / 2;
+    }
+
+    private static void getScreenSize(Activity context) {
+        if (screenSize == null) {
+            screenSize = new Point();
+            context.getWindowManager().getDefaultDisplay().getSize(screenSize);
+        }
+    }
+
+    /**
+     * latlng是否在屏幕内
+     * @param context
+     * @param baiduMap
+     * @param latLng
+     * @return
+     */
+    public static boolean isInScreen(Context context, BaiduMap baiduMap, LatLng latLng) {
+        getScreenSize((Activity) context);
+        Projection projection = baiduMap.getProjection();
+        Point point = projection.toScreenLocation(latLng);
+        return point.x > 0 && point.x < screenSize.x && point.y > 0 && point.y < screenSize.y;
+    }
+
+    /**
+     * 当前地图的缩放等级
+     * @param baiduMap
+     * @return
+     */
+    public static float getZoomLevel(BaiduMap baiduMap) {
+        return baiduMap.getMapStatus().zoom;
     }
 
     public static void moveToBounds(BaiduMap map, LatLngBounds bounds, int width, int height) {
         MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(bounds,
                 width, height);
         map.setMapStatus(update);
+    }
+
+    public static void moveToBoundsAnimate(BaiduMap map, LatLngBounds bounds, int width, int height) {
+        MapStatusUpdate update = MapStatusUpdateFactory.newLatLngBounds(bounds,
+                width, height);
+        map.animateMapStatus(update);
     }
 
     public static void moveToLatLng(BaiduMap map, double lat, double lng, int zoom, boolean animate) {

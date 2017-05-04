@@ -1,5 +1,7 @@
 package com.congxiaoyao.xber_admin.monitoring;
 
+import com.baidu.mapapi.model.LatLngBounds;
+
 import java.util.List;
 
 /**
@@ -10,5 +12,5 @@ public interface ISearchBarState {
 
     void onTraceAllCar();
 
-    void onTraceSpecifiedCar(List<Long> carIds);
+    void onTraceSpecifiedCar(List<Long> carIds, LatLngBounds latLngBounds);
 }

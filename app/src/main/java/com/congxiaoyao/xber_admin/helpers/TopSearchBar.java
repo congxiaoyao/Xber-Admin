@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -20,13 +21,31 @@ import android.widget.LinearLayout;
 import android.databinding.ViewDataBinding;
 
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
+import com.congxiaoyao.httplib.request.LocationRequest;
+import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
+import com.congxiaoyao.httplib.response.CarDetail;
+import com.congxiaoyao.httplib.response.CarPosition;
+import com.congxiaoyao.httplib.response.exception.EmptyDataException;
+import com.congxiaoyao.xber_admin.MainActivity;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.TAG;
 import com.congxiaoyao.xber_admin.databinding.ItemSearchBarBinding;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 import com.congxiaoyao.xber_admin.utils.MathUtils;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
+import com.congxiaoyao.xber_admin.utils.Token;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Created by congxiaoyao on 2017/3/18.
@@ -44,6 +63,7 @@ public class TopSearchBar {
 
     private int iconState = ICON_STATE_SEARCH;
     protected boolean enabled;
+    private Subscription subscribe;
 
     public TopSearchBar(ItemSearchBarBinding binding, final LinearLayout animationLayer) {
         this.binding = binding;
@@ -168,10 +188,62 @@ public class TopSearchBar {
         int b = (int) MathUtils.map(minValue, maxValue, Color.blue(gray), Color.blue(red), value);
         int result = Color.rgb(r, g, b);
         binding.imgRightIcon.getDrawable().setTint(result);
+        binding.imgLeftIcon.getDrawable().setTint(result);
+        binding.tvHint.setTextColor(result);
     }
 
     public ItemSearchBarBinding getBinding() {
         return binding;
+    }
+
+    @NonNull
+    public static LatLngBounds carPositionToLatLngBounds(CarPosition carPosition) {
+        return new LatLngBounds.Builder()
+                .include(new LatLng(carPosition.getLat() - 0.06,
+                        carPosition.getLng() - 0.06))
+                .include(new LatLng(carPosition.getLat() + 0.06,
+                        carPosition.getLng() + 0.06)).build();
+    }
+
+
+    protected void moveMapToCarPosition(final Context context, final List<Long> carIds,
+                                        final LatLngBounds defBounds) {
+        Observable<LatLngBounds> netWork = XberRetrofit.create(LocationRequest.class)
+                .getRunningCars(carIds, Token.value)
+                .map(new Func1<List<CarPosition>, LatLngBounds>() {
+                    @Override
+                    public LatLngBounds call(List<CarPosition> carPositions) {
+                        if (carPositions == null || carPositions.size() == 0) {
+                            throw new EmptyDataException();
+                        }
+                        if (carPositions.size() == 1) {
+                            return carPositionToLatLngBounds(carPositions.get(0));
+                        }
+                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                        for (CarPosition carPosition : carPositions) {
+                            builder.include(new LatLng(carPosition.getLat(),
+                                    carPosition.getLng()));
+                        }
+                        return builder.build();
+                    }
+                });
+        Observable<LatLngBounds> local = Observable.just(defBounds)
+                .delay(2000, TimeUnit.MILLISECONDS);
+        subscribe = Observable.merge(netWork, local).take(1)
+                .compose(RxUtils.<LatLngBounds>defaultScheduler())
+                .subscribe(new Action1<LatLngBounds>() {
+                    @Override
+                    public void call(LatLngBounds latLngBounds) {
+                        MainActivity.moveMap(context, latLngBounds);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        if (defBounds != null) {
+                            MainActivity.moveMap(context, defBounds);
+                        }
+                    }
+                });
     }
 
     public void setEnabled(boolean enabled) {
@@ -218,7 +290,13 @@ public class TopSearchBar {
      *
      * @param carIds 当carIds为null时 意味着取消被点击了
      */
-    protected void onTraceCars(List<Long> carIds) {
+    protected void onTraceCars(List<Long> carIds, LatLngBounds bounds) {
 
+    }
+
+    public void destroy() {
+        if (subscribe != null) {
+            subscribe.unsubscribe();
+        }
     }
 }

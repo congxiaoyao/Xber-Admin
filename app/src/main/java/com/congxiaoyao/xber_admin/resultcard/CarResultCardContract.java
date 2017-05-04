@@ -1,8 +1,11 @@
 package com.congxiaoyao.xber_admin.resultcard;
 
 import com.congxiaoyao.httplib.response.CarDetail;
+import com.congxiaoyao.httplib.response.CarPosition;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.ListLoadablePresenter;
 import com.congxiaoyao.xber_admin.mvpbase.view.ListLoadableView;
+
+import java.util.List;
 
 import rx.functions.Action0;
 
@@ -25,6 +28,8 @@ public interface CarResultCardContract {
 
         void setOnCarSelectedListener(OnCarSelectedListener listener);
 
+        List<CarPosition> getCarPositions();
+
         void search(String content);
 
         void callClick(CarDetail carDetail);
@@ -32,6 +37,6 @@ public interface CarResultCardContract {
 
     interface OnCarSelectedListener {
 
-        void onCarSelected(CarDetail carDetail);
+        void onCarSelected(CarDetail carDetail, CarPosition carPosition);
     }
 }

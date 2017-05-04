@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="def_max_car_count" >50</integer>
+    <integer name="def_animate_thread_count">2</integer>
+</resources>

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/activity_welcome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#fafafa"
+        android:orientation="vertical"
+        android:fitsSystemWindows="true"
         tools:context="com.congxiaoyao.xber_admin.WelcomeActivity">
 
         <RelativeLayout
@@ -46,5 +48,5 @@
                 android:src="@drawable/logo_large" />
 
         </RelativeLayout>
-    </FrameLayout>
+    </LinearLayout>
 </layout>

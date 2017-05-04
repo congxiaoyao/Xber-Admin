@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import android.databinding.ViewDataBinding;
 
+import com.baidu.mapapi.model.LatLngBounds;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ItemSearchBarBinding;
 import com.congxiaoyao.xber_admin.helpers.SearchAddrBar;
@@ -44,9 +45,9 @@ public class TopBarPagerAdapter extends PagerAdapter {
         nameBarView = binding.getRoot();
         searchCarBar = new SearchCarBar(binding, animationLayer) {
             @Override
-            protected void onTraceCars(List<Long> carIds) {
+            protected void onTraceCars(List<Long> carIds, LatLngBounds bounds) {
                 if (listener == null) return;
-                listener.onTraceCar(carIds);
+                listener.onTraceCar(carIds, bounds);
             }
         };
         binding = DataBindingUtil.inflate(inflater,
@@ -54,9 +55,9 @@ public class TopBarPagerAdapter extends PagerAdapter {
         addrBarView = binding.getRoot();
         searchAddrBar = new SearchAddrBar(binding, animationLayer) {
             @Override
-            protected void onTraceCars(List<Long> carIds) {
+            protected void onTraceCars(List<Long> carIds, LatLngBounds bounds) {
                 if (listener == null) return;
-                listener.onTraceCar(carIds);
+                listener.onTraceCar(carIds, bounds);
             }
         };
     }
@@ -159,6 +160,11 @@ public class TopBarPagerAdapter extends PagerAdapter {
 
     public interface OnTraceCarListener {
 
-        void onTraceCar(List<Long> carIds);
+        void onTraceCar(List<Long> carIds, LatLngBounds latLngBounds);
+    }
+
+    public void destroy() {
+        searchAddrBar.destroy();
+        searchCarBar.destroy();
     }
 }

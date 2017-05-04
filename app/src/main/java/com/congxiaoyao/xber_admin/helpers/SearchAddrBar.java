@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,18 +15,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.congxiaoyao.adapter.base.binding.BindingAdapterHelper;
 import com.congxiaoyao.adapter.base.binding.annotations.ItemLayout;
 import com.congxiaoyao.adapter.base.binding.demo.SampleBean;
 import com.congxiaoyao.httplib.response.CarDetail;
+import com.congxiaoyao.httplib.response.CarPosition;
 import com.congxiaoyao.httplib.response.Spot;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ItemCarBinding;
@@ -39,10 +44,12 @@ import com.congxiaoyao.xber_admin.resultcard.OnTaskResultCardViewImpl;
 import com.congxiaoyao.xber_admin.utils.DisplayUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Action2;
 
 /**
  * Created by congxiaoyao on 2017/3/21.
@@ -62,6 +69,7 @@ public class SearchAddrBar extends TopSearchBar {
     private OnTaskResultCardPresenterImpl onTaskPresenter;
 
     private List<CarDetail> result;
+    private LatLngBounds latLngBounds;
 
     public SearchAddrBar(ItemSearchBarBinding binding, LinearLayout animationLayer) {
         super(binding, animationLayer);
@@ -100,7 +108,7 @@ public class SearchAddrBar extends TopSearchBar {
         binding.tvHint.setText(R.string.please_input_addr);
         setRightIconSearch();
         clearCache();
-        onTraceCars(null);
+        onTraceCars(null, null);
     }
 
     @Override
@@ -134,12 +142,23 @@ public class SearchAddrBar extends TopSearchBar {
                     }
                 });
         adapter.addData(result);
-
-        final AlertDialog dialog = builder.setView(recyclerView).setPositiveButton("确定", null)
+        final AlertDialog dialog = builder.setView(recyclerView)
+                .setPositiveButton("预览", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        List<Long> carIds = new ArrayList<Long>(result.size());
+                        for (CarDetail carDetail : result) {
+                            carIds.add(carDetail.getCarId());
+                        }
+                        moveMapToCarPosition(context, carIds, latLngBounds);
+                    }
+                })
                 .setTitle("正在追踪").show();
         recyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int position) {
+                moveMapToCarPosition(context,
+                        Arrays.asList(result.get(position).getCarId()), latLngBounds);
                 dialog.dismiss();
             }
         });
@@ -462,9 +481,9 @@ public class SearchAddrBar extends TopSearchBar {
                 return;
             }
             showLoadingCard();
-            onTaskPresenter.getCarOnTask(startSpot, endSpot, new Action1<List<CarDetail>>() {
+            onTaskPresenter.getCarOnTask(startSpot, endSpot, new Action2<List<CarDetail>, List<CarPosition>>() {
                 @Override
-                public void call(List<CarDetail> carDetails) {
+                public void call(List<CarDetail> carDetails, List<CarPosition> carPositions) {
                     removeLoadingCard();
                     onClickOutSide();
                     if (carDetails.size() == 0) {
@@ -476,10 +495,15 @@ public class SearchAddrBar extends TopSearchBar {
                     binding.tvHint.setText("正在追踪车辆");
                     setRightIconCancel();
                     result = carDetails;
-                    onTraceCars(new ArrayList<Long>() {{
-                            for (CarDetail detail : result) add(detail.getCarId());
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    if (carPositions != null) {
+                        for (CarPosition carPosition : carPositions) {
+                            builder.include(new LatLng(carPosition.getLat(), carPosition.getLng()));
                         }
-                    });
+                    }
+                    onTraceCars(new ArrayList<Long>() {{
+                        for (CarDetail detail : result) add(detail.getCarId());
+                    }}, latLngBounds = builder.build());
                 }
             });
         }
@@ -503,5 +527,11 @@ public class SearchAddrBar extends TopSearchBar {
         this.endSpot = null;
         this.endSpot = null;
         this.result = null;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
     }
 }

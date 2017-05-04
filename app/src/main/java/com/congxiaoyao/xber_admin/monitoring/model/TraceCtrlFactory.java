@@ -7,6 +7,7 @@ import com.congxiaoyao.xber_admin.TAG;
 import java.util.LinkedList;
 
 /**
+ * 为TraceCtrl及其子类提供的工厂类 包含了创建及回收
  * Created by congxiaoyao on 2017/3/24.
  */
 

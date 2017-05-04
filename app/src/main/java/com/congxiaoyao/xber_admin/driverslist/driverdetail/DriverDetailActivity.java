@@ -78,12 +78,6 @@ public class DriverDetailActivity extends SwipeBackActivity implements Collapsib
         binding.imgAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String[] fileNames = fileList();
-                for (String fileName : fileNames) {
-                    if (fileName.startsWith("trace")) {
-                        deleteFile(fileName);
-                    }
-                }
             }
         });
     }

@@ -7,8 +7,11 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.congxiaoyao.xber_admin.settings.Settings;
 import com.congxiaoyao.xber_admin.utils.Token;
 import com.xiaomi.mipush.sdk.MiPushClient;
+
+import net.orange_box.storebox.StoreBox;
 
 import java.util.List;
 
@@ -24,13 +27,17 @@ public class XberApplication extends Application {
     public static final String APP_KEY = "5971757218356";
     public static final String APP_ID = "2882303761517572356";
 
+    private Settings settings;
+
     @Override
     public void onCreate() {
         super.onCreate();
         long pre = System.currentTimeMillis();
+        if (settings == null) settings = StoreBox.create(this, Settings.class);
         if (shouldInit()) {
             SDKInitializer.initialize(this);
-            MiPushClient.registerPush(this, APP_ID, APP_KEY);
+            if(settings.enableNotification())
+                MiPushClient.registerPush(this, APP_ID, APP_KEY);
         }
         Log.d("cxy", "time = " + (System.currentTimeMillis() - pre));
         Token.value = "";
@@ -64,5 +71,9 @@ public class XberApplication extends Application {
             }
         }
         return false;
+    }
+
+    public Settings getSettings() {
+        return settings;
     }
 }

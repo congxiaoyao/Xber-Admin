@@ -10,17 +10,24 @@ import com.congxiaoyao.httplib.request.TaskRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.CarDetail;
 import com.congxiaoyao.httplib.response.Spot;
+import com.congxiaoyao.httplib.response.Task;
+import com.congxiaoyao.httplib.response.TaskListRsp;
 import com.congxiaoyao.httplib.response.TaskRsp;
+import com.congxiaoyao.httplib.response.exception.EmptyDataException;
+import com.congxiaoyao.xber_admin.driverslist.DriverListActivity;
+import com.congxiaoyao.xber_admin.driverslist.module.CarDetailParcel;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
 import com.congxiaoyao.xber_admin.publishedtask.bean.TaskTrackContact;
 import com.congxiaoyao.xber_admin.spotmanage.ParcelSpot;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
 import com.congxiaoyao.xber_admin.utils.Token;
 import com.xiaomi.mipush.sdk.MiPushMessage;
 import com.xiaomi.mipush.sdk.PushMessageHelper;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscription;
@@ -41,6 +48,7 @@ public class TaskTrackPresenter extends BasePresenterImpl<TaskTrackContact.View>
 
 
     private static final String KEY_TASK_ID = "KEY_TASK_ID";
+    private static final String KEY_CAR_ID = "KEY_CAR_ID";
     public static final String KEY_TASK_STATUS = "KEY_TASK_STATUS";
 
     public TaskTrackPresenter(TaskTrackContact.View view) {
@@ -58,7 +66,13 @@ public class TaskTrackPresenter extends BasePresenterImpl<TaskTrackContact.View>
         }
         Serializable serializable = intent.getSerializableExtra(PushMessageHelper.KEY_MESSAGE);
         if (serializable == null) {
-            view.showError();
+            CarDetailParcel carDetail = intent
+                    .getParcelableExtra(DriverListActivity.EXTRA_CARDETIAL);
+            if (carDetail != null) {
+                subscribeByCarId(carDetail);
+            } else {
+                view.showError();
+            }
             return;
         }
         long taskId = -1;
@@ -79,7 +93,6 @@ public class TaskTrackPresenter extends BasePresenterImpl<TaskTrackContact.View>
                                         .getCarInfo(taskRsp.getCarId(), Token.value), new Func2<TaskRsp, CarDetail, TaskRspAndDriver>() {
                                     @Override
                                     public TaskRspAndDriver call(TaskRsp taskRsp, CarDetail carDetail) {
-
                                         return merge(taskRsp, carDetail);
                                     }
                                 });
@@ -93,6 +106,38 @@ public class TaskTrackPresenter extends BasePresenterImpl<TaskTrackContact.View>
                 }, TaskTrackPresenter.this);
 
         subscriptions.add(subscription);
+    }
+
+    private void subscribeByCarId(final CarDetailParcel carDetail) {
+        Subscription subscribe = XberRetrofit.create(TaskRequest.class).getTask(carDetail.getUserInfo().getUserId(),
+                0, 1, Task.STATUS_EXECUTING, System.currentTimeMillis(), null, Token.value)
+                .flatMap(new Func1<TaskListRsp, Observable<TaskListRsp>>() {
+                    @Override
+                    public Observable<TaskListRsp> call(TaskListRsp taskListRsp) {
+                        List<TaskRsp> pageData = taskListRsp.getCurrentPageData();
+                        if (pageData == null || pageData.size() == 0) {
+                            return XberRetrofit.create(TaskRequest.class).getTask(carDetail.getUserInfo().getUserId(),
+                                    0, 1, Task.STATUS_DELIVERED, System.currentTimeMillis(), null, Token.value);
+                        }
+                        return Observable.just(taskListRsp);
+                    }
+                })
+                .compose(RxUtils.<TaskListRsp>defaultScheduler())
+                .subscribe(new Action1<TaskListRsp>() {
+                    @Override
+                    public void call(TaskListRsp taskListRsp) {
+                        List<TaskRsp> pageData = taskListRsp.getCurrentPageData();
+                        if (pageData == null || pageData.size() == 0) {
+                            throw new EmptyDataException();
+                        }
+                        TaskRspAndDriver taskRsp = getTaskRspWithoutDriver(pageData.get(0));
+                        taskRsp.setCarDetail(carDetail);
+                        view.hideLoading();
+                        view.showTask(taskRsp);
+                    }
+                }, this);
+
+        subscriptions.add(subscribe);
     }
 
     private TaskRspAndDriver merge(TaskRsp taskRsp, CarDetail carDetail) {

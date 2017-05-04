@@ -81,9 +81,6 @@ public class LoginFragment extends LoadableViewImpl<LoginContract.Presenter>
 
     @Override
     public boolean onLongClick(View v) {
-        getContext().getSharedPreferences("xber_sp", Context.MODE_PRIVATE)
-                .edit().putString("admin", null).apply();
-        Toast.makeText(getContext(), "logout!", Toast.LENGTH_SHORT).show();
         return true;
     }
 }

@@ -25,34 +25,9 @@ public class WelcomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_welcome);
         binding.getRoot().postDelayed(runnable, 500);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-//        if (animator != null) return;
-//        int width = binding.rlContainer.getWidth();
-//        binding.rlContainer.setTranslationX(width);
-//        PushService.stopPushService(this);
-//        animator = ObjectAnimator.ofFloat(binding.rlContainer, "translationX", width, 0)
-//                .setDuration(650);
-//        animator.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                binding.rlContainer.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        WelcomeActivity.this.onAnimationEnd();
-//                    }
-//                }, 200);
-//            }
-//        });
-//        animator.setStartDelay(100);
-//        animator.start();
     }
 
     public void onAnimationEnd() {

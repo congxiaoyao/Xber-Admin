@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">>
+    <PreferenceCategory android:title="系统设置">
+        <SwitchPreference android:title="通知"
+            android:key="@string/setting_notification"
+            android:summaryOn="开启"
+            android:summaryOff="关闭"
+            android:defaultValue="true" />
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/setting_max_car_count"
+            android:title="最大显示车辆"
+            android:summary="屏幕中显示的车辆数"
+            android:enabled="true"
+            android:defaultValue="50"
+            app:msbp_minValue="10"
+            app:msbp_maxValue="60"
+            app:msbp_interval="1"
+            app:msbp_measurementUnit="辆车(会有波动)"
+            app:msbp_dialogEnabled="false"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="@string/setting_animate_thread_count"
+            android:title="动画线程数"
+            android:summary="请根据手机性能调节,多核手机请调高"
+            android:enabled="true"
+            android:defaultValue="2"
+            app:msbp_minValue="1"
+            app:msbp_maxValue="8"
+            app:msbp_interval="1"
+            app:msbp_measurementUnit="个线程"
+            app:msbp_dialogEnabled="false"/>
+
+        <Preference android:title="清除缓存"
+            android:summary="清除缓存的轨迹文件"
+            android:key="remove_cache" />
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="关于">
+        <Preference android:title="版本"
+            android:summary="Xber毕业设计"
+            android:key="version"/>
+        <Preference android:title="退出登陆"
+            android:key="logout" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -53,7 +53,7 @@ public class XberMonitorMapFragment extends Fragment {
 
             @Override
             public void onMapStatusChangeFinish(MapStatus mapStatus) {
-                monitor.onMapStatusChangeFinish(mapStatus);
+                if (monitor != null) monitor.onMapStatusChangeFinish(mapStatus);
             }
         });
 
@@ -80,7 +80,7 @@ public class XberMonitorMapFragment extends Fragment {
         baiduMap.setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                BaiduMapUtils.moveToLatLng(baiduMap, 39.066252, 117.147011);
+                BaiduMapUtils.moveToLatLng(baiduMap, 39.066252, 117.147011, 10);
             }
         });
 
@@ -108,6 +108,9 @@ public class XberMonitorMapFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mapView.onResume();
+    }
+
+    public void tokenSafeOnResume() {
         monitor = new XberMonitor(mapView, mapView.getMap(), stompProvider);
     }
 

@@ -149,7 +149,7 @@ public class StompService extends Service implements Action1<Throwable> {
                 });
 
         //连接完成的回调
-        client.onConnected().compose(RxUtils.toMainThread()).subscribe(new Action1<Integer>() {
+        client.onConnected().compose(RxUtils.<Integer>toMainThread()).subscribe(new Action1<Integer>() {
             @Override
             public void call(Integer integer) {
                 nearestNQuery.topic().subscribe(new Action1<Integer>() {
@@ -188,7 +188,7 @@ public class StompService extends Service implements Action1<Throwable> {
         queryMessage.setQueryId(queryId);
 
         //如果 specifiedQuery没在运行 则不是状态切换 可以直接查询
-        if (!specifiedQuery.isRunning()) {
+        if (!isSpecifiedCarsRunning()) {
             nearestNQuery.query(queryMessage, queryId, false);
             return;
         }
@@ -231,6 +231,10 @@ public class StompService extends Service implements Action1<Throwable> {
         nearestNQuery.stopQuery();
     }
 
+    public boolean isNearestNRunning() {
+        return nearestNQuery.isRunning();
+    }
+
     public void specifiedCarsTrace(final List<Long> carIds) {
         if (carIds == null || carIds.size() == 0
                 || client == null) return;
@@ -243,7 +247,7 @@ public class StompService extends Service implements Action1<Throwable> {
         queryMessage.setQueryId(queryId);
 
         //如果 nearestNQuery没在运行 则不是状态切换 可以直接查询
-        if (!nearestNQuery.isRunning()) {
+        if (!isNearestNRunning()) {
             specifiedQuery.query(queryMessage, queryId, carIds.size() == 1);
             return;
         }
@@ -277,7 +281,7 @@ public class StompService extends Service implements Action1<Throwable> {
                 logThreadName("重置buffer");
                 buffer = newBuffer;
                 latestTime = newLatestDataTimeMap;
-                Observable.from(needToRemoveIds).compose(RxUtils.toMainThread()).subscribe(new Action1<Long>() {
+                Observable.from(needToRemoveIds).compose(RxUtils.<Long>toMainThread()).subscribe(new Action1<Long>() {
                     @Override
                     public void call(Long carId) {
                         //在主线程做回调
@@ -300,6 +304,10 @@ public class StompService extends Service implements Action1<Throwable> {
 
     public void stopSpecifiedCarsTrace() {
         specifiedQuery.stopQuery();
+    }
+
+    public boolean isSpecifiedCarsRunning() {
+        return specifiedQuery.isRunning();
     }
 
     public void disconnect() {
@@ -372,7 +380,7 @@ public class StompService extends Service implements Action1<Throwable> {
 
         Observable<Integer> topic() {
             subscribeCallback = Observable.just(0)
-                    .compose(RxUtils.toMainThread()).publish();
+                    .compose(RxUtils.<Integer>toMainThread()).publish();
             if (client == null) return subscribeCallback;
             if (subscription != null) subscription.unsubscribe();
 
@@ -515,17 +523,18 @@ public class StompService extends Service implements Action1<Throwable> {
                 buffer.put(carId, trace);
             }
 
-            //插入数据
-            trace.insertAll(gpsSamples);
-
             for (int i = 0; i < gpsSamples.length; i++) {
                 GpsSampleRsp gpsSample = gpsSamples[i];
                 Log.d(TAG.ME, "receive data time = " + gpsSample.getTime()
                         + ",id = " + gpsSample.getCarId());
             }
 
+            //插入数据
+            trace.insertAll(gpsSamples);
+
             //一段时间后检查有没有新数据插入 没有的话认为这个车消失了 做相应处理并回调相应接口
             GpsSampleRsp last = trace.getLast();
+            if (last == null) return null;
             latestTime.put(last.getCarId(), last.getTime());
             Observable.just(last.getTime())
                     .delay(QueryConfig.DATA_EXPIRATION, QueryConfig.TIME_UNIT)

@@ -23,22 +23,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <FrameLayout
                 android:background="#fdfdfd"
-                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="48dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textSize="16sp"
-                    android:background="?android:attr/selectableItemBackground"
                     android:gravity="center"
                     android:textColor="@color/colorBlack"
                     android:text="车辆信息" />
 
-            </LinearLayout>
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{presenter.onShowLocation}"
+                    android:layout_gravity="right">
+                    <View
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_location"
+                        android:backgroundTint="@color/colorLightGray" />
+                </FrameLayout>
+
+            </FrameLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -170,7 +183,7 @@
                 android:padding="16dp"
                 android:onClick="@{presenter.onClick}"
                 android:enabled="@{data!=null}"
-                android:text="查看司机" />
+                android:text="查看任务" />
         </LinearLayout>
 
         <include layout="@layout/view_progress_bar" />

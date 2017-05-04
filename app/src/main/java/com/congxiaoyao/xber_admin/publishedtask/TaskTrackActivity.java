@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
 import com.baidu.mapapi.search.geocode.GeoCoder;
@@ -28,8 +29,10 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.congxiaoyao.httplib.request.TaskRequest;
 import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
+import com.congxiaoyao.httplib.response.CarPosition;
 import com.congxiaoyao.httplib.response.GpsSamplePo;
 import com.congxiaoyao.httplib.response.Task;
+import com.congxiaoyao.xber_admin.MainActivity;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ActivityTaskTrackBinding;
 import com.congxiaoyao.xber_admin.databinding.ItemTaskStateBinding;
@@ -40,6 +43,7 @@ import com.congxiaoyao.xber_admin.driverslist.driverdetail.HistoryTaskFragment;
 import com.congxiaoyao.xber_admin.driverslist.module.CarDetailParcel;
 import com.congxiaoyao.xber_admin.driverslist.module.ParcelTaskRsp;
 import com.congxiaoyao.xber_admin.driverslist.taskdetail.TaskDetailActivity;
+import com.congxiaoyao.xber_admin.helpers.TopSearchBar;
 import com.congxiaoyao.xber_admin.mvpbase.presenter.BasePresenterImpl;
 import com.congxiaoyao.xber_admin.mvpbase.view.LoadableView;
 import com.congxiaoyao.xber_admin.publishedtask.bean.TaskRspAndDriver;
@@ -248,6 +252,7 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
     class LocationQueryView implements LoadableView<LocationQueryPresenter> {
 
         private ItemTaskStateBinding itemTaskStateBinding;
+        private LocationQueryPresenter presenter;
 
         public LocationQueryView(ItemTaskStateBinding itemTaskStateBinding) {
             this.itemTaskStateBinding = itemTaskStateBinding;
@@ -265,6 +270,7 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
 
         @Override
         public void setPresenter(LocationQueryPresenter presenter) {
+            this.presenter = presenter;
         }
 
         @Override
@@ -274,6 +280,16 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
 
         public void showLocation(String location) {
             itemTaskStateBinding.setSubTitle(location);
+            itemTaskStateBinding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LatLng latLng = presenter.latLng;
+                    MainActivity.moveMap(getContext(), TopSearchBar
+                            .carPositionToLatLngBounds(new CarPosition(-1L, latLng.latitude,
+                                    latLng.longitude)));
+                    finish();
+                }
+            });
         }
 
         public void showError() {
@@ -284,6 +300,7 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
     class LocationQueryPresenter extends BasePresenterImpl<LocationQueryView> {
 
         private final Long taskId;
+        private LatLng latLng;
 
         public LocationQueryPresenter(LocationQueryView view, Long taskId) {
             super(view);
@@ -298,7 +315,7 @@ public class TaskTrackActivity extends SwipeBackActivity implements TaskTrackCon
             .map(new Func1<GpsSamplePo, LatLng>() {
                 @Override
                 public LatLng call(GpsSamplePo gpsSamplePo) {
-                    return new LatLng(gpsSamplePo.getLatitude(), gpsSamplePo.getLongitude());
+                    return latLng = new LatLng(gpsSamplePo.getLatitude(), gpsSamplePo.getLongitude());
                 }
             }).flatMap(new Func1<LatLng, Observable<ReverseGeoCodeResult>>() {
                 @Override

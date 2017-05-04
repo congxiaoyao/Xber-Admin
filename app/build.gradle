@@ -51,4 +51,6 @@ dependencies {
     compile 'com.google.dagger:dagger:2.4'
     apt 'com.google.dagger:dagger-compiler:2.4'
     compile 'org.glassfish:javax.annotation:10.0-b28'
+    compile 'com.pavelsikun:material-seekbar-preference:2.3.0+'
+    compile 'net.orange-box.storebox:storebox-lib:1.4.0'
 }

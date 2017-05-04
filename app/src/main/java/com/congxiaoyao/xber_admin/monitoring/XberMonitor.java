@@ -1,25 +1,18 @@
 package com.congxiaoyao.xber_admin.monitoring;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapViewLayoutParams;
 import com.baidu.mapapi.map.Marker;
-import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.Projection;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
+import com.congxiaoyao.location.utils.Line;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.StompBaseActivity.StompServiceProvider;
 import com.congxiaoyao.xber_admin.TAG;
@@ -27,7 +20,7 @@ import com.congxiaoyao.xber_admin.monitoring.carinfo.CarInfoPresenter;
 import com.congxiaoyao.xber_admin.monitoring.carinfo.CarInfoView;
 import com.congxiaoyao.xber_admin.monitoring.model.TraceCtrlFactory;
 import com.congxiaoyao.xber_admin.service.SyncOrderedList;
-import com.congxiaoyao.xber_admin.widget.BottomDialog;
+import com.congxiaoyao.xber_admin.utils.BaiduMapUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,7 +39,9 @@ import dagger.Provides;
 
 import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.GpsSampleRsp;
 import static com.congxiaoyao.location.model.GpsSampleRspOuterClass.registerAllExtensions;
+import static com.congxiaoyao.xber_admin.settings.Settings.*;
 import static com.congxiaoyao.xber_admin.monitoring.RunningCar.STATE_DYNAMIC;
+import static com.congxiaoyao.xber_admin.monitoring.RunningCar.STATE_STATIC;
 
 /**
  * Created by congxiaoyao on 2017/3/24.
@@ -55,6 +50,10 @@ import static com.congxiaoyao.xber_admin.monitoring.RunningCar.STATE_DYNAMIC;
 @Module
 public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 
+    //当地图缩放等级大于等于16的时候对屏幕内的车辆做动画
+    public static final int MIN_ANIMATE_ZOOM = 15;
+    public static final double MIN_QUERY_RADIUS = 0.02;
+
     private TextureMapView mapView;
     private BaiduMap baiduMap;
     private StompServiceProvider serviceProvider;
@@ -62,6 +61,10 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 
     private Map<Long, RunningCar> runningCars = new HashMap<>();
     private CarInfoPresenter presenter;
+
+    private int maxCarCount = R.integer.def_max_car_count;
+
+    private int animateState = STATE_DYNAMIC;
 
     public XberMonitor(TextureMapView mapView, BaiduMap baiduMap,
                        StompServiceProvider serviceProvider) {
@@ -72,71 +75,64 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
         this.baiduMap = baiduMap;
         this.serviceProvider = serviceProvider;
         this.factory = new TraceCtrlFactory(10, 10, 10);
-
-        Button button = new Button(mapView.getContext());
-        button.setText("BUTTON????");
-        button.setOnClickListener(new View.OnClickListener() {
-            private int state = STATE_DYNAMIC;
-            @Override
-            public void onClick(View v) {
-                state = (state + 1) % 2;
-                if (state == STATE_DYNAMIC) {
-                    changeToDynamic();
-                }else {
-                    changeToStatic();
-                }
-            }
-        });
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.topMargin = 960;
-        ((ViewGroup) mapView.getParent()).addView(button, params);
+        animateState = getAnimateStateByZoomLevel(BaiduMapUtils.getZoomLevel(baiduMap));
+        maxCarCount = SettingsHelper.getInstance(mapView.getContext()).maxCarCount();
 
     }
 
-    public void changeToStatic() {
-        Set<Long> carIds = runningCars.keySet();
-        for (Long carId : carIds) {
-            RunningCar runningCar = runningCars.get(carId);
-            runningCar.changeToStatic();
-        }
-    }
-
-    public void changeToDynamic() {
-        Set<Long> carIds = runningCars.keySet();
-        for (Long carId : carIds) {
-            RunningCar runningCar = runningCars.get(carId);
-            runningCar.changeToDynamic();
-        }
-    }
-
+    /**
+     * 搜索栏中要求搜索所有车辆
+     */
     @Override
     public void onTraceAllCar() {
-
+        Context context = mapView.getContext();
+        LatLng latLng = BaiduMapUtils.getScreenCenterLatLng(context, baiduMap);
+        double radius = BaiduMapUtils.getScreenRadius(context, baiduMap);
+        if (radius < MIN_QUERY_RADIUS) radius = MIN_QUERY_RADIUS;
+        serviceProvider.getService().nearestNTrace(latLng.latitude,
+                latLng.longitude, radius, maxCarCount);
     }
 
+    /**
+     * 搜索栏中要求搜索指定车辆
+     * @param carIds
+     */
     @Override
-    public void onTraceSpecifiedCar(List<Long> carIds) {
-
+    public void onTraceSpecifiedCar(List<Long> carIds, LatLngBounds latLngBounds) {
+        if (carIds != null || carIds.size() != 0) {
+            serviceProvider.getService().specifiedCarsTrace(carIds);
+        }
+        if (latLngBounds != null) {
+            BaiduMapUtils.moveToBoundsAnimate(baiduMap, latLngBounds,
+                    mapView.getWidth(), mapView.getHeight());
+        }
     }
 
     @Override
     public void onCarAdd(long carId, SyncOrderedList<GpsSampleRsp> trace) {
+        Log.d(XberMonitor.class.getSimpleName(), "onCarAdd: ");
         RunningCar runningCar = runningCars.get(carId);
         if (runningCar != null) {
             Log.e(TAG.ME, "onCarAdd: 按说这里不应该查到东西的！！");
             runningCar.destroy();
         }
         try {
-            runningCar = new RunningCar(this, trace, STATE_DYNAMIC);
+            int animate = getAnimateStateByZoomLevel(BaiduMapUtils.getZoomLevel(baiduMap));
+            runningCar = new RunningCar(this, trace, animate);
         } catch (RuntimeException e) {
             e.printStackTrace();
+            return;
         }
         runningCars.put(carId, runningCar);
     }
 
+    private int getAnimateStateByZoomLevel( float zoomLevel) {
+        return zoomLevel >= MIN_ANIMATE_ZOOM ? STATE_DYNAMIC : STATE_STATIC;
+    }
+
     @Override
     public void onCarRemove(long carId) {
+        Log.d(XberMonitor.class.getSimpleName(), "onCarRemove: ");
         RunningCar removed = runningCars.remove(carId);
         if (removed != null) {
             removed.destroy();
@@ -145,7 +141,36 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 
     @Override
     public void onMapStatusChangeFinish(MapStatus mapStatus) {
-
+        int state = getAnimateStateByZoomLevel(mapStatus.zoom);
+        //地图状态发生变化 切换车辆动画状态
+        Set<Long> carIds = runningCars.keySet();
+        for (Long carId : carIds) {
+            RunningCar runningCar = runningCars.get(carId);
+            //如果当前缩放状态需要动画 则对屏幕内的所有车设置为动画状态
+            if (state == STATE_DYNAMIC &&
+                    mapStatus.bound.contains(runningCar.getCurrentLatLng())) {
+                runningCar.setAnimationState(STATE_DYNAMIC);
+            }
+            //不在屏幕范围内的设置为静态
+            else {
+                runningCar.setAnimationState(STATE_STATIC);
+            }
+        }
+        //地图状态发生变化 考虑重新提交请求参数
+        //当搜索指定车辆时 不需要提交新的请求参数
+        if (serviceProvider.getService().isSpecifiedCarsRunning()) {
+            return;
+        }
+        //否则重新请求屏幕范围内的车辆
+        LatLngBounds bound = mapStatus.bound;
+        LatLng latLng = bound.getCenter();
+        LatLng ne = bound.northeast;
+        LatLng sw = bound.southwest;
+        Line line = new Line(ne.longitude, ne.latitude, sw.longitude, sw.latitude);
+        double radius = line.getLength() / 2;
+        if (radius < MIN_QUERY_RADIUS) radius = MIN_QUERY_RADIUS;
+        serviceProvider.getService().nearestNTrace(latLng.latitude,
+                latLng.longitude, radius, maxCarCount);
     }
 
     @Override
@@ -163,19 +188,19 @@ public class XberMonitor implements ISearchBarState,IStompState,IMapState {
 
     @Override
     public void onMapClick(final LatLng latLng) {
-        if (testData == null) {
-            testData = getTestData();
-            lastData = testData.getLast();
-            onCarAdd(testData.getFirst().getCarId(), testData);
-        }else {
-            lastData = GpsSampleRsp.newBuilder().setLat(latLng.latitude)
-                    .setLng(latLng.longitude)
-                    .setTime(System.currentTimeMillis())
-                    .setVlat(lastData.getVlat())
-                    .setVlng(lastData.getVlng())
-                    .setCarId(lastData.getCarId()).build();
-            testData.insert(lastData);
-        }
+//        if (testData == null) {
+//            testData = getTestData();
+//            lastData = testData.getLast();
+//            onCarAdd(testData.getFirst().getCarId(), testData);
+//        }else {
+//            lastData = GpsSampleRsp.newBuilder().setLat(latLng.latitude)
+//                    .setLng(latLng.longitude)
+//                    .setTime(System.currentTimeMillis())
+//                    .setVlat(lastData.getVlat())
+//                    .setVlng(lastData.getVlng())
+//                    .setCarId(lastData.getCarId()).build();
+//            testData.insert(lastData);
+//        }
     }
 
     public SyncOrderedList<GpsSampleRsp> getTestData() {

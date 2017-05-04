@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -19,7 +20,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
+import com.congxiaoyao.httplib.request.LocationRequest;
+import com.congxiaoyao.httplib.request.retrofit2.XberRetrofit;
 import com.congxiaoyao.httplib.response.CarDetail;
+import com.congxiaoyao.httplib.response.CarPosition;
+import com.congxiaoyao.httplib.response.exception.EmptyDataException;
+import com.congxiaoyao.xber_admin.MainActivity;
 import com.congxiaoyao.xber_admin.R;
 import com.congxiaoyao.xber_admin.databinding.ItemCarBinding;
 import com.congxiaoyao.xber_admin.databinding.ItemSearchBarBinding;
@@ -27,12 +35,18 @@ import com.congxiaoyao.xber_admin.databinding.ItemSearchCarBarBinding;
 import com.congxiaoyao.xber_admin.resultcard.CarResultCardContract;
 import com.congxiaoyao.xber_admin.resultcard.CarResultCardPresenterImpl;
 import com.congxiaoyao.xber_admin.resultcard.CarResultCardViewImpl;
+import com.congxiaoyao.xber_admin.utils.RxUtils;
+import com.congxiaoyao.xber_admin.utils.Token;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import rx.Observable;
+import rx.Subscription;
 import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by congxiaoyao on 2017/3/18.
@@ -45,6 +59,7 @@ public class SearchCarBar extends TopSearchBar {
     private CarResultCardViewImpl fragment;
 
     private CarDetail trackingCar = null;
+    private LatLngBounds latLngBounds = null;
 
     public SearchCarBar(ItemSearchBarBinding binding, LinearLayout animationLayer) {
         super(binding, animationLayer);
@@ -55,7 +70,7 @@ public class SearchCarBar extends TopSearchBar {
     protected void onCancelClick() {
         binding.tvHint.setText(R.string.please_input_car);
         setRightIconSearch();
-        onTraceCars(null);
+        onTraceCars(null, null);
     }
 
     @Override
@@ -100,8 +115,16 @@ public class SearchCarBar extends TopSearchBar {
         });
 
         binding.setCar(trackingCar);
-        builder.setView(binding.getRoot()).setPositiveButton("确定", null)
+        final AlertDialog dialog = builder.setView(binding.getRoot()).setPositiveButton("关闭", null)
                 .setTitle("正在追踪").show();
+        binding.getRoot().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveMapToCarPosition(context,
+                        Arrays.asList(trackingCar.getCarId()), latLngBounds);
+                dialog.dismiss();
+            }
+        });
     }
 
     @Override
@@ -134,15 +157,18 @@ public class SearchCarBar extends TopSearchBar {
         FragmentManager manager = activity.getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         fragment = new CarResultCardViewImpl();
+        if (presenter != null) presenter.unSubscribe();
         presenter = new CarResultCardPresenterImpl(fragment);
         presenter.setOnCarSelectedListener(new CarResultCardContract.OnCarSelectedListener() {
             @Override
-            public void onCarSelected(CarDetail carDetail) {
+            public void onCarSelected(CarDetail carDetail, CarPosition carPosition) {
                 SearchCarBar.this.trackingCar = carDetail;
                 runCarBarOutAnimation();
                 binding.tvHint.setText("正在跟踪车辆...");
                 setRightIconCancel();
-                onTraceCars(Arrays.asList(carDetail.getCarId()));
+                latLngBounds = carPositionToLatLngBounds(carPosition);
+                SearchCarBar.this.latLngBounds = latLngBounds;
+                onTraceCars(Arrays.asList(carDetail.getCarId()), latLngBounds);
             }
         });
         transaction.replace(R.id.animation_layer, fragment);
@@ -318,6 +344,14 @@ public class SearchCarBar extends TopSearchBar {
             });
         }else {
             shakeCard(itemSearchCarBinding.cardView);
+        }
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (presenter != null) {
+            presenter.unSubscribe();
         }
     }
 }
